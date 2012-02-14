@@ -9,3 +9,6 @@
 # VC build output directories
 *Debug/
 *Release/
+
+# Some special files
+Apps/JiraDB/Data/MotorolaCRs.xlsx
