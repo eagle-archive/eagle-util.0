@@ -1,28 +1,15 @@
-/* Copyright (C) 2008 The Android Open Source Project
-**
-** This software is licensed under the terms of the GNU General Public
-** License version 2, as published by the Free Software Foundation, and
-** may be copied, distributed, and modified under those terms.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU General Public License for more details.
-*/
-#include "android/utils/ini.h"
+
+#include "ini.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
 #include <errno.h>
-#include "android/utils/debug.h"
-#include "android/utils/system.h" /* for ASTRDUP */
-#include "android/utils/bufprint.h"
-#include "osdep.h"
 
 /* W() is used to print warnings, D() to print debugging info */
 #define  W(...)   dwarning(__VA_ARGS__)
 #define  D(...)   VERBOSE_PRINT(avd_config,__VA_ARGS__)
+#define  AFREE    free
 
 /* a simple .ini file parser and container for Android
  * no sections support. see android/utils/ini.h for

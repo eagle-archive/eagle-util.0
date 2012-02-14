@@ -1,18 +1,6 @@
-/* Copyright (C) 2008 The Android Open Source Project
-**
-** This software is licensed under the terms of the GNU General Public
-** License version 2, as published by the Free Software Foundation, and
-** may be copied, distributed, and modified under those terms.
-**
-** This program is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU General Public License for more details.
-*/
-#ifndef _ANDROID_UTILS_INI_H
-#define _ANDROID_UTILS_INI_H
 
-#include <stdint.h>
+#ifndef _UTILS_INI_H
+#define _UTILS_INI_H
 
 /* the emulator supports a simple .ini file format for its configuration
  * files. See docs/ANDROID-CONFIG-FILES.TXT for details.
@@ -61,7 +49,7 @@ int     iniFile_getInteger( IniFile*  f, const char*  key, int  defaultValue );
 /* returns a 64-bit integer value, or a default in case the value string is
  * missing or badly formatted
  */
-int64_t iniFile_getInt64( IniFile*  f, const char*  key, int64_t  defaultValue );
+long long iniFile_getInt64( IniFile*  f, const char*  key, long long  defaultValue );
 
 /* returns a double value, or a default in case the value string is
  * missing or badly formatted
@@ -80,16 +68,16 @@ int     iniFile_getBoolean( IniFile*  f, const char*  key, const char*  defaultV
  *
  * NOTE: we consider that 1K = 1024, not 1000.
  */
-int64_t  iniFile_getDiskSize( IniFile*  f, const char*  key, const char*  defaultValue );
+long long  iniFile_getDiskSize( IniFile*  f, const char*  key, const char*  defaultValue );
 
 /* These functions are used to set values in an IniFile */
 void iniFile_setValue( IniFile* f, const char* key, const char* value );
 void iniFile_setInteger( IniFile* f, const char* key, int value );
-void iniFile_setInt64( IniFile* f, const char* key, int64_t value );
+void iniFile_setInt64( IniFile* f, const char* key, long long value );
 void iniFile_setDouble( IniFile* f, const char* key, double value );
 void iniFile_setBoolean( IniFile* f, const char* key, int value );
-void iniFile_setDiskSize( IniFile* f, const char* key, int64_t size );
+void iniFile_setDiskSize( IniFile* f, const char* key, long long size );
 
 /* */
 
-#endif /* _ANDROID_UTILS_INI_H */
+#endif /* _UTILS_INI_H */
