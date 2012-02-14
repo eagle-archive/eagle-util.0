@@ -1,0 +1,8 @@
+For MainDev:
+- http://idart.mot.com/browse/IKMAIN
+- Filters > All
+- Tools > Configure Columns
+- Find Add New Column, make sure to include "Components", "Resolved Date", 
+  "Previous Issue IDs", "Inspection Record", "Duplicate"
+- Back to "Issue Navigator" page, Views > Excel (current fields) to download
+
