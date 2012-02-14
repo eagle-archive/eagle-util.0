@@ -1,0 +1,11 @@
+# VC files
+*.suo
+*.ncb
+*.user
+
+# binaries
+*.exe
+
+# VC build output directories
+*Debug/
+*Release/
