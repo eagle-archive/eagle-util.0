@@ -1,15 +1,78 @@
 
+#if defined(_MSC_VER)
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include "ini.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include <string.h>
 #include <limits.h>
 #include <errno.h>
 
 /* W() is used to print warnings, D() to print debugging info */
-#define  W(...)   dwarning(__VA_ARGS__)
-#define  D(...)   VERBOSE_PRINT(avd_config,__VA_ARGS__)
+#define  W(...)   //dwarning(__VA_ARGS__)
+#define  D(...)   //VERBOSE_PRINT(avd_config,__VA_ARGS__)
 #define  AFREE    free
+
+
+
+/** USEFUL STRING BUFFER FUNCTIONS
+ **/
+
+char*
+vbufprint( char*        buffer,
+           char*        buffer_end,
+           const char*  fmt,
+           va_list      args )
+{
+    int  len = vsnprintf( buffer, buffer_end - buffer, fmt, args );
+    if (len < 0 || buffer+len >= buffer_end) {
+        if (buffer < buffer_end)
+            buffer_end[-1] = 0;
+        return buffer_end;
+    }
+    return buffer + len;
+}
+
+char*
+bufprint(char*  buffer, char*  end, const char*  fmt, ... )
+{
+    va_list  args;
+    char*    result;
+
+    va_start(args, fmt);
+    result = vbufprint(buffer, end, fmt, args);
+    va_end(args);
+    return  result;
+}
+
+
+char*
+ASTRDUP( const char*  str )
+{
+#if defined(_MSC_VER)
+    return _strdup(str);
+#else
+    int    len;
+    char*  copy;
+
+    if (str == NULL)
+        return NULL;
+
+    len  = (int)strlen(str);
+    copy = malloc(len+1);
+    memcpy(copy, str, len);
+    copy[len] = 0;
+
+    return copy;
+#endif
+}
+
+#if defined(_MSC_VER)
+#define strtoll _strtoui64
+#endif
 
 /* a simple .ini file parser and container for Android
  * no sections support. see android/utils/ini.h for
@@ -44,7 +107,7 @@ iniFile_alloc( void )
 {
     IniFile*  i;
 
-    ANEW0(i);
+    i = malloc(sizeof(IniFile));
     return i;
 }
 
@@ -52,7 +115,7 @@ static void
 iniPair_init( IniPair* pair, const char* key, int keyLen,
                              const char* value, int valueLen )
 {
-    AARRAY_NEW(pair->key, keyLen + valueLen + 2);
+    pair->key = malloc(sizeof(*pair->key) * (keyLen + valueLen + 2));
     memcpy(pair->key, key, keyLen);
     pair->key[keyLen] = 0;
 
@@ -65,8 +128,8 @@ static void
 iniPair_replaceValue( IniPair* pair, const char* value )
 {
     char* key      = pair->key;
-    int   keyLen   = strlen(key);
-    int   valueLen = strlen(value);
+    int   keyLen   = (int)strlen(key);
+    int   valueLen = (int)strlen(value);
 
     iniPair_init(pair, key, keyLen, value, valueLen);
     AFREE(key);
@@ -83,7 +146,7 @@ iniFile_addPair( IniFile*  i,
         int       oldMax = i->maxPairs;
         int       newMax = oldMax + (oldMax >> 1) + 4;
 
-        AARRAY_RENEW(i->pairs, newMax);
+        i->pairs = realloc(i->pairs, newMax * sizeof(*i->pairs));
         i->maxPairs = newMax;
     }
 
@@ -204,7 +267,7 @@ iniFile_newFromMemory( const char*  text, const char*  fileName )
         while (isKeyChar(*p))
             p++;
 
-        keyLen = p - key;
+        keyLen = (int)(p - key);
         p      = skipSpaces(p);
 
         /* check the equal */
@@ -228,7 +291,7 @@ iniFile_newFromMemory( const char*  text, const char*  fileName )
         while (p > value && (p[-1] == ' ' || p[-1] == '\t'))
             p --;
 
-        valueLen = p - value;
+        valueLen = (int)(p - value);
 
         iniFile_addPair(ini, key, keyLen, value, valueLen);
         D("%4d: KEY='%.*s' VALUE='%.*s'", lineno,
@@ -273,7 +336,7 @@ iniFile_newFromFile( const char*  filepath )
     }
 
     /* read the file, add a sentinel at the end of it */
-    AARRAY_NEW(text, size+1);
+    text = malloc(sizeof(*text) * (size+1));
     len = fread(text, 1, size, fp);
     text[len] = 0;
 
@@ -300,7 +363,7 @@ iniFile_saveToFile( IniFile*  f, const char*  filepath )
     }
 
     for ( ; pair < pairEnd; pair++ ) {
-        char  temp[PATH_MAX], *p=temp, *end=p+sizeof(temp);
+        char  temp[4096/*PATH_MAX*/], *p=temp, *end=p+sizeof(temp);
         p = bufprint(temp, end, "%s = %s\n", pair->key, pair->value);
         if (fwrite(temp, p - temp, 1, fp) != 1) {
             result = -1;
@@ -376,11 +439,11 @@ iniFile_getBoolean( IniFile*  f, const char*  key, const char*  defaultValue )
         return 0;
 }
 
-int64_t
+long long
 iniFile_getDiskSize( IniFile*  f, const char*  key, const char*  defaultValue )
 {
     const char*  valStr = iniFile_getValue(f, key);
-    int64_t      value  = 0;
+    long long    value  = 0;
 
     if (!valStr)
         valStr = defaultValue;
@@ -399,15 +462,15 @@ iniFile_getDiskSize( IniFile*  f, const char*  key, const char*  defaultValue )
     return value;
 }
 
-int64_t
-iniFile_getInt64( IniFile*  f, const char*  key, int64_t  defaultValue )
+long long
+iniFile_getInt64( IniFile*  f, const char*  key, long long  defaultValue )
 {
     const char*  valStr = iniFile_getValue(f, key);
-    int64_t      value  = defaultValue;
+    long long      value  = defaultValue;
 
     if (valStr != NULL) {
         char*    end;
-        int64_t  d;
+        long long  d;
 
         d = strtoll(valStr, &end, 10);
         if (end != NULL && end[0] == 0)
@@ -428,7 +491,7 @@ iniFile_setValue( IniFile* f, const char* key, const char* value )
     if (pair != NULL) {
         iniPair_replaceValue(pair, value);
     } else {
-        iniFile_addPair(f, key, strlen(key), value, strlen(value));
+        iniFile_addPair(f, key, (int)strlen(key), value, (int)strlen(value));
     }
 }
 
@@ -441,7 +504,7 @@ iniFile_setInteger( IniFile* f, const char* key, int value )
 }
 
 void
-iniFile_setInt64( IniFile* f, const char* key, int64_t value )
+iniFile_setInt64( IniFile* f, const char* key, long long value )
 {
     char temp[32];
     snprintf(temp, sizeof temp, "%" PRId64, value);
@@ -463,13 +526,13 @@ iniFile_setBoolean( IniFile* f, const char* key, int value )
 }
 
 void
-iniFile_setDiskSize( IniFile* f, const char* key, int64_t size )
+iniFile_setDiskSize( IniFile* f, const char* key, long long size )
 {
     char     temp[32];
-    int64_t  divisor = 0;
-    const int64_t  kilo = 1024;
-    const int64_t  mega = 1024*kilo;
-    const int64_t  giga = 1024*mega;
+    long long  divisor = 0;
+    const long long  kilo = 1024;
+    const long long  mega = 1024*kilo;
+    const long long  giga = 1024*mega;
     char     suffix = '\0';
 
     if (size >= giga && !(size % giga)) {
