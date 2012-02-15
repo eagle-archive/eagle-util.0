@@ -71,7 +71,9 @@ ASTRDUP( const char*  str )
 }
 
 #if defined(_MSC_VER)
-#define strtoll _strtoui64
+#define strtoll     _strtoui64
+#define snprintf    _snprintf
+#define PRId64      "lld"
 #endif
 
 /* a simple .ini file parser and container for Android
