@@ -136,7 +136,7 @@ BOOL CIEProxyDlg::OnBnClickedBtnProxy_X(int num)
     case 3:
         strBypass = "*.cn;*.kaixin001.com;*.taobao.com;*.baidu.com;" \
             "*.dyhjw.com;*.wzde.com;*.gfan.com" \
-            "*.139.com;";
+            "*.139.com;*.360*.com";
         res = EnableIEProxy(TRUE, "127.0.0.1", 8087, strBypass);
         break;
 
