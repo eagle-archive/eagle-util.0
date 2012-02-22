@@ -185,13 +185,13 @@ void CIEProxyDlg::OnBnClickedBtnSysProxySetting()
 
 LRESULT CIEProxyDlg::OnGetProxyStatus(WPARAM wParam, LPARAM lParam)
 {
-    BOOL bEnable;
-    CStringA proxy, byPass;
+    bool bEnable;
+    std::string proxy, byPass;
     BOOL res = GetIEProxy(bEnable, proxy, byPass);
 
     if (res)
     {
-        CString status, proxyT(proxy), byPassT(byPass);
+        CString status, proxyT(proxy.c_str()), byPassT(byPass.c_str());
         if (!bEnable)
             status = "IE proxy server is disabled.";
         else

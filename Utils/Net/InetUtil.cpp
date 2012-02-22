@@ -1,9 +1,10 @@
 
+#include <afxwin.h>         // MFC core and standard components
+#include <Wininet.h>
 #include "InetUtil.h"
-#include "Wininet.h"
 
 
-BOOL GetIEProxy(BOOL &bEnable, CStringA &proxy, CStringA &byPass)
+bool GetIEProxy(bool &bEnable, std::string &proxy, std::string &byPass)
 {
     BOOL result = TRUE;
     bEnable = FALSE;
@@ -24,10 +25,10 @@ BOOL GetIEProxy(BOOL &bEnable, CStringA &proxy, CStringA &byPass)
     {
         DWORD err = ::GetLastError();
     }
-    return result;
+    return (result != FALSE);
 }
 
-BOOL EnableIEProxy(BOOL bEnable, LPCSTR sIP,  UINT32 nPort, LPCSTR sBypass) 
+bool EnableIEProxy(bool bEnable, const char *sIP,  unsigned int nPort, const char *sBypass) 
 {
     CString proxy, ip(sIP), bypass(sBypass);
     proxy.Format(_T("%s:%u"), ip, nPort);
@@ -69,7 +70,7 @@ BOOL EnableIEProxy(BOOL bEnable, LPCSTR sIP,  UINT32 nPort, LPCSTR sBypass)
         CStringA proxyA(proxy);
         proxyinfo.lpszProxy = (LPSTR)(LPCSTR)(proxyA);
         proxyinfo.lpszProxyBypass = sBypass;
-        BOOL result = InternetSetOption(NULL, INTERNET_OPTION_PROXY, &proxyinfo, sizeof(proxyinfo));
+        bool result = InternetSetOption(NULL, INTERNET_OPTION_PROXY, &proxyinfo, sizeof(proxyinfo));
         DWORD err = ::GetLastError();
     }
 */

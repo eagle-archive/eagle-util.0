@@ -1,12 +1,11 @@
 #ifndef _INET_UTIL_H
 #define _INET_UTIL_H
 
-#include <afxwin.h>         // MFC core and standard components
-
+#include <string>
 
 // For IE
-BOOL EnableIEProxy(BOOL bEnable, LPCSTR sIP = NULL, UINT32 nPort = NULL, LPCSTR sBypass = NULL);
-BOOL GetIEProxy(BOOL &bEnable, CStringA &proxy, CStringA &byPass);
+bool EnableIEProxy(bool bEnable, const char *sIP = NULL, unsigned int nPort = NULL, const char *sBypass = NULL);
+bool GetIEProxy(bool &bEnable, std::string &proxy, std::string &byPass);
 void ShowNetworkProxySettings();
 
 
