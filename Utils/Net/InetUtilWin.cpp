@@ -3,6 +3,10 @@
 #include <Wininet.h>
 #include "InetUtil.h"
 
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#endif
+
 
 bool GetIEProxy(bool &bEnable, std::string &proxy, std::string &byPass)
 {
