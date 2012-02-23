@@ -21,7 +21,7 @@
 
 #define INI_USE_HASH_TABLE
 
-#include "libini.h"
+#include "libini/include/libini.h" //#include "libini.h"
 #include "keys.h"
 #include "headings.h"
 #ifdef INI_ADD_LIST_SUPPORT

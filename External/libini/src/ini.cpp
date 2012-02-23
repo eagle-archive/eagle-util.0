@@ -129,7 +129,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "config.h"
+#include "libini/include/config.h" //#include "config.h"
 #include "ini.h"
 
 #define INI_BUFFER_SIZE (1024 * 5)
@@ -278,7 +278,7 @@ void __ini_strtrim (char *str)
 {
     long first, last, len;
     first = 0;
-    last  = strlen (str);
+    last  = (long)strlen (str);
 
     if (!last--)
         return;
@@ -317,7 +317,7 @@ ini_t *__ini_open (const char *name, ini_mode_t mode, const char *comment, int f
     if (!name)
         return 0;
 
-    length = strlen(name);
+    length = (unsigned long)strlen(name);
     if (!length)
         return 0;
 
@@ -1099,7 +1099,7 @@ extern "C" int INI_LINKAGE ini_append (ini_fd_t fddst, ini_fd_t fdsrc)
         current_k = current_h->first;
         while (current_k)
         {   // Check if data buffer can hold the key
-            int i = current_k->length;
+            int i = (int)current_k->length;
             current_h->selected = current_k;
             if (i > length)
             {   // Make data buffer bigger, with some spare

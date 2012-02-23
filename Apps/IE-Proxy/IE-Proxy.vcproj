@@ -44,7 +44,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../Utils"
+				AdditionalIncludeDirectories="../../Utils;../../External"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -126,7 +126,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../../Utils"
+				AdditionalIncludeDirectories="../../Utils;../../External/libini/include"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
@@ -195,7 +195,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\IE-Proxy.h"
+				>
+			</File>
+			<File
 				RelativePath=".\IE-ProxyDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\IE-ProxyDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Resource.h"
 				>
 			</File>
 			<File
@@ -217,24 +229,6 @@
 						UsePrecompiledHeader="1"
 					/>
 				</FileConfiguration>
-			</File>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
-			>
-			<File
-				RelativePath=".\IE-Proxy.h"
-				>
-			</File>
-			<File
-				RelativePath=".\IE-ProxyDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Resource.h"
-				>
 			</File>
 			<File
 				RelativePath=".\stdafx.h"
@@ -344,6 +338,66 @@
 							UsePrecompiledHeader="0"
 						/>
 					</FileConfiguration>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="External"
+			>
+			<Filter
+				Name="libini"
+				>
+				<File
+					RelativePath="..\..\External\libini\include\config.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\External\libini\src\headings.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\External\libini\src\headings.i"
+					>
+				</File>
+				<File
+					RelativePath="..\..\External\libini\src\ini.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\External\libini\src\keys.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\External\libini\src\keys.i"
+					>
+				</File>
+				<File
+					RelativePath="..\..\External\libini\include\libini.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\External\libini\src\list.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\External\libini\src\list.i"
+					>
 				</File>
 			</Filter>
 		</Filter>
