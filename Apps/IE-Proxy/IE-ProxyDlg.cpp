@@ -12,7 +12,9 @@
 #define new DEBUG_NEW
 #endif
 
-utils::CSimpleIni gSimpleIni;
+using namespace utils;
+
+CSimpleIni gSimpleIni;
 
 // CIEProxyDlg dialog
 

@@ -7,6 +7,7 @@
 #define new DEBUG_NEW
 #endif
 
+namespace utils {
 
 bool GetIEProxy(bool &bEnable, std::string &proxy, std::string &byPass)
 {
@@ -91,4 +92,6 @@ void ShowNetworkProxySettings()
 {
     ShellExecute(NULL, TEXT("open"), TEXT("rundll32.exe"),
         TEXT("shell32.dll,Control_RunDLL Inetcpl.cpl,,4"), NULL, SW_SHOWNORMAL);
+}
+
 }
