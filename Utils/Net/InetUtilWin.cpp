@@ -3,9 +3,10 @@
 #include <Wininet.h>
 #include "InetUtil.h"
 
-#ifdef _DEBUG
+#if defined(_MSC_VER) && defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
+
 
 namespace utils {
 

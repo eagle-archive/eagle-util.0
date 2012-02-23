@@ -5,11 +5,11 @@
 
 #include "SimpleIni.h"
 #include "FS/FileUtil.h"
+#include "libini/include/libini.h"
 
-#ifdef _DEBUG
+#if defined(_MSC_VER) && defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
-
 
 namespace utils {
 
@@ -44,15 +44,24 @@ CSimpleIni::CSimpleIni(const char * pathname)
         }
     }
 
+    ini_fd_t inifd = ini_open(m_strPathname.c_str(), "a", NULL);
+    m_iniFd = inifd;
 }
 
 CSimpleIni::~CSimpleIni(void)
 {
+    if (m_iniFd != NULL)
+    {
+        ini_close((ini_fd_t)m_iniFd);
+        m_iniFd = NULL;
+    }
 }
 
 std::string CSimpleIni::GetString(const char* entry,  const char* defaultValue)
 {
     std::string strValue;
+    ini_fd_t inifd = m_iniFd;
+    //ini_readString(inifd, entry, );
 
     return strValue;
 }
@@ -69,7 +78,7 @@ int CSimpleIni::GetInt(const char * lpszEntry, int nDefault)
     //strDefualtValue.Format(_T("%d"), nDefault);
     //CString strValue = GetString(strSection, lpszEntry, strDefualtValue);
 
-    int nValue;
+    int nValue = 0;
     //_stscanf_s(strValue, _T("%d"), &nValue);
     return nValue;
 }
