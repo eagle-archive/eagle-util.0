@@ -20,7 +20,9 @@
 #define HAVE_STRCASECMP 
 
 /* Define if you have the <strings.h> header file. */
+#if !defined(_MSC_VER)
 #define HAVE_STRINGS_H 1
+#endif
 
 /* Define to 1 if you have the <string.h> header file. */
 #define HAVE_STRING_H 1

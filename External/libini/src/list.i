@@ -47,7 +47,7 @@ int __ini_listEval (ini_t *ini)
     }
 
     // Re-evaluate with new settings
-    length = ini->selected->selected->length;
+    length = (int)ini->selected->selected->length;
     if (length < 0)
         return -1;
     if (!length)
@@ -326,7 +326,7 @@ int __ini_listIndexLength (ini_t *ini)
     }
 
     // Now return length
-    return strlen (ini->listIndexPtr);
+    return (int)strlen (ini->listIndexPtr);
 }
 
 #endif // INI_ADD_LIST_SUPPORT
