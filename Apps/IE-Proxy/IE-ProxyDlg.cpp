@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "IE-Proxy.h"
 #include "IE-ProxyDlg.h"
+#include "Ini/SimpleIni.h"
 #include "Net/InetUtil.h"
 
 
@@ -11,6 +12,7 @@
 #define new DEBUG_NEW
 #endif
 
+utils::CSimpleIni gSimpleIni;
 
 // CIEProxyDlg dialog
 
@@ -129,15 +131,14 @@ BOOL CIEProxyDlg::OnBnClickedBtnProxy_X(int num)
     case 1:
     case 2:
         strProxy = (num == 1) ? "wwwgate0.mot.com" : "wwwgate0-ch.mot.com";
-        strBypass = "*.mot.com;*.mot-mobility.com";
+        strBypass = gSimpleIni.GetString("bypass-" + strProxy, "").c_str();
         res = EnableIEProxy(TRUE, strProxy, 1080, strBypass);
         break;
 
     case 3:
-        strBypass = "*.cn;*.kaixin001.com;*.taobao.com;*.baidu.com;" \
-            "*.dyhjw.com;*.wzde.com;*.gfan.com" \
-            "*.139.com;*.360*.com";
-        res = EnableIEProxy(TRUE, "127.0.0.1", 8087, strBypass);
+        strProxy = "127.0.0.1";
+        strBypass = gSimpleIni.GetString("bypass-" + strProxy, "").c_str();
+        res = EnableIEProxy(TRUE, strProxy, 8087, strBypass);
         break;
 
     default:

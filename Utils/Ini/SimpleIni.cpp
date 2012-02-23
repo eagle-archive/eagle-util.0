@@ -1,49 +1,58 @@
 
+#if defined(_MSC_VER)
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include "SimpleIni.h"
-#include "ini.h"
+#include "FS/FileUtil.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
 
-#define MAX_STRING_LENGTH   1024
-
-
+namespace utils {
 
 CSimpleIni::CSimpleIni(const char * pathname)
 {
-    m_strPathname = pathname;
+    if (pathname != NULL)
+        m_strPathname = pathname;
+    else
+        m_strPathname.clear();
 
-    /*
-    if (pathname == NULL)
+    if (m_strPathname.empty())
     {
-        CString modulePathName = GetCurModulePathname();
-        m_strPathname = GetFilePath(modulePathName) + GetFileTitle(modulePathName) + _T(".ini");
+        std::string modulePathName = GetCurModulePathname();
+        m_strPathname = GetFilePath(modulePathName.c_str()) + 
+            GetFileTitle(modulePathName.c_str()) + ".ini";
     }
 
-    if (!IsFileExist(m_strPathname))
+    if (!FileExists(m_strPathname.c_str()))
     {
-        CString path = GetFilePath(m_strPathname);
-        if (!IsDirectoryExist(path))
+        std::string path = GetFilePath(m_strPathname.c_str());
+        if (!DirectoryExists(path.c_str()))
         {
-            SHCreateDirectoryEx(NULL, path, NULL);
+            RecursiveCreateDirectory(path.c_str());
+        }
+
+        // create a dummy file if no ini file existing
+        FILE*  fp = fopen(m_strPathname.c_str(), "wt");
+        if (fp != NULL)
+        {
+            fwrite(" ", 1, 1, fp);
+            fclose (fp);
         }
     }
-    */
+
 }
 
 CSimpleIni::~CSimpleIni(void)
 {
 }
 
-std::string CSimpleIni::GetString(const char * lpszEntry,  const char * lpszDefault/* = NULL*/)
+std::string CSimpleIni::GetString(const char* entry,  const char* defaultValue)
 {
-    std::string strValue(lpszDefault);
-
-    char buff[MAX_STRING_LENGTH];
-    //GetPrivateProfileString(strSection, lpszEntry, lpszDefault, buff, MAX_STRING_LENGTH, this->m_strPathname);
-    strValue = buff;
+    std::string strValue;
 
     return strValue;
 }
@@ -81,4 +90,6 @@ bool CSimpleIni::GetBoolean(const char * lpszEntry, bool bDefault)
 bool CSimpleIni::WriteBoolean(const char * lpszEntry, bool bValue)
 {
     return WriteInt(lpszEntry, bValue);
+}
+
 }
