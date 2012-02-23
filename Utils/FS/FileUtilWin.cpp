@@ -13,9 +13,9 @@ bool FileExists(const char* pathname)
     if (att == (DWORD)-1)
         return FALSE;
     if(att & FILE_ATTRIBUTE_DIRECTORY)
-        return FALSE;
+        return false;
     else
-        return TRUE;
+        return true;
 }
 
 // Checks the existence of a Windows directory.
@@ -23,6 +23,6 @@ bool DirectoryExists(const char* directory)
 {
     DWORD att = ::GetFileAttributes(directory);
     if (att == (DWORD)-1)
-        return FALSE;
+        return false;
     return (att & FILE_ATTRIBUTE_DIRECTORY) != 0;
 }

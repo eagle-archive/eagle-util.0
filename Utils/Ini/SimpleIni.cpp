@@ -14,6 +14,7 @@
 CSimpleIni::CSimpleIni(const char * pathname)
 {
     m_strPathname = pathname;
+
     /*
     if (pathname == NULL)
     {
