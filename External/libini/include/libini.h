@@ -26,7 +26,7 @@ extern "C" {
 #include <string.h>
 
 #define INI_ADD_EXTRAS
-#define INI_ADD_LIST_SUPPORT
+//#define INI_ADD_LIST_SUPPORT
 
 #ifdef SWIG
 %ignore ini_readString;

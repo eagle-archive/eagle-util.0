@@ -132,15 +132,19 @@ BOOL CIEProxyDlg::OnBnClickedBtnProxy_X(int num)
 
     case 1:
     case 2:
-        strProxy = (num == 1) ? "wwwgate0.mot.com" : "wwwgate0-ch.mot.com";
-        strBypass = gSimpleIni.GetString("bypass-" + strProxy, "").c_str();
-        res = EnableIEProxy(TRUE, strProxy, 1080, strBypass);
-        break;
-
     case 3:
-        strProxy = "127.0.0.1";
-        strBypass = gSimpleIni.GetString("bypass-" + strProxy, "").c_str();
-        res = EnableIEProxy(TRUE, strProxy, 8087, strBypass);
+        if (num == 1)
+            strProxy = "wwwgate0.mot.com";
+        else if (num == 2)
+            strProxy = "wwwgate0-ch.mot.com";
+        else if (num == 3)
+            strProxy = "127.0.0.1";
+
+        strBypass = gSimpleIni.GetString(strProxy, "bypass", "no change").c_str();
+        if (strBypass != "no change")
+            res = EnableIEProxy(TRUE, strProxy, 1080, strBypass);
+        else
+            res = EnableIEProxy(TRUE, strProxy, 1080, NULL);
         break;
 
     default:

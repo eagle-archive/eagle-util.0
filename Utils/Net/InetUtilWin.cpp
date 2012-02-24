@@ -34,6 +34,8 @@ bool GetIEProxy(bool &bEnable, std::string &proxy, std::string &byPass)
     return (result != FALSE);
 }
 
+// If sBypass is NULL, do not overwrite bypass
+// If sBypass is "" or any other string, change the bypass
 bool EnableIEProxy(bool bEnable, const char *sIP,  unsigned int nPort, const char *sBypass) 
 {
     CString proxy, ip(sIP), bypass(sBypass);
@@ -53,10 +55,13 @@ bool EnableIEProxy(bool bEnable, const char *sIP,  unsigned int nPort, const cha
             RegCloseKey(hKeyOut); 
             return FALSE; 
         }
-        if (ERROR_SUCCESS != RegSetValueEx(hKeyOut, _T("ProxyOverride"), 0, REG_SZ, (BYTE *)(LPCTSTR)bypass, (bypass.GetLength() + 1)* sizeof(TCHAR))) 
-        { 
-            RegCloseKey(hKeyOut); 
-            return FALSE; 
+        if (sBypass != NULL)
+        {
+            if (ERROR_SUCCESS != RegSetValueEx(hKeyOut, _T("ProxyOverride"), 0, REG_SZ, (BYTE *)(LPCTSTR)bypass, (bypass.GetLength() + 1)* sizeof(TCHAR))) 
+            { 
+                RegCloseKey(hKeyOut); 
+                return FALSE; 
+            }
         }
     }
 

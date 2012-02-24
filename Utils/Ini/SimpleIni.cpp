@@ -13,6 +13,36 @@
 
 namespace utils {
 
+bool LocateToSection(ini_fd_t fd, const char *section)
+{
+    const char* curSection = ini_currentHeading(fd);
+    if (curSection != NULL)
+    {
+        if (strcmp(section, curSection) == 0)
+            return true;
+    }
+
+    if (0 == ini_locateHeading(fd, section))
+        return true;
+    else
+        return false;
+
+}
+
+bool LocateToEntry(ini_fd_t fd, const char *entry)
+{
+    const char* curEntry = ini_currentKey(fd);
+    if (curEntry != NULL)
+    {
+        if (strcmp(entry, curEntry) == 0)
+            return true;
+    }
+    if (0 == ini_locateKey(fd, entry))
+        return true;
+    else
+        return false;
+}
+
 CSimpleIni::CSimpleIni(const char * pathname)
 {
     if (pathname != NULL)
@@ -57,48 +87,73 @@ CSimpleIni::~CSimpleIni(void)
     }
 }
 
-std::string CSimpleIni::GetString(const char* entry,  const char* defaultValue)
+std::string CSimpleIni::GetString(const char* section, const char* entry,  const char* defaultValue)
 {
     std::string strValue;
+    if (defaultValue != NULL)
+        strValue = defaultValue;
     ini_fd_t inifd = m_iniFd;
-    //ini_readString(inifd, entry, );
+
+    if (false == LocateToSection(inifd, section))
+        return strValue;
+    if (false == LocateToEntry(inifd, entry))
+        return strValue;
+
+    int len = ini_dataLength(inifd);
+    char *buff = (char *)malloc(len + 1);
+    if (buff != NULL)
+    {
+        if (ini_readString(inifd, buff, len + 1) >= 0)
+        {
+            strValue = buff;
+        }
+        free(buff);
+    }
 
     return strValue;
 }
 
-bool CSimpleIni::WriteString(const char * lpszEntry, const char * lpszValue)
+bool CSimpleIni::WriteString(const char* section, const char* entry, const char* value)
 {
-    // return WritePrivateProfileString(strSection, lpszEntry, lpszValue, m_strPathname);
+    ini_fd_t inifd = m_iniFd;
+
+    if (false == LocateToSection(inifd, section))
+        return false;
+    if (false == LocateToEntry(inifd, entry))
+        return false;
+
+    if (ini_writeString(inifd, value) < 0)
+        return false;
     return true;
 }
 
-int CSimpleIni::GetInt(const char * lpszEntry, int nDefault)
+int CSimpleIni::GetInt(const char* section, const char * entry, int nDefault)
 {
     std::string strDefualtValue;
     //strDefualtValue.Format(_T("%d"), nDefault);
-    //CString strValue = GetString(strSection, lpszEntry, strDefualtValue);
+    //CString strValue = GetString(strSection, entry, strDefualtValue);
 
     int nValue = 0;
     //_stscanf_s(strValue, _T("%d"), &nValue);
     return nValue;
 }
 
-bool CSimpleIni::WriteInt(const char * lpszEntry, int nValue)
+bool CSimpleIni::WriteInt(const char* section, const char * entry, int nValue)
 {
     std::string strValue;
     //strValue.Format(_T("%d"), nValue);
-    //return WriteString(strSection, lpszEntry, strValue);
+    //return WriteString(strSection, entry, strValue);
     return true;
 }
 
-bool CSimpleIni::GetBoolean(const char * lpszEntry, bool bDefault)
+bool CSimpleIni::GetBoolean(const char* section, const char* entry, bool defaultValue)
 {
-    return 0 != GetInt(lpszEntry, (int)bDefault);
+    return 0 != GetInt(section, entry, (int)defaultValue);
 }
 
-bool CSimpleIni::WriteBoolean(const char * lpszEntry, bool bValue)
+bool CSimpleIni::WriteBoolean(const char* section, const char* entry, bool value)
 {
-    return WriteInt(lpszEntry, bValue);
+    return WriteInt(section, entry, value);
 }
 
-}
+} // namespace utils
