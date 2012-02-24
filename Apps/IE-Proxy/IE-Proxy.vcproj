@@ -45,7 +45,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../Utils;../../External"
-				PreprocessorDefinitions="WINVER=0x0500"
+				PreprocessorDefinitions="WINVER=0x0502"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -127,7 +127,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="../../Utils;../../External"
-				PreprocessorDefinitions="WINVER=0x0500"
+				PreprocessorDefinitions="WINVER=0x0502"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"

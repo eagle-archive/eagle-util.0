@@ -123,33 +123,48 @@ BOOL CIEProxyDlg::OnBnClickedBtnProxy_X(int num)
 
     CStringA strProxy;
     CStringA strBypass;
+    unsigned int port;
 
     switch(num)
     {
-    case 0:
-        res = EnableIEProxy(FALSE);
+    case 1:
+        strProxy = "wwwgate0.mot.com";
+        port = 1080;
+        strBypass = "127.0.0.1;*.mot.com;*.mot-mobility.com";
+        break;
+    case 2:
+        strProxy = "wwwgate0-ch.mot.com";
+        port = 1080;
+        strBypass = "127.0.0.1;*.mot.com;*.mot-mobility.com";
         break;
 
-    case 1:
-    case 2:
     case 3:
-        if (num == 1)
-            strProxy = "wwwgate0.mot.com";
-        else if (num == 2)
-            strProxy = "wwwgate0-ch.mot.com";
-        else if (num == 3)
-            strProxy = "127.0.0.1";
-
-        strBypass = gSimpleIni.GetString(strProxy, "bypass", "no change").c_str();
-        if (strBypass != "no change")
-            res = EnableIEProxy(TRUE, strProxy, 1080, strBypass);
-        else
-            res = EnableIEProxy(TRUE, strProxy, 1080, NULL);
+        strProxy = "127.0.0.1";
+        port = 8087;
+        strBypass = "bypass =*.cn;*.kaixin001.com;*.taobao.com;*.baidu.com;*.gfan.com;*.139.com";
         break;
 
     default:
         res = FALSE;
         break;
+    }
+
+    if (num == 0)
+    {
+        res = EnableIEProxy(FALSE);
+    }
+    else if (num > 0)
+    {
+        std::string bypass = gSimpleIni.GetString(strProxy, "bypass", "no");
+        if (bypass == "no")
+        {
+            gSimpleIni.WriteString(strProxy, "bypass", strBypass);
+        }
+        else
+        {
+            strBypass = bypass.c_str();
+        }
+        res = EnableIEProxy(TRUE, strProxy, port, strBypass);
     }
 
     if (res == TRUE)

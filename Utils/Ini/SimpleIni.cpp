@@ -13,7 +13,7 @@
 
 namespace utils {
 
-bool LocateToSection(ini_fd_t fd, const char *section)
+static bool LocateToSection(ini_fd_t fd, const char *section)
 {
     const char* curSection = ini_currentHeading(fd);
     if (curSection != NULL)
@@ -29,7 +29,7 @@ bool LocateToSection(ini_fd_t fd, const char *section)
 
 }
 
-bool LocateToEntry(ini_fd_t fd, const char *entry)
+static bool LocateToEntry(ini_fd_t fd, const char *entry)
 {
     const char* curEntry = ini_currentKey(fd);
     if (curEntry != NULL)
@@ -64,67 +64,56 @@ CSimpleIni::CSimpleIni(const char * pathname)
         {
             RecursiveCreateDirectory(path.c_str());
         }
-
-        // create a dummy file if no ini file existing
-        FILE*  fp = fopen(m_strPathname.c_str(), "wt");
-        if (fp != NULL)
-        {
-            fwrite(" ", 1, 1, fp);
-            fclose (fp);
-        }
     }
-
-    ini_fd_t inifd = ini_open(m_strPathname.c_str(), "a", NULL);
-    m_iniFd = inifd;
 }
 
 CSimpleIni::~CSimpleIni(void)
 {
-    if (m_iniFd != NULL)
-    {
-        ini_close((ini_fd_t)m_iniFd);
-        m_iniFd = NULL;
-    }
 }
 
-std::string CSimpleIni::GetString(const char* section, const char* entry,  const char* defaultValue)
+std::string CSimpleIni::GetString(const char* section, const char* entry, const char* defaultValue)
 {
     std::string strValue;
     if (defaultValue != NULL)
         strValue = defaultValue;
-    ini_fd_t inifd = m_iniFd;
-
-    if (false == LocateToSection(inifd, section))
-        return strValue;
-    if (false == LocateToEntry(inifd, entry))
-        return strValue;
-
-    int len = ini_dataLength(inifd);
-    char *buff = (char *)malloc(len + 1);
-    if (buff != NULL)
+    ini_fd_t inifd = ini_open(m_strPathname.c_str(), "r", NULL);
+    if (inifd != NULL)
     {
-        if (ini_readString(inifd, buff, len + 1) >= 0)
+        if (true == LocateToSection(inifd, section) &&
+            true == LocateToEntry(inifd, entry))
         {
-            strValue = buff;
+            int len = ini_dataLength(inifd);
+            char *buff = (char *)malloc(len + 1);
+            if (buff != NULL)
+            {
+                if (ini_readString(inifd, buff, len + 1) >= 0)
+                {
+                    strValue = buff;
+                }
+                free(buff);
+            }
         }
-        free(buff);
+        ini_close(inifd);
     }
-
     return strValue;
 }
 
 bool CSimpleIni::WriteString(const char* section, const char* entry, const char* value)
 {
-    ini_fd_t inifd = m_iniFd;
-
-    if (false == LocateToSection(inifd, section))
-        return false;
-    if (false == LocateToEntry(inifd, entry))
-        return false;
-
-    if (ini_writeString(inifd, value) < 0)
-        return false;
-    return true;
+    bool result = false;
+    ini_fd_t inifd = ini_open(m_strPathname.c_str(), "w", NULL);
+    if (inifd != NULL)
+    {
+#error to change here
+        if (true == LocateToSection(inifd, section) &&
+            true == LocateToEntry(inifd, entry))
+        {
+            if (ini_writeString(inifd, value) >= 0)
+                result = true;
+        }
+        ini_close(inifd);
+    }
+    return result;
 }
 
 int CSimpleIni::GetInt(const char* section, const char * entry, int nDefault)

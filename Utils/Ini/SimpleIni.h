@@ -23,7 +23,6 @@ public:
 
 protected:
     std::string     m_strPathname;
-    void*           m_iniFd;
 };
 
 }
