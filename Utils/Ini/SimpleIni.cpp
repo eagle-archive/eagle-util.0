@@ -83,14 +83,17 @@ std::string CSimpleIni::GetString(const char* section, const char* entry, const 
             true == LocateToEntry(inifd, entry))
         {
             int len = ini_dataLength(inifd);
-            char *buff = (char *)malloc(len + 1);
-            if (buff != NULL)
+            if (len != -1)
             {
-                if (ini_readString(inifd, buff, len + 1) >= 0)
+                char *buff = (char *)malloc(len + 1);
+                if (buff != NULL)
                 {
-                    strValue = buff;
+                    if (ini_readString(inifd, buff, len + 1) >= 0)
+                    {
+                        strValue = buff;
+                    }
+                    free(buff);
                 }
-                free(buff);
             }
         }
         ini_close(inifd);
@@ -104,45 +107,91 @@ bool CSimpleIni::WriteString(const char* section, const char* entry, const char*
     ini_fd_t inifd = ini_open(m_strPathname.c_str(), "w", NULL);
     if (inifd != NULL)
     {
-#error to change here
-        if (true == LocateToSection(inifd, section) &&
-            true == LocateToEntry(inifd, entry))
-        {
-            if (ini_writeString(inifd, value) >= 0)
-                result = true;
-        }
+        // Ignore the returned values of below calls. if no section and entry are located,
+        // it creates will a temp one.
+        LocateToSection(inifd, section);
+        LocateToEntry(inifd, entry);
+
+        if (ini_writeString(inifd, value) >= 0)
+            result = true;
+
         ini_close(inifd);
     }
     return result;
 }
 
-int CSimpleIni::GetInt(const char* section, const char * entry, int nDefault)
+int CSimpleIni::GetInt(const char* section, const char * entry, int defaultValue)
 {
-    std::string strDefualtValue;
-    //strDefualtValue.Format(_T("%d"), nDefault);
-    //CString strValue = GetString(strSection, entry, strDefualtValue);
-
-    int nValue = 0;
-    //_stscanf_s(strValue, _T("%d"), &nValue);
-    return nValue;
+    int value = defaultValue;
+    ini_fd_t inifd = ini_open(m_strPathname.c_str(), "r", NULL);
+    if (inifd != NULL)
+    {
+        if (true == LocateToSection(inifd, section) &&
+            true == LocateToEntry(inifd, entry))
+        {
+            ini_readInt(inifd, &value);
+        }
+        ini_close(inifd);
+    }
+    return value;
 }
 
-bool CSimpleIni::WriteInt(const char* section, const char * entry, int nValue)
+bool CSimpleIni::WriteInt(const char* section, const char* entry, int value)
 {
-    std::string strValue;
-    //strValue.Format(_T("%d"), nValue);
-    //return WriteString(strSection, entry, strValue);
-    return true;
+    bool result = false;
+    ini_fd_t inifd = ini_open(m_strPathname.c_str(), "w", NULL);
+    if (inifd != NULL)
+    {
+        // Ignore the returned values of below calls. if no section and entry are located,
+        // it creates will a temp one.
+        LocateToSection(inifd, section);
+        LocateToEntry(inifd, entry);
+
+        if (ini_writeInt(inifd, value) >= 0)
+            result = true;
+
+        ini_close(inifd);
+    }
+    return result;
 }
 
 bool CSimpleIni::GetBoolean(const char* section, const char* entry, bool defaultValue)
 {
-    return 0 != GetInt(section, entry, (int)defaultValue);
+    bool value = defaultValue;
+    ini_fd_t inifd = ini_open(m_strPathname.c_str(), "r", NULL);
+    if (inifd != NULL)
+    {
+        if (true == LocateToSection(inifd, section) &&
+            true == LocateToEntry(inifd, entry))
+        {
+            int iValue;
+            if (ini_readBool(inifd, &iValue) >= 0)
+            {
+                value = (iValue != 0);
+            }
+        }
+        ini_close(inifd);
+    }
+    return value;
 }
 
 bool CSimpleIni::WriteBoolean(const char* section, const char* entry, bool value)
 {
-    return WriteInt(section, entry, value);
+    bool result = false;
+    ini_fd_t inifd = ini_open(m_strPathname.c_str(), "w", NULL);
+    if (inifd != NULL)
+    {
+        // Ignore the returned values of below calls. if no section and entry are located,
+        // it creates will a temp one.
+        LocateToSection(inifd, section);
+        LocateToEntry(inifd, entry);
+
+        if (ini_writeBool(inifd, value) >= 0)
+            result = true;
+
+        ini_close(inifd);
+    }
+    return result;
 }
 
 } // namespace utils

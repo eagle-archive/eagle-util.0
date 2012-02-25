@@ -16,6 +16,18 @@ using namespace utils;
 
 CSimpleIni gSimpleIni;
 
+void DoIniTest()
+{
+    gSimpleIni.WriteBoolean("test", "bool", true);
+    bool bValue = gSimpleIni.GetBoolean("test", "bool", false);
+
+    int iValue;
+    iValue = gSimpleIni.GetInt("test", "int", 0);
+    gSimpleIni.WriteInt("test", "int", -100);
+    iValue = gSimpleIni.GetInt("test", "int", 0);
+
+}
+
 // CIEProxyDlg dialog
 
 CIEProxyDlg::CIEProxyDlg(CWnd* pParent /*=NULL*/)
@@ -59,6 +71,8 @@ BOOL CIEProxyDlg::OnInitDialog()
     // TODO: Add extra initialization here
     m_stcStatus.SetWindowText(_T("Retrieving IE proxy settings..."));
     this->PostMessage(WM_GET_PROXY_STATUS);
+
+    // DoIniTest();
 
     return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -137,11 +151,10 @@ BOOL CIEProxyDlg::OnBnClickedBtnProxy_X(int num)
         port = 1080;
         strBypass = "127.0.0.1;*.mot.com;*.mot-mobility.com";
         break;
-
     case 3:
         strProxy = "127.0.0.1";
         port = 8087;
-        strBypass = "bypass =*.cn;*.kaixin001.com;*.taobao.com;*.baidu.com;*.gfan.com;*.139.com";
+        strBypass = "*.cn;*.kaixin001.com;*.taobao.com;*.baidu.com;*.gfan.com;*.139.com";
         break;
 
     default:
