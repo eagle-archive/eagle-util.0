@@ -23,8 +23,10 @@ bool GetIEProxy(bool &bEnable, std::string &proxy, std::string &byPass)
         INTERNET_PROXY_INFO *pinfo = (INTERNET_PROXY_INFO *)buff;
 
         bEnable = (pinfo->dwAccessType == INTERNET_OPEN_TYPE_PROXY);
-        proxy = pinfo->lpszProxy;
-        byPass = pinfo->lpszProxyBypass;
+        if (pinfo->lpszProxy)
+            proxy = pinfo->lpszProxy;
+        if (pinfo->lpszProxyBypass)
+            byPass = pinfo->lpszProxyBypass;
     }
 
     if (!result)
