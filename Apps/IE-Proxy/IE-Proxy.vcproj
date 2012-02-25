@@ -311,6 +311,26 @@
 					RelativePath="..\..\Utils\Ini\SimpleIni.h"
 					>
 				</File>
+				<File
+					RelativePath="..\..\Utils\Ini\test\SimpleIniTest.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
 			</Filter>
 			<Filter
 				Name="FS"

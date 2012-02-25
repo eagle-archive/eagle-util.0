@@ -21,8 +21,11 @@ public:
     bool GetBoolean(const char* section, const char * entry, bool defaultValue);
     bool WriteBoolean(const char* section, const char * entry, bool value);
 
+    bool Flush(void);
+
 protected:
     std::string     m_strPathname;
+    void *          m_iniFd;
 };
 
 }
