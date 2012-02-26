@@ -12,7 +12,7 @@ namespace utils {
 
 bool FileExists(const char* pathname)
 {
-    DWORD att = ::GetFileAttributes(pathname);
+    DWORD att = ::GetFileAttributesA(pathname);
     if (att == (DWORD)-1)
         return FALSE;
     if(att & FILE_ATTRIBUTE_DIRECTORY)
@@ -23,14 +23,14 @@ bool FileExists(const char* pathname)
 
 bool RecursiveCreateDirectory(const char *directory)
 {
-    int res = SHCreateDirectoryEx(NULL, directory, NULL);
+    int res = SHCreateDirectoryExA(NULL, directory, NULL);
     return (ERROR_SUCCESS == res);
 }
 
 // Checks the existence of a Windows directory.
 bool DirectoryExists(const char* directory)
 {
-    DWORD att = ::GetFileAttributes(directory);
+    DWORD att = ::GetFileAttributesA(directory);
     if (att == (DWORD)-1)
         return false;
     return (att & FILE_ATTRIBUTE_DIRECTORY) != 0;
@@ -39,8 +39,8 @@ bool DirectoryExists(const char* directory)
 std::string GetCurModulePathname()
 {
     std::string name;
-    TCHAR buff[MAX_PATH];
-    DWORD res = GetModuleFileNameA(NULL, buff, MAX_PATH);
+    char buff[MAX_PATH];
+    DWORD res = ::GetModuleFileNameA(NULL, buff, MAX_PATH);
     if (res != 0)
         name = buff;
     return name;

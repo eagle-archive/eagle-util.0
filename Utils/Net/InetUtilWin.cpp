@@ -10,6 +10,13 @@
 
 namespace utils {
 
+typedef struct {
+
+    DWORD dwAccessType;
+    const char *lpszProxy;
+    const char *lpszProxyBypass;
+} INTERNET_PROXY_INFO_A;
+
 bool GetIEProxy(bool &bEnable, std::string &proxy, std::string &byPass)
 {
     BOOL result = TRUE;
@@ -17,10 +24,10 @@ bool GetIEProxy(bool &bEnable, std::string &proxy, std::string &byPass)
 
     char buff[1024 * 5];
     DWORD len = sizeof(buff);
-    result = InternetQueryOption(NULL, INTERNET_OPTION_PROXY, &buff, &len);
+    result = InternetQueryOptionA(NULL, INTERNET_OPTION_PROXY, &buff, &len);
     if (result)
     {
-        INTERNET_PROXY_INFO *pinfo = (INTERNET_PROXY_INFO *)buff;
+        INTERNET_PROXY_INFO_A *pinfo = (INTERNET_PROXY_INFO_A *)buff;
 
         bEnable = (pinfo->dwAccessType == INTERNET_OPEN_TYPE_PROXY);
         if (pinfo->lpszProxy)

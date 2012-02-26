@@ -228,7 +228,7 @@ BOOL CIEProxyDlg::OnBnClickedBtnProxy_X(int num)
         }
         else
         {
-            CString inipath = GetIniPathName().c_str();
+            CString inipath(GetIniPathName().c_str());
             ShellExecute(NULL, TEXT("open"), TEXT("notepad.exe"), inipath, NULL, SW_SHOWNORMAL);
             res =  FALSE;
         }
