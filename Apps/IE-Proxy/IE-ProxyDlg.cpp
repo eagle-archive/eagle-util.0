@@ -230,6 +230,9 @@ BOOL CIEProxyDlg::OnBnClickedBtnProxy_X(int num)
         {
             CString inipath(GetIniPathName().c_str());
             ShellExecute(NULL, TEXT("open"), TEXT("notepad.exe"), inipath, NULL, SW_SHOWNORMAL);
+
+            m_stcStatus.SetWindowText(inipath + _T(" is open. This program will be closed in few seconds."));
+            this->SetTimer(1, 5000, NULL);
             res =  FALSE;
         }
     }
@@ -237,11 +240,7 @@ BOOL CIEProxyDlg::OnBnClickedBtnProxy_X(int num)
     if (res == TRUE)
     {
         m_stcStatus.SetWindowText(_T("New IE proxy is set successfully!\nThis program will be closed in few seconds."));
-        this->SetTimer(1, 2500, NULL);
-    }
-    else
-    {
-        this->PostMessage(WM_GET_PROXY_STATUS);
+        this->SetTimer(1, 5000, NULL);
     }
 
     return res;
