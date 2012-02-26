@@ -49,7 +49,9 @@ std::string GetCurModulePathname()
 // "c:\folder\file.txt" => "c:\folder\"
 std::string GetFilePath(const char* pathname)
 {
-    std::string path(pathname);
+    std::string path;
+    if (pathname)
+        path = pathname;
     size_t k = path.rfind('\\');
     if (k == std::string::npos)
     {
@@ -65,7 +67,9 @@ std::string GetFilePath(const char* pathname)
 // "c:\folder\file.txt" => "file.txt"
 std::string GetFileName(const char* pathname)
 {
-    std::string name(pathname);
+    std::string name;
+    if (pathname)
+        name = pathname;
     size_t k = name.rfind('\\');
     if (k != std::string::npos)
     {

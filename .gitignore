@@ -2,13 +2,11 @@
 *.suo
 *.ncb
 *.user
-
-# binaries
-*.exe
+*.aps
 
 # VC build output directories
-*Debug/
-*Release/
+Debug/
+Release/
 
 # Some special files
 Apps/JiraDB/Data/MotorolaCRs.xlsx

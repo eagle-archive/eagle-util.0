@@ -2,8 +2,6 @@
 // Microsoft Visual C++ generated include file.
 // Used by IE-Proxy.rc
 //
-
-
 #define IDM_ABOUTBOX                    0x0010
 #define IDS_ABOUTBOX                    101
 #define IDD_IEPROXY_DIALOG              102
@@ -14,6 +12,7 @@
 #define IDC_BTN_PROXY3                  1003
 #define IDC_BTN_NO_PROXY                1004
 #define IDC_BTN_SYS_PROXY_SETTING       1005
+#define IDC_BTN_PROXY4                  1006
 
 // Next default values for new objects
 // 

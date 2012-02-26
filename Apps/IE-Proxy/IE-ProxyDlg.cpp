@@ -6,15 +6,36 @@
 #include "IE-ProxyDlg.h"
 #include "Ini/SimpleIni.h"
 #include "Net/InetUtil.h"
-
+#include "Fs/FileUtil.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
+#define WM_GET_PROXY_STATUS   WM_USER
+
+#define DEFAULT_INI_TEXT    \
+    "[proxy-1]\n" \
+    "tag = wwwgate0\n" \
+    "proxy = wwwgate0.mot.com\n" \
+    "port = 1080\n" \
+    "bypass = 127.0.0.1;*.mot.com;*.mot-mobility.com\n" \
+    "\n" \
+    "[proxy-2]\n" \
+    "tag = wwwgate0-ch\n" \
+    "proxy = wwwgate0-ch.mot.com\n" \
+    "port = 1080\n" \
+    "bypass = 127.0.0.1;*.mot.com;*.mot-mobility.com\n"
+
 
 using namespace utils;
 
-CSimpleIni gSimpleIni;
+
+std::string GetIniPathName()
+{
+    std::string modulePathName = GetCurModulePathname();
+    std::string pathname = GetFilePath(modulePathName.c_str()) + GetFileTitle(modulePathName.c_str()) + ".ini";
+    return pathname;
+}
 
 // CIEProxyDlg dialog
 
@@ -39,6 +60,7 @@ BEGIN_MESSAGE_MAP(CIEProxyDlg, CDialog)
     ON_BN_CLICKED(IDC_BTN_PROXY1, OnBnClickedBtnProxy1)
     ON_BN_CLICKED(IDC_BTN_PROXY2, OnBnClickedBtnProxy2)
     ON_BN_CLICKED(IDC_BTN_PROXY3, OnBnClickedBtnProxy3)
+    ON_BN_CLICKED(IDC_BTN_PROXY4, OnBnClickedBtnProxy4)
     ON_BN_CLICKED(IDC_BTN_SYS_PROXY_SETTING, OnBnClickedBtnSysProxySetting)
     ON_MESSAGE(WM_GET_PROXY_STATUS, OnGetProxyStatus) 
     ON_WM_TIMER()
@@ -65,7 +87,65 @@ BOOL CIEProxyDlg::OnInitDialog()
 
     //DoIniTest();
 
+    ReadSettings();
+    UpdateUiBySettings();
+
     return TRUE;  // return TRUE  unless you set the focus to a control
+}
+
+BOOL CIEProxyDlg::ReadSettings()
+{
+    m_proxies.SetSize(MAX_NUM_PROXY);
+
+    std::string iniPath = GetIniPathName();
+    if (!FileExists(iniPath.c_str()))
+    {
+        FILE *fp = NULL;
+        fopen_s(&fp, iniPath.c_str(), "wt");
+        if (fp)
+        {
+            fwrite(DEFAULT_INI_TEXT, strlen(DEFAULT_INI_TEXT), 1, fp);
+            fclose(fp);
+        }
+    }
+
+    CSimpleIni ini;
+    for (int i=0; i<MAX_NUM_PROXY; i++)
+    {
+        Proxy &proxy = m_proxies.GetAt(i);
+        CStringA section;
+        section.Format("proxy-%d", i+1);
+
+        CStringA defaultTag = CStringA("Not set. Check ") + GetFileName(iniPath.c_str()).c_str();
+
+        proxy.displayName = ini.GetString(section, "tag", defaultTag).c_str();
+        proxy.proxy = ini.GetString(section, "proxy", "unset").c_str();
+        proxy.port = ini.GetInt(section, "port", 0);
+        proxy.bypass = ini.GetString(section, "bypass", "unset").c_str();
+    }
+
+
+    return TRUE;
+}
+
+BOOL CIEProxyDlg::UpdateUiBySettings()
+{
+    for (int i=0; i<MAX_NUM_PROXY; i++)
+    {
+        UINT buttonid = 0;
+        switch (i+1)
+        {
+        case 1: buttonid = IDC_BTN_PROXY1; break;
+        case 2: buttonid = IDC_BTN_PROXY2; break;
+        case 3: buttonid = IDC_BTN_PROXY3; break;
+        case 4: buttonid = IDC_BTN_PROXY4; break;
+        default:
+            ASSERT(FALSE);
+            return FALSE;
+        }
+        this->GetDlgItem(buttonid)->SetWindowText(m_proxies[i].displayName);
+    }
+    return TRUE;
 }
 
 void CIEProxyDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -130,45 +210,28 @@ BOOL CIEProxyDlg::OnBnClickedBtnProxy_X(int num)
     CStringA strBypass;
     unsigned int port;
 
-    switch(num)
-    {
-    case 1:
-        strProxy = "wwwgate0.mot.com";
-        port = 1080;
-        strBypass = "127.0.0.1;*.mot.com;*.mot-mobility.com";
-        break;
-    case 2:
-        strProxy = "wwwgate0-ch.mot.com";
-        port = 1080;
-        strBypass = "127.0.0.1;*.mot.com;*.mot-mobility.com";
-        break;
-    case 3:
-        strProxy = "127.0.0.1";
-        port = 8087;
-        strBypass = "*.cn;*.kaixin001.com;*.taobao.com;*.baidu.com;*.gfan.com;*.139.com";
-        break;
-
-    default:
-        res = FALSE;
-        break;
-    }
-
     if (num == 0)
     {
         res = EnableIEProxy(FALSE);
     }
     else if (num > 0)
     {
-        std::string bypass = gSimpleIni.GetString(strProxy, "bypass", "no");
-        if (bypass == "no")
+        ReadSettings();
+
+        const Proxy &proxy = m_proxies.GetAt(num-1);
+        strProxy = proxy.proxy;
+        if (strProxy != "unset")
         {
-            gSimpleIni.WriteString(strProxy, "bypass", strBypass);
+            strBypass = proxy.bypass;
+            port = proxy.port;
+            res = EnableIEProxy(TRUE, strProxy, port, strBypass);
         }
         else
         {
-            strBypass = bypass.c_str();
+            CString inipath = GetIniPathName().c_str();
+            ShellExecute(NULL, TEXT("open"), TEXT("notepad.exe"), inipath, NULL, SW_SHOWNORMAL);
+            res =  FALSE;
         }
-        res = EnableIEProxy(TRUE, strProxy, port, strBypass);
     }
 
     if (res == TRUE)
@@ -202,6 +265,11 @@ void CIEProxyDlg::OnBnClickedBtnProxy2()
 void CIEProxyDlg::OnBnClickedBtnProxy3()
 {
     OnBnClickedBtnProxy_X(3);
+}
+
+void CIEProxyDlg::OnBnClickedBtnProxy4()
+{
+    OnBnClickedBtnProxy_X(4);
 }
 
 void CIEProxyDlg::OnBnClickedBtnSysProxySetting()

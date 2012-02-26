@@ -5,7 +5,15 @@
 #include "afxwin.h"
 
 
-#define WM_GET_PROXY_STATUS   WM_USER
+#define MAX_NUM_PROXY   4
+
+struct Proxy
+{
+    CString displayName;
+    CString proxy;
+    UINT    port;
+    CString bypass;
+};
 
 // CIEProxyDlg dialog
 class CIEProxyDlg : public CDialog
@@ -25,9 +33,11 @@ protected:
 protected:
     HICON m_hIcon;
     CStatic m_stcStatus;
-
+    CArray<Proxy> m_proxies;
 
     BOOL OnBnClickedBtnProxy_X(int num);
+    BOOL ReadSettings();
+    BOOL UpdateUiBySettings();
 
     // Generated message map functions
     virtual BOOL OnInitDialog();
@@ -41,6 +51,7 @@ public:
     afx_msg void OnBnClickedBtnProxy1();
     afx_msg void OnBnClickedBtnProxy2();
     afx_msg void OnBnClickedBtnProxy3();
+    afx_msg void OnBnClickedBtnProxy4();
     afx_msg void OnBnClickedBtnSysProxySetting();
     afx_msg void OnTimer(UINT nIDEvent);
 };
