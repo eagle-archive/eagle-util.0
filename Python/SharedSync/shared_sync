@@ -1,3 +1,8 @@
+#!/bin/sh
+
+magic='--calling-python-from-/bin/sh--'
+"""exec" python -E "$0" "$@" """#$magic"
+
 import os
 from xml.etree import ElementTree
 
