@@ -10,7 +10,7 @@ magic='--calling-python-from-/bin/sh--'
 EXCLUDED_PROJECT_LIST = ("packages/apps/Settings",
                          "motorola/packages/blur")
 
-# Specify the path where to store the shared projects. Mush be absolute path.
+# Specify the path where to store the shared projects. Must be absolute path.
 SHARED_PROJECTS_PATH = '/localrepo/a18238/shared_projects'
 
 
