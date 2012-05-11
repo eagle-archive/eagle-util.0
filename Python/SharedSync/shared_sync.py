@@ -83,8 +83,8 @@ def getSharedProjsPath():
 
 
 class InvalidProjectsPathError(Exception):
-  """Invalid shared projects path.
-  """
+    """Invalid shared projects path.
+    """
 
 
 if __name__=="__main__":
