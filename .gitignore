@@ -4,9 +4,11 @@
 *.user
 *.aps
 
+# VC 2010 files
+.sdf
+.opensdf
+ipch/
+
 # VC build output directories
 Debug/
 Release/
-
-# Some special files
-Apps/JiraDB/Data/MotorolaCRs.xlsx
