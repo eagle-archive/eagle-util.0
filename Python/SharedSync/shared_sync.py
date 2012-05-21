@@ -14,11 +14,12 @@ SHARED_PROJECTS_PATH = '/localrepo/<core-id>/shared_projects'
 
 
 import os
+import sys
 from xml.etree import ElementTree
 
 
 def printUsage():
-    print "shared-sync v1.0"
+    print "More usage details, see https://sites.google.com/a/motorola.com/yingdai/shared-sync"
 
 
 # Make sure the common shared folder is created
@@ -82,7 +83,7 @@ def getSharedProjsPath():
         SHARED_PROJECTS_PATH == '':
             print 'Error: invalid SHARED_PROJECTS_PATH! Update SHARED_PROJECTS_PATH in the script!'
             printUsage()
-            raise InvalidProjectsPathError()
+            sys.exit(1)
 
         gSharedProjectsPath = SHARED_PROJECTS_PATH
         if gSharedProjectsPath[-1] != '/':
@@ -96,7 +97,13 @@ class InvalidProjectsPathError(Exception):
 
 
 if __name__=="__main__":
-    manifest_root = ElementTree.parse('.repo/manifest.xml')
+    manifest = '.repo/manifest.xml'
+    if not os.path.exists(manifest):
+        print 'Error: no valid .repo folder found. Need to run "repo init" first!'
+        printUsage()
+        sys.exit(1)
+
+    manifest_root = ElementTree.parse(manifest)
     xml_projects = manifest_root.getiterator("project")
 
     createSharedProjsFolder(xml_projects)
