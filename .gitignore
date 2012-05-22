@@ -5,8 +5,8 @@
 *.aps
 
 # VC 2010 files
-.sdf
-.opensdf
+*.sdf
+*.opensdf
 ipch/
 
 # VC build output directories
