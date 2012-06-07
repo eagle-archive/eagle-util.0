@@ -14,6 +14,8 @@ std::string GetFilePath(const char* pathname);
 std::string GetFileName(const char* pathname);
 std::string GetFileTitle(const char* pathname);
 
+bool WriteAllLines(const TCHAR * name, const CStringArray &linesArray);
+
 }
 
 #endif // _FILE_UTIL_H

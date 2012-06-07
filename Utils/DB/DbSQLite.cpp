@@ -271,7 +271,7 @@ BOOL DbSQLite::DropTable(const char *table_name)
     const char* zTail; 
 
     char SQL[1024];
-	sprintf("DROP TABLE %s", table_name);
+	sprintf_s(SQL, "DROP TABLE %s", table_name);
     if (SQLITE_OK != sqlite3_prepare(data.dbHandle, SQL, -1, &stmt, &zTail))
         ERROR_RETURN;
     sqlite3_step(stmt);
@@ -304,7 +304,7 @@ BOOL DbSQLite::Insert(const char *table_name, const char *column_names, const Db
             column_num++;
         }
     }
-    sprintf(sql, "INSERT INTO %s (%s) VALUES(%s);", table_name, column_names, values);
+    sprintf_s(sql, "INSERT INTO %s (%s) VALUES(%s);", table_name, column_names, values);
 	#pragma TODO(Remember to fix values conversion)
 
     // SQL example: "INSERT INTO players (name, age) VALUES(?,?);"

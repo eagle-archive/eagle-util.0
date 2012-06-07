@@ -30,7 +30,6 @@ public:
     Variant(const Variant& varSrc);
     Variant(short i);
     Variant(long i);
-    Variant(long long i);
     Variant(float f);
     Variant(double f);
     Variant(bool b);
@@ -41,7 +40,6 @@ public:
     const Variant& operator =(const Variant& varSrc);
     const Variant& operator =(short i);
     const Variant& operator =(long i);
-    const Variant& operator =(long long i);
     const Variant& operator =(float f);
     const Variant& operator =(double lf);
     const Variant& operator =(bool b);

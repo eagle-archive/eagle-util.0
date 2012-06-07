@@ -1,6 +1,7 @@
 #include <afxwin.h>         // MFC core and standard components
 #include <string>
 #include "FileUtil.h"
+#include "StrUtil.h"
 #include <shlobj.h>
 
 #if defined(_MSC_VER) && defined(_DEBUG)
@@ -97,6 +98,35 @@ std::string GetFileTitle(const char* pathname)
     }
 
     return title;
+}
+
+
+
+bool WriteAllLines(const TCHAR * name, const CStringArray &linesArray)
+{
+   bool bRes = false;
+
+   CStdioFile file;
+   if (TRUE == file.Open(name, CFile::modeCreate | CFile::modeWrite | CFile::shareExclusive))
+   {
+      for (int i=0; i<linesArray.GetSize(); i++)
+      {
+		  std::string line;
+#ifdef _UNICODE
+         WideStrToAnsiStr(line, linesArray[i]);
+#else
+         line = linesArray[i];
+#endif
+         line += "\n";
+
+		 file.Write((const void *)line.c_str(), line.length() * sizeof(line[0]));
+      }
+      file.Close();
+
+      bRes = true;
+   }
+
+   return bRes;
 }
 
 }

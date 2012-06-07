@@ -33,11 +33,7 @@ CRange& CRange::operator=(const char* str)
     COleVariant var;
     var.Clear();
     var.vt = VT_BSTR;
-#if (_MFC_VER > 0x0600)
-    var.bstrVal = CStringA(str).AllocSysString();
-#else
-#pragma TODO(Remember to fix this)
-#endif
+    var.bstrVal = CString(str).AllocSysString();
 	rg.SetValue(var);
 	return *this;
 }
@@ -73,7 +69,7 @@ CExcel::CExcel()
 {
 	if(!App.CreateDispatch(_T("Excel.Application"), NULL)) 
 	{ 
-		AfxMessageBox(_T("Error in creating Excel service!")); 
+		::MessageBox(NULL, _T("Error"), _T("Error in creating Excel service!"), 0); 
 		exit(1); 
 	}
 	
@@ -107,11 +103,10 @@ void CExcel::Close()
 	App.ReleaseDispatch();						// 释放服务接口
 }
 
-#if defined(_MFC_VER) && (_MFC_VER > 0x0600)
 //=============================================================================
 // 添加某个文件到EXCEL服务中, 如果指定文件名,则打开该文件
 // 如果不指定文件名, 则新建一个文件
-void CExcel::AddNewFile(const CStringW& WExtPath)
+void CExcel::AddNewFile(const CString& WExtPath)
 {
 	if(WExtPath.IsEmpty())
 	{
@@ -126,6 +121,7 @@ void CExcel::AddNewFile(const CStringW& WExtPath)
 	SelectSheet(1);			// 选择第一个工作表, 以邦定相关的单元格等
 }
 
+#if (_MFC_VER > 0x0600)
 void CExcel::AddNewFile(const CStringA& ExtPath)
 {
     CStringW WExtPath(ExtPath);
@@ -241,7 +237,7 @@ void CExcel::CopySheet(_Worksheet &sht)
 // 获取range
 Range& CExcel::GetRange(const CString& RangeStart, const CString& RangeEnd)
 {
-	range=sheet.GetRange(COleVariant(RangeStart),COleVariant(RangeEnd));	
+	range=sheet.GetRange(COleVariant(RangeStart), COleVariant(RangeEnd));	
 	return range;
 }
 

@@ -4,6 +4,14 @@
 #include <afxtempl.h>
 #include "DbBasics.h"
 
+#if (_MFC_VER <= 0x0600)
+// DbBasics.obj : error LNK2001: unresolved external symbol "void __stdcall AfxThrowInvalidArgException(void)" (?AfxThrowInvalidArgException@@YGXXZ)
+static
+void __stdcall AfxThrowInvalidArgException(void)
+{
+}
+#endif
+
 static
 char *WideStrToAnsiStr(const WCHAR * wstr)
 {
@@ -139,12 +147,6 @@ Variant::Variant(long i)
     *this = i;
 }
 
-Variant::Variant(long long i)
-{
-    Init();
-    *this = i;
-}
-
 Variant::Variant(float f)
 {
     Init();
@@ -213,17 +215,6 @@ const Variant& Variant::operator =(long i)
     Var_MakeString(m_data, m_wstr);
     return *this;
 }
-
-#if (_MFC_VER > 0x0600)
-const Variant& Variant::operator =(long long i)
-{
-    this->m_type = DT_Int64;
-    this->m_dirty = false;
-    DATA_TO_VAR = i;
-    Var_MakeString(m_data, m_wstr);
-    return *this;
-}
-#endif
 
 const Variant& Variant::operator =(float f)
 {

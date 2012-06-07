@@ -27,9 +27,6 @@ public:
     bool SetCell(int row, const char* col, const Variant& var);
 	bool GetCell(int row, const char* col, CString& wstr) const;
     bool SetCell(int row, const char* col, const WCHAR* wstr);
-#if (_MFC_VER > 0x0600)
-    bool GetCell(int row, const char* col, CStringA& str) const;
-#endif
     bool SetCell(int row, const char* col, const char* str);
 
     // iRowStart, iRowEnd: 1-based index
