@@ -6,7 +6,7 @@
 
 
 static
-BOOL AnsiStrToWideStr(CStringW &wstr, const CHAR * str)
+BOOL AnsiStrToWideStr(CString &wstr, const CHAR * str)
 {
     BOOL result = FALSE;
     WCHAR *buffW = NULL;
@@ -35,14 +35,50 @@ BOOL AnsiStrToWideStr(CStringW &wstr, const CHAR * str)
 }
 
 static
-CStringW AnsiStrToWideStr(const CHAR * str)
+CString AnsiStrToWideStr(const CHAR * str)
 {
-    CStringW wstr;
+    CString wstr;
     if (FALSE == AnsiStrToWideStr(wstr, str))
     {
         wstr.Empty();
     }
     return wstr;
+}
+
+static
+CString VariantToString(VARIANT var)
+{
+	CString strValue;
+	_variant_t var_t;
+	_bstr_t bstr_t;
+	COleDateTime time_value;
+	COleCurrency var_currency;
+
+	switch(var.vt)
+	{
+	case VT_EMPTY:
+	case VT_NULL:strValue=_T("");break;
+	case VT_UI1:strValue.Format(_T("%d"),var.bVal);break;
+	case VT_I2:strValue.Format(_T("%d"),var.iVal);break;
+	case VT_I4:strValue.Format(_T("%d"),var.lVal);break;
+	case VT_R4:strValue.Format(_T("%f"),var.fltVal);break;
+	case VT_R8:strValue.Format(_T("%f"),var.dblVal);break;
+	case VT_CY:
+		var_currency=var;
+		strValue=var_currency.Format(0);break;
+	case VT_BSTR:
+		var_t =var;
+		bstr_t=var_t;
+		strValue.Format(_T("%s"),(const char *)bstr_t);break;
+	case VT_DATE:
+		time_value = var.date;
+		strValue.Format(_T("%A,%B,%d,%Y"));
+		ASSERT(FALSE); // FIXME
+		break;
+	case VT_BOOL:strValue.Format(_T("%d"),var.boolVal);break;
+	default:strValue=_T("");break;
+	}
+	return strValue;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -148,7 +184,7 @@ bool DbExcel::SaveAs(const WCHAR *wfilename)
 
 bool DbExcel::SelectSheet(const char *sheet)
 {
-    return SelectSheet(CStringW(sheet));
+    return SelectSheet(CString(sheet));
 }
 
 bool DbExcel::SelectSheet(const WCHAR *wsheet)
@@ -205,7 +241,7 @@ bool DbExcel::SetCell(int iRow, const char* col, const Variant& var)
     return SetCell(iRow, iCol, var);
 }
 
-bool DbExcel::GetCell(int iRow, const char* col, CStringW& wstr) const
+bool DbExcel::GetCell(int iRow, const char* col, CString& wstr) const
 {
     if (iRow <= 0)
         return false;
@@ -215,7 +251,7 @@ bool DbExcel::GetCell(int iRow, const char* col, CStringW& wstr) const
 
     CExcel& excel = DATA_TO_CEXCEL;
     VARIANT var = excel.GetCell(iRow, iCol);
-    wstr = var;
+    wstr = VariantToString(var);
     return true;
 }
 
@@ -232,6 +268,7 @@ bool DbExcel::SetCell(int iRow, const char* col, const WCHAR* wstr)
     return true;
 }
 
+#if (_MFC_VER  > 0x0600)
 bool DbExcel::GetCell(int iRow, const char* col, CStringA& str) const
 {
     if (iRow <= 0)
@@ -245,6 +282,7 @@ bool DbExcel::GetCell(int iRow, const char* col, CStringA& str) const
     str = var;
     return true;
 }
+#endif
 
 bool DbExcel::SetCell(int iRow, const char* col, const char* str)
 {

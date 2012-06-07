@@ -23,7 +23,7 @@ CRange& CRange::operator=(const WCHAR *wstr)
     COleVariant var;
     var.Clear();
     var.vt = VT_BSTR;
-    var.bstrVal = CStringW(wstr).AllocSysString();
+    var.bstrVal = CString(wstr).AllocSysString();
 	rg.SetValue(var);
 	return *this;
 }
@@ -33,7 +33,11 @@ CRange& CRange::operator=(const char* str)
     COleVariant var;
     var.Clear();
     var.vt = VT_BSTR;
+#if (_MFC_VER > 0x0600)
     var.bstrVal = CStringA(str).AllocSysString();
+#else
+#pragma TODO(Remember to fix this)
+#endif
 	rg.SetValue(var);
 	return *this;
 }
@@ -103,6 +107,7 @@ void CExcel::Close()
 	App.ReleaseDispatch();						// 释放服务接口
 }
 
+#if defined(_MFC_VER) && (_MFC_VER > 0x0600)
 //=============================================================================
 // 添加某个文件到EXCEL服务中, 如果指定文件名,则打开该文件
 // 如果不指定文件名, 则新建一个文件
@@ -126,6 +131,7 @@ void CExcel::AddNewFile(const CStringA& ExtPath)
     CStringW WExtPath(ExtPath);
     AddNewFile(WExtPath);
 }
+#endif
 
 //=============================================================================
 // 根据工作表表名, 选中该工作表
@@ -220,8 +226,8 @@ int CExcel::SaveAs(const WCHAR *WFileName)
 // 把当前文件另存为指定的文件名
 int CExcel::SaveAs(const char *FileName)
 {
-    CStringW WFileName(FileName);
-    return SaveAs(WFileName);
+	CString fileName(FileName);
+    return SaveAs(fileName);
 }
 
 //=============================================================================
@@ -243,7 +249,7 @@ Range& CExcel::GetRange(const CString& RangeStart, const CString& RangeEnd)
 // 获取range 参数为A1:A2模式
 Range& CExcel::GetRange(const CString& RangeStr)
 {
-	int pos=RangeStr.Find(':');
+	int pos=RangeStr.Find(L':');
 	if(pos>0)
 	{
 		CString a,b;

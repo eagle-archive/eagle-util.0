@@ -1,7 +1,28 @@
 
 
 #include <afxdisp.h>
+#include <afxtempl.h>
 #include "DbBasics.h"
+
+static
+char *WideStrToAnsiStr(const WCHAR * wstr)
+{
+    char *buff = NULL;
+    if( NULL != wstr )
+    {
+        int size = WideCharToMultiByte(CP_ACP, 0, wstr, -1, NULL, 0, NULL, NULL);
+        if (size > 0)
+        {
+            buff = new char[size];
+            if (NULL != buff)
+            {
+                WideCharToMultiByte(CP_ACP, 0, wstr, -1, buff, size, NULL, NULL);
+            }
+        }
+    }
+
+	return buff;
+}
 
 static
 BOOL WriteStrToFile(const char *name, const char *str)
@@ -32,7 +53,7 @@ static COleVariant &Var_DataToOleVariant(void *data)
     return *(COleVariant*)data;
 }
 
-static void Var_MakeString(void* data, CStringW& wstr)
+void Var_MakeString(void* data, CString& wstr)
 {
     COleVariant& var = Var_DataToOleVariant(data);
     switch(var.vt)
@@ -193,6 +214,7 @@ const Variant& Variant::operator =(long i)
     return *this;
 }
 
+#if (_MFC_VER > 0x0600)
 const Variant& Variant::operator =(long long i)
 {
     this->m_type = DT_Int64;
@@ -201,6 +223,7 @@ const Variant& Variant::operator =(long long i)
     Var_MakeString(m_data, m_wstr);
     return *this;
 }
+#endif
 
 const Variant& Variant::operator =(float f)
 {
@@ -241,7 +264,7 @@ const Variant& Variant::operator =(const char *strIn)
 		var.bstrVal = NULL;
 	else
 	{
-		var.bstrVal = CStringA(strIn).AllocSysString();
+		var.bstrVal = CString(strIn).AllocSysString();
 	}
 
     Var_MakeString(m_data, m_wstr);
@@ -260,7 +283,7 @@ const Variant& Variant::operator =(const WCHAR *wstrIn)
 		var.bstrVal = NULL;
 	else
 	{
-		var.bstrVal = CStringW(wstrIn).AllocSysString();
+		var.bstrVal = CString(wstrIn).AllocSysString();
 	}
 
     Var_MakeString(m_data, m_wstr);
@@ -363,19 +386,19 @@ void Variant::Init()
 //////////////////////////////////////////////////////////////////////////////////////
 // class DbRow Implementation
 
-static CArray<Variant>& Row_DataToArray(void *data)
+static CArray<Variant, const Variant&>& Row_DataToArray(void *data)
 {
-    return *(CArray<Variant> *)data;
+    return *(CArray<Variant, const Variant&> *)data;
 }
 
-static void Row_MakeString(void* data, CStringW& wstrRow)
+static void Row_MakeString(void* data, CString& wstrRow)
 {
     int i;
-    CStringW wstr;
-    CArray<Variant>& arrVars = Row_DataToArray(data);
+    CString wstr;
+    CArray<Variant, const Variant&>& arrVars = Row_DataToArray(data);
 
     wstrRow.Empty();
-    for (i=0; i<arrVars.GetCount(); i++)
+    for (i=0; i<arrVars.GetSize(); i++)
     {
         wstr.Format(L"[%s], ", arrVars[i].ToString());
         wstrRow += wstr;
@@ -386,19 +409,19 @@ static void Row_MakeString(void* data, CStringW& wstrRow)
 
 DbRow::DbRow()
 {
-    m_data = new CArray<Variant>;
+    m_data = new CArray<Variant, const Variant&>;
     m_wstr.Empty();
 }
 
 DbRow::~DbRow()
 {
     if (this->m_data)
-        delete (CArray<Variant> *)this->m_data;
+        delete (CArray<Variant, const Variant&> *)this->m_data;
 }
 
 int DbRow::GetColCount() const
 {
-    return (int)Row_DataToArray(m_data).GetCount();
+    return (int)Row_DataToArray(m_data).GetSize();
 }
 
 void DbRow::SetColCount(int n)
@@ -417,7 +440,7 @@ bool DbRow::SetAt(int i, const Variant& varNew)
     Variant& varOld = this->GetAt(i);
     if (varOld != varNew)
     {
-        Row_DataToArray(m_data).SetAt(i, varNew);
+        Row_DataToArray(m_data).SetAt(i, (Variant &)varNew);
         Row_MakeString(this->m_data, this->m_wstr);
     }
     return TRUE;
@@ -467,26 +490,26 @@ const WCHAR* DbRow::ToString() const
 // class DbRange Implementation
 #define MAX_COL_COUNT   10000
 
-static CArray<DbRow>& Table_DataToArray(void *data)
+static CArray<DbRow, const DbRow&>& Table_DataToArray(void *data)
 {
-    return *(CArray<DbRow> *)data;
+    return *(CArray<DbRow, const DbRow&> *)data;
 }
 
 DbRange::DbRange()
 : m_nRowCount(0), m_nColCount(0)
 {
-    m_data = new CArray<DbRow>;
+    m_data = new CArray<DbRow, const DbRow&>;
 }
 
 DbRange::~DbRange()
 {
     if (this->m_data)
-        delete (CArray<DbRow> *)this->m_data;
+        delete (CArray<DbRow, const DbRow&> *)this->m_data;
 }
 
 int DbRange::GetRowCount() const
 {
-    return (int)Table_DataToArray(m_data).GetCount();
+    return (int)Table_DataToArray(m_data).GetSize();
 }
 
 bool DbRange::SetRowCount(int n)
@@ -494,7 +517,7 @@ bool DbRange::SetRowCount(int n)
     if (n < 0)
         return false;
 
-    CArray<DbRow>& rows = Table_DataToArray(m_data);
+    CArray<DbRow, const DbRow&>& rows = Table_DataToArray(m_data);
     int nLastRowCount = m_nRowCount;
     m_nRowCount = n;
     rows.SetSize(m_nRowCount);
@@ -525,8 +548,8 @@ bool DbRange::SetColumnCount(int n)
         return false;
 
     m_nColCount = n;
-    CArray<DbRow>& rows = Table_DataToArray(m_data);
-    for (int i=0; i<rows.GetCount(); i++)
+    CArray<DbRow, const DbRow&>& rows = Table_DataToArray(m_data);
+    for (int i=0; i<rows.GetSize(); i++)
     {
         rows[i].SetColCount(m_nColCount);
     }
@@ -535,20 +558,20 @@ bool DbRange::SetColumnCount(int n)
 
 Variant& DbRange::GetAt(int iRow, int iCol) const
 {
-    CArray<DbRow>& rows = Table_DataToArray(m_data);
+    CArray<DbRow, const DbRow&>& rows = Table_DataToArray(m_data);
     return rows[iRow].GetAt(iCol);
 }
 
 DbRow& DbRange::GetRowAt(int iRow) const
 {
-    CArray<DbRow>& rows = Table_DataToArray(m_data);
+    CArray<DbRow, const DbRow&>& rows = Table_DataToArray(m_data);
     return rows.GetAt(iRow);
 }
 
 bool DbRange::SetRowAt(int iRow, const DbRow& row)
 {
-    CArray<DbRow>& rows = Table_DataToArray(m_data);
-    if (iRow >= rows.GetCount())
+    CArray<DbRow, const DbRow&>& rows = Table_DataToArray(m_data);
+    if (iRow >= rows.GetSize())
         return false;
     rows.SetAt(iRow, row);
     return true;
@@ -556,24 +579,32 @@ bool DbRange::SetRowAt(int iRow, const DbRow& row)
 
 void DbRange::ClearDirty()
 {
-    CArray<DbRow>& rows = Table_DataToArray(m_data);
-    for (int iRow=0; iRow<rows.GetCount(); iRow++)
+    CArray<DbRow, const DbRow&>& rows = Table_DataToArray(m_data);
+    for (int iRow=0; iRow<rows.GetSize(); iRow++)
     {
         rows.GetAt(iRow).ClearDirty();
     }
 }
 
-void DbRange::Dump(const WCHAR *filename)
+void DbRange::Dump(const WCHAR *wfilename)
 {
-    CStringA str, strAll;
+    CString str, strAll;
 
-    CArray<DbRow>& rows = Table_DataToArray(m_data);
-    for (int iRow=0; iRow<rows.GetCount(); iRow++)
+    CArray<DbRow, const DbRow&>& rows = Table_DataToArray(m_data);
+    for (int iRow=0; iRow<rows.GetSize(); iRow++)
     {
         str = rows.GetAt(iRow).ToString();
         strAll += str;
         strAll += _T("\n");
     }
 
-    WriteStrToFile(CStringA(filename), strAll);
+	char *filename = WideStrToAnsiStr(wfilename);
+	char *content = WideStrToAnsiStr(strAll);
+
+	if (filename && content)
+	{
+		WriteStrToFile(filename, content);
+	}
+	if (filename) delete[] filename;
+	if (content) delete[] content;
 }

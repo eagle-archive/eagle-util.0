@@ -13,7 +13,9 @@
 // CJIRADBApp
 
 BEGIN_MESSAGE_MAP(CJIRADBApp, CWinApp)
+#if defined(_MFC_VER) && (_MFC_VER  > 0x0600)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
+#endif
 END_MESSAGE_MAP()
 
 

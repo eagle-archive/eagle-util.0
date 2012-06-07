@@ -126,9 +126,11 @@ public:
     //=========================================================================
     // 工作簿相关操作
     _Worksheet& ActiveSheet();		//当前活动的sheet,在SelectSheet 后改变
-    void CopySheet(_Worksheet &sht);			//复制一个sheet	
-    void AddNewFile(const CStringA& ExtPath=CStringA(""));	//从一个模版构造
-    void AddNewFile(const CStringW& WExtPath=CStringW(L""));//从一个模版构造
+    void CopySheet(_Worksheet &sht);			//复制一个sheet
+#if (_MFC_VER  > 0x0600)
+	void AddNewFile(const CStringA& ExtPath=CStringA(""));	//从一个模版构造
+#endif
+    void AddNewFile(const CString& WExtPath=CString(L""));//从一个模版构造
     void Close();
 
     //=========================================================================
@@ -136,7 +138,7 @@ public:
     _Worksheet& SelectSheet(const WCHAR *wSheetName);	//选择一个已知表名的表
     _Worksheet& SelectSheet(const char* SheetName)        //选择一个已知表名的表
     {
-        return SelectSheet(CStringW(SheetName));
+        return SelectSheet(CString(SheetName));
     };
     _Worksheet& SelectSheet(int index);				//选择一个已知索引的表
 

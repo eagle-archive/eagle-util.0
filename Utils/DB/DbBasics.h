@@ -65,7 +65,7 @@ protected:
 
 protected:
     DataType    m_type;
-    CStringW    m_wstr; // description for the VAR for easy debug. accurate data stored in *data
+    CString     m_wstr; // description for the VAR for easy debug. accurate data stored in *data
     void*       m_data;
     bool        m_dirty;
 
@@ -99,7 +99,7 @@ public:
     const WCHAR *ToString() const;
 
 protected:
-    CStringW    m_wstr;  // description of the row data, accurate data stored in *data
+    CString     m_wstr;  // description of the row data, accurate data stored in *data
     void*       m_data;
 };
 

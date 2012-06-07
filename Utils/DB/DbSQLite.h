@@ -51,8 +51,10 @@ public:
 public:
     BOOL Open(const WCHAR *wsFilename);
     BOOL Close();
+#if (_MFC_VER > 0x0600)
     void GetErrMsg(CStringA &err) const;
-    void GetErrMsg(CStringW &werr) const;
+#endif
+    void GetErrMsg(CString &werr) const;
     BOOL GetDbHandle(void **pdbHandle) const; // get db handle which can be mapped to type sqlite3*
 
     // Create table, SQL example: "CREATE TABLE players (ID INTEGER PRIMARY KEY, name TEXT, age INTERER);"
@@ -66,6 +68,6 @@ public:
     BOOL Query(const char *SQL, DbSQLiteRowArray &rows);
 
 protected:
-    CStringW    m_wfilename;
+    CString     m_wfilename;
     void*       m_data;
 };

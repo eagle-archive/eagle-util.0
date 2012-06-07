@@ -150,7 +150,7 @@ BOOL DbSQLiteRowArray::AppendRow(const DbSQLiteRow& row)
 struct SQLITE_DATA
 {
     sqlite3*    dbHandle;
-    CStringW    wErrMsg;
+    CString     wErrMsg;
 
     void Init()
     {
@@ -215,14 +215,16 @@ BOOL DbSQLite::Close()
     return TRUE;
 }
 
+#if (_MFC_VER > 0x0600)
 void DbSQLite::GetErrMsg(CStringA &err) const
 {
     CStringW werr;
     this->GetErrMsg(werr);
     err = werr;
 }
+#endif
 
-void DbSQLite::GetErrMsg(CStringW &werr) const
+void DbSQLite::GetErrMsg(CString &werr) const
 {
     SQLITE_DATA& data = DATA_TO_STRUCT;
 
@@ -268,8 +270,8 @@ BOOL DbSQLite::DropTable(const char *table_name)
     sqlite3_stmt* stmt;
     const char* zTail; 
 
-    CStringA SQL;
-    SQL.Format("DROP TABLE %s", table_name);
+    char SQL[1024];
+	sprintf("DROP TABLE %s", table_name);
     if (SQLITE_OK != sqlite3_prepare(data.dbHandle, SQL, -1, &stmt, &zTail))
         ERROR_RETURN;
     sqlite3_step(stmt);
@@ -292,7 +294,8 @@ BOOL DbSQLite::Insert(const char *table_name, const char *column_names, const Db
     const char* zTail;
     int column_num = 1;
 
-    CStringA sql, values("?");
+	char sql[1024];
+	CString values("?");
     for (int i=(int)strlen(column_names)-1; i>=0; i--)
     {
         if (column_names[i] == ',')
@@ -301,7 +304,8 @@ BOOL DbSQLite::Insert(const char *table_name, const char *column_names, const Db
             column_num++;
         }
     }
-    sql.Format("INSERT INTO %s (%s) VALUES(%s);", table_name, column_names, values);
+    sprintf(sql, "INSERT INTO %s (%s) VALUES(%s);", table_name, column_names, values);
+	#pragma TODO(Remember to fix values conversion)
 
     // SQL example: "INSERT INTO players (name, age) VALUES(?,?);"
     if (SQLITE_OK != sqlite3_prepare(data.dbHandle, sql, -1, &stmt, &zTail))
