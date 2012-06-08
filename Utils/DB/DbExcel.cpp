@@ -4,6 +4,9 @@
 #include "DbExcel.h"
 #include "Excel/Excel.h"
 
+#ifndef _UNICODE
+#error Must be compiled with UNICODE
+#endif
 
 static
 BOOL AnsiStrToWideStr(CString &wstr, const CHAR * str)
@@ -45,41 +48,6 @@ CString AnsiStrToWideStr(const CHAR * str)
     return wstr;
 }
 
-static
-CString VariantToString(VARIANT var)
-{
-	CString strValue;
-	_variant_t var_t;
-	_bstr_t bstr_t;
-	COleDateTime time_value;
-	COleCurrency var_currency;
-
-	switch(var.vt)
-	{
-	case VT_EMPTY:
-	case VT_NULL:strValue=_T("");break;
-	case VT_UI1:strValue.Format(_T("%d"),var.bVal);break;
-	case VT_I2:strValue.Format(_T("%d"),var.iVal);break;
-	case VT_I4:strValue.Format(_T("%d"),var.lVal);break;
-	case VT_R4:strValue.Format(_T("%f"),var.fltVal);break;
-	case VT_R8:strValue.Format(_T("%f"),var.dblVal);break;
-	case VT_CY:
-		var_currency=var;
-		strValue=var_currency.Format(0);break;
-	case VT_BSTR:
-		var_t =var;
-		bstr_t=var_t;
-		strValue.Format(_T("%s"),(const char *)bstr_t);break;
-	case VT_DATE:
-		time_value = var.date;
-		strValue.Format(_T("%A,%B,%d,%Y"));
-		ASSERT(FALSE); // FIXME
-		break;
-	case VT_BOOL:strValue.Format(_T("%d"),var.boolVal);break;
-	default:strValue=_T("");break;
-	}
-	return strValue;
-}
 
 //////////////////////////////////////////////////////////////////////////////////////
 // class DbExcel Implementation
@@ -251,7 +219,7 @@ bool DbExcel::GetCell(int iRow, const char* col, CString& wstr) const
 
     CExcel& excel = DATA_TO_CEXCEL;
     VARIANT var = excel.GetCell(iRow, iCol);
-    wstr = VariantToString(var);
+    wstr = (TCHAR *)(_bstr_t)var;
     return true;
 }
 
