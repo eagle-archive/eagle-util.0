@@ -13,7 +13,7 @@
 // 3. each blocks a few lines, each lines contains specified numbers of call NOs, e.g. 10
 // OA system has the limiation that each time to input limited call NOs to send SMS to customers
 
-const CString EXCEL_FILE = _T("D:\\Dev\\MyProgram\\Source\\eagle-utils\\Apps\\Excel2Txt\\Data\\主副卡.xls");
+const CString EXCEL_FILE = _T("D:\\Dev\\MyProgram\\Source\\eagle-utils\\Apps\\Excel2Txt\\Data\\未硬捆绑中高端6月.xls");
 const CString SHEET_NAME = _T("Sheet1");
 const char    COLUMN[] = "A";
 const CString MANAGER_NAME = L"夏敏";
