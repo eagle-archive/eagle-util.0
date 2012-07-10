@@ -13,24 +13,77 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Basic">
+      <UniqueIdentifier>{a8e3e802-fa00-4092-a865-b99397a371b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Ini">
+      <UniqueIdentifier>{2f7e3235-e09b-4cf6-9854-0bc76d395f1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External">
+      <UniqueIdentifier>{4f5b07e2-308f-4d6b-b727-94e4747b48be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\libini">
+      <UniqueIdentifier>{32bbaf5b-cf21-40a5-87bd-8fd3968cda78}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Utils\Basic\FileUtil.h">
+      <Filter>Basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utils\Basic\StrUtil.h">
+      <Filter>Basic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utils\Ini\SimpleIni.h">
+      <Filter>Ini</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\External\libini\include\config.h">
+      <Filter>External\libini</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\External\libini\src\headings.h">
+      <Filter>External\libini</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\External\libini\src\keys.h">
+      <Filter>External\libini</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\External\libini\include\libini.h">
+      <Filter>External\libini</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\External\libini\src\list.h">
+      <Filter>External\libini</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CbUnit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Utils\Basic\StrUtilWin.cpp">
+      <Filter>Basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Utils\Basic\FileUtilWin.cpp">
+      <Filter>Basic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Utils\Ini\SimpleIni.cpp">
+      <Filter>Ini</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\External\libini\src\ini.cpp">
+      <Filter>External\libini</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\External\libini\src\headings.i">
+      <Filter>External\libini</Filter>
+    </None>
+    <None Include="..\..\External\libini\src\keys.i">
+      <Filter>External\libini</Filter>
+    </None>
+    <None Include="..\..\External\libini\src\list.i">
+      <Filter>External\libini</Filter>
+    </None>
+    <None Include="..\..\External\libini\src\types.i">
+      <Filter>External\libini</Filter>
+    </None>
   </ItemGroup>
 </Project>

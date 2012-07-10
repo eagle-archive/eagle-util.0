@@ -4,7 +4,7 @@
 #endif
 
 #include "SimpleIni.h"
-#include "FS/FileUtil.h"
+#include "FileUtil.h"
 #include "libini/include/libini.h"
 
 #if defined(_MSC_VER) && defined(_DEBUG)

@@ -2,6 +2,7 @@
 #define _FILE_UTIL_H
 
 #include <string>
+#include <afxwin.h>         // MFC core and standard components
 
 namespace utils {
 
