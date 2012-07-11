@@ -54,6 +54,9 @@
     <ClInclude Include="..\..\External\libini\src\list.h">
       <Filter>External\libini</Filter>
     </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CbUnit.cpp">
@@ -70,6 +73,9 @@
     </ClCompile>
     <ClCompile Include="..\..\External\libini\src\ini.cpp">
       <Filter>External\libini</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
