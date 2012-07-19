@@ -1,4 +1,4 @@
-#include <afxwin.h>         // MFC core and standard components
+#include <afx.h>         // MFC core and standard components
 #include <string>
 #include "StrUtil.h"
 #include <shlobj.h>

@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 
+const CString EXCEL_FILE;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
