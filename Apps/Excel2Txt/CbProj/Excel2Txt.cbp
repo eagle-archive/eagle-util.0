@@ -56,7 +56,6 @@
 			<Add directory="$(#psdk.lib)" />
 		</Linker>
 		<Unit filename="..\Excel2Txt.cpp" />
-		<Unit filename="..\stdafx.cpp" />
 		<Unit filename="..\stdafx.h" />
 		<Unit filename="..\targetver.h" />
 		<Unit filename="..\..\..\Utils\Basic\FileUtil.h" />
