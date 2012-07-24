@@ -22,8 +22,8 @@
     <Filter Include="External">
       <UniqueIdentifier>{4f5b07e2-308f-4d6b-b727-94e4747b48be}</UniqueIdentifier>
     </Filter>
-    <Filter Include="External\libini">
-      <UniqueIdentifier>{32bbaf5b-cf21-40a5-87bd-8fd3968cda78}</UniqueIdentifier>
+    <Filter Include="External\iniparser">
+      <UniqueIdentifier>{47478f46-7f57-42b1-b5f3-f0e58bb3433c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -39,22 +39,16 @@
     <ClInclude Include="..\..\Utils\Ini\SimpleIni.h">
       <Filter>Ini</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\External\libini\include\config.h">
-      <Filter>External\libini</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\External\libini\src\headings.h">
-      <Filter>External\libini</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\External\libini\src\keys.h">
-      <Filter>External\libini</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\External\libini\include\libini.h">
-      <Filter>External\libini</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\External\libini\src\list.h">
-      <Filter>External\libini</Filter>
-    </ClInclude>
     <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\External\iniparser\src\iniparser.h">
+      <Filter>External\iniparser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\External\iniparser\src\dictionary.h">
+      <Filter>External\iniparser</Filter>
+    </ClInclude>
+    <ClInclude Include="forceinc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -71,25 +65,14 @@
     <ClCompile Include="..\..\Utils\Ini\SimpleIni.cpp">
       <Filter>Ini</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\External\libini\src\ini.cpp">
-      <Filter>External\libini</Filter>
-    </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\External\libini\src\headings.i">
-      <Filter>External\libini</Filter>
-    </None>
-    <None Include="..\..\External\libini\src\keys.i">
-      <Filter>External\libini</Filter>
-    </None>
-    <None Include="..\..\External\libini\src\list.i">
-      <Filter>External\libini</Filter>
-    </None>
-    <None Include="..\..\External\libini\src\types.i">
-      <Filter>External\libini</Filter>
-    </None>
+    <ClCompile Include="..\..\External\iniparser\src\dictionary.c">
+      <Filter>External\iniparser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\External\iniparser\src\iniparser.c">
+      <Filter>External\iniparser</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

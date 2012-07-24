@@ -5,43 +5,15 @@
 
 #include "SimpleIni.h"
 #include "FileUtil.h"
-#include "libini/include/libini.h"
+extern "C" {
+#include "iniparser/src/iniparser.h"
+}
 
 #if defined(_MSC_VER) && defined(_DEBUG)
 #define new DEBUG_NEW
 #endif
 
 namespace utils {
-
-static bool LocateToSection(ini_fd_t fd, const char *section)
-{
-    const char* curSection = ini_currentHeading(fd);
-    if (curSection != NULL)
-    {
-        if (strcmp(section, curSection) == 0)
-            return true;
-    }
-
-    if (0 == ini_locateHeading(fd, section))
-        return true;
-    else
-        return false;
-
-}
-
-static bool LocateToEntry(ini_fd_t fd, const char *entry)
-{
-    const char* curEntry = ini_currentKey(fd);
-    if (curEntry != NULL)
-    {
-        if (strcmp(entry, curEntry) == 0)
-            return true;
-    }
-    if (0 == ini_locateKey(fd, entry))
-        return true;
-    else
-        return false;
-}
 
 CSimpleIni::CSimpleIni(const char * pathname)
 {
@@ -74,25 +46,16 @@ CSimpleIni::CSimpleIni(const char * pathname)
         }
     }
 
-    m_iniFd = ini_open(m_strPathname.c_str(), "a", NULL);
+    m_iniFd = (void *)iniparser_load(m_strPathname.c_str());
 }
 
 CSimpleIni::~CSimpleIni(void)
 {
     if (m_iniFd)
     {
-        ini_close(m_iniFd);
+        iniparser_freedict((dictionary *)m_iniFd);
         m_iniFd = NULL;
     }
-}
-
-bool CSimpleIni::Flush(void)
-{
-    if (m_iniFd)
-    {
-        return 0 == ini_flush(m_iniFd);
-    }
-    return false;
 }
 
 std::string CSimpleIni::GetString(const char* section, const char* entry, const char* defaultValue)
@@ -100,26 +63,21 @@ std::string CSimpleIni::GetString(const char* section, const char* entry, const 
     std::string strValue;
     if (defaultValue != NULL)
         strValue = defaultValue;
+    if (section == NULL)
+        return strValue;
 
     if (m_iniFd != NULL)
     {
-        if (true == LocateToSection(m_iniFd, section) &&
-            true == LocateToEntry(m_iniFd, entry))
+        std::string key = section;
+        if (entry != NULL && entry[0] != NULL)
         {
-            int len = ini_dataLength(m_iniFd);
-            if (len != -1)
-            {
-                char *buff = (char *)malloc(len + 1);
-                if (buff != NULL)
-                {
-                    if (ini_readString(m_iniFd, buff, len + 1) >= 0)
-                    {
-                        strValue = buff;
-                    }
-                    free(buff);
-                }
-            }
+            key += ":";
+            key += entry;
         }
+
+        char *value = iniparser_getstring((dictionary *)m_iniFd, key.c_str(), (char *)defaultValue);
+        if (value != NULL)
+            strValue = value;
     }
     return strValue;
 }
@@ -127,14 +85,19 @@ std::string CSimpleIni::GetString(const char* section, const char* entry, const 
 bool CSimpleIni::WriteString(const char* section, const char* entry, const char* value)
 {
     bool result = false;
+    if (section == NULL)
+        return result;
+
     if (m_iniFd != NULL)
     {
-        // Ignore the returned values of below calls. if no section and entry are located,
-        // it creates will a temp one.
-        LocateToSection(m_iniFd, section);
-        LocateToEntry(m_iniFd, entry);
+        std::string key = section;
+        if (entry != NULL && entry[0] != NULL)
+        {
+            key += ":";
+            key += entry;
+        }
 
-        if (ini_writeString(m_iniFd, value) >= 0)
+        if (0 == iniparser_set((dictionary *)m_iniFd, key.c_str(), value))
             result = true;
     }
     return result;
@@ -142,66 +105,57 @@ bool CSimpleIni::WriteString(const char* section, const char* entry, const char*
 
 int CSimpleIni::GetInt(const char* section, const char * entry, int defaultValue)
 {
-    int value = defaultValue;
+    int value;
+    if (section == NULL)
+        return defaultValue;
+
     if (m_iniFd != NULL)
     {
-        if (true == LocateToSection(m_iniFd, section) &&
-            true == LocateToEntry(m_iniFd, entry))
+        std::string key = section;
+        if (entry != NULL && entry[0] != NULL)
         {
-            ini_readInt(m_iniFd, &value);
+            key += ":";
+            key += entry;
         }
+
+        value = iniparser_getint((dictionary *)m_iniFd, key.c_str(), defaultValue);
     }
     return value;
 }
 
 bool CSimpleIni::WriteInt(const char* section, const char* entry, int value)
 {
-    bool result = false;
-    if (m_iniFd != NULL)
-    {
-        // Ignore the returned values of below calls. if no section and entry are located,
-        // it creates will a temp one.
-        LocateToSection(m_iniFd, section);
-        LocateToEntry(m_iniFd, entry);
-
-        if (ini_writeInt(m_iniFd, value) >= 0)
-            result = true;
-    }
-    return result;
+    char buff[64];
+    sprintf(buff, "%d", value);
+    return WriteString(section, entry, buff);
 }
 
 bool CSimpleIni::GetBoolean(const char* section, const char* entry, bool defaultValue)
 {
-    bool value = defaultValue;
+    bool value;
+    if (section == NULL)
+        return defaultValue;
+
     if (m_iniFd != NULL)
     {
-        if (true == LocateToSection(m_iniFd, section) &&
-            true == LocateToEntry(m_iniFd, entry))
+        std::string key = section;
+        if (entry != NULL && entry[0] != NULL)
         {
-            int iValue;
-            if (ini_readBool(m_iniFd, &iValue) >= 0)
-            {
-                value = (iValue != 0);
-            }
+            key += ":";
+            key += entry;
         }
+
+        int r = iniparser_getint((dictionary *)m_iniFd, key.c_str(), defaultValue ? 1:0);
+        value = (r!=0);
     }
     return value;
 }
 
 bool CSimpleIni::WriteBoolean(const char* section, const char* entry, bool value)
 {
-    bool result = false;
-    if (m_iniFd != NULL)
-    {
-        // Ignore the returned values of below calls. if no section and entry are located,
-        // it creates will a temp one.
-        LocateToSection(m_iniFd, section);
-        LocateToEntry(m_iniFd, entry);
-
-        if (ini_writeBool(m_iniFd, value) >= 0)
-            result = true;
-    }
-    return result;
+    char buff[2] = "";
+    buff[0] = value ? '1' : '0';
+    return WriteString(section, entry, buff);
 }
 
 } // namespace utils

@@ -13,7 +13,6 @@
 /*---------------------------------------------------------------------------
                                 Includes
  ---------------------------------------------------------------------------*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,7 +22,10 @@
  * It is not needed for Windows platforms.
  * Uncomment it if needed.
  */
-/* #include <unistd.h> */
+#if !defined(_MSC_VER)
+#include <unistd.h>
+#endif
+
 
 #include "dictionary.h"
 
