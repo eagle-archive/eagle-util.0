@@ -1,11 +1,8 @@
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CbProj", "CbProj.vcproj", "{812542C2-2DB8-4A22-88B2-2C9E88BD925D}"
-	ProjectSection(ProjectDependencies) = postProject
-		{A32B2FE2-44FC-432A-ABD6-1342A872D9AB} = {A32B2FE2-44FC-432A-ABD6-1342A872D9AB}
-	EndProjectSection
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CbProj", "CbProj.vcxproj", "{812542C2-2DB8-4A22-88B2-2C9E88BD925D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MyUtil", "..\..\MyUtil\MyUtil.vcproj", "{A32B2FE2-44FC-432A-ABD6-1342A872D9AB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CbUnit", "..\CbUnit\CbUnit.vcxproj", "{D4F82236-C495-494B-BF6F-4F72BD6A33CD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +14,10 @@ Global
 		{812542C2-2DB8-4A22-88B2-2C9E88BD925D}.Debug|Win32.Build.0 = Debug|Win32
 		{812542C2-2DB8-4A22-88B2-2C9E88BD925D}.Release|Win32.ActiveCfg = Release|Win32
 		{812542C2-2DB8-4A22-88B2-2C9E88BD925D}.Release|Win32.Build.0 = Release|Win32
-		{A32B2FE2-44FC-432A-ABD6-1342A872D9AB}.Debug|Win32.ActiveCfg = Debug|Win32
-		{A32B2FE2-44FC-432A-ABD6-1342A872D9AB}.Debug|Win32.Build.0 = Debug|Win32
-		{A32B2FE2-44FC-432A-ABD6-1342A872D9AB}.Release|Win32.ActiveCfg = Release|Win32
-		{A32B2FE2-44FC-432A-ABD6-1342A872D9AB}.Release|Win32.Build.0 = Release|Win32
+		{D4F82236-C495-494B-BF6F-4F72BD6A33CD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D4F82236-C495-494B-BF6F-4F72BD6A33CD}.Debug|Win32.Build.0 = Debug|Win32
+		{D4F82236-C495-494B-BF6F-4F72BD6A33CD}.Release|Win32.ActiveCfg = Release|Win32
+		{D4F82236-C495-494B-BF6F-4F72BD6A33CD}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

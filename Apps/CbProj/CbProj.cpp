@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "CbProj.h"
-#include "MyUtil.h"
+#include "Ini/SimpleIni.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -20,11 +20,11 @@ CWinApp theApp;
 
 using namespace std;
 
-CConfigMgr g_cfgMgr;
-CString g_strPrjName;
-CString g_strTemplateFile;
-CString g_strSourceFile;
-CString g_strPathPrefix;
+utils::CSimpleIni g_cfgMgr;
+std::string g_strPrjName;
+std::string g_strTemplateFile;
+std::string g_strSourceFile;
+std::string g_strPathPrefix;
 
 int GetParameters()
 {
@@ -32,8 +32,8 @@ int GetParameters()
 
    if (nRetCode == 0)
    {
-       g_strPrjName = g_cfgMgr.GetString(_T("Parameters"), _T("ProjectName"));
-       if (g_strPrjName.IsEmpty())
+       g_strPrjName = g_cfgMgr.GetString("Parameters", "ProjectName", NULL).c_str();
+       if (g_strPrjName.empty())
        {
            _tprintf(_T("Error: ProjectName is not specified. Update CbProj.ini to set ProjectName parameter.\n"));
            nRetCode = 10;
@@ -42,8 +42,8 @@ int GetParameters()
 
    if (nRetCode == 0)
    {
-       g_strTemplateFile = g_cfgMgr.GetString(_T("Parameters"), _T("Template"));
-       if (g_strPrjName.IsEmpty())
+       g_strTemplateFile = g_cfgMgr.GetString("Parameters", "Template", NULL);
+       if (g_strTemplateFile.empty())
        {
            _tprintf(_T("Error: Template is not specified. Update CbProj.ini to set Project Template file name.\n"));
            nRetCode = 11;
@@ -52,8 +52,8 @@ int GetParameters()
 
    if (nRetCode == 0)
    {
-       g_strSourceFile = g_cfgMgr.GetString(_T("Parameters"), _T("Source"));
-       if (g_strPrjName.IsEmpty())
+       g_strSourceFile = g_cfgMgr.GetString("Parameters", "Source", NULL);
+       if (g_strSourceFile.empty())
        {
            _tprintf(_T("Error: Source is not specified. Update CbProj.ini to set Source file name.\n"));
            nRetCode = 12;
@@ -62,8 +62,8 @@ int GetParameters()
 
    if (nRetCode == 0)
    {
-       g_strPathPrefix = g_cfgMgr.GetString(_T("Parameters"), _T("PathPrefix"));
-       g_strPathPrefix.Trim();
+       g_strPathPrefix = g_cfgMgr.GetString("Parameters", "PathPrefix", NULL);
+       //g_strPathPrefix.Trim();
    }
 
    return nRetCode;
@@ -74,7 +74,7 @@ CStringA ReadTemplate()
     CStringA all;
     CFile file;
 
-    if (!file.Open(g_strTemplateFile, CFile::modeRead))
+    if (!file.Open(CString(g_strTemplateFile.c_str()), CFile::modeRead))
     {
         _tprintf(_T("Invalid project templateFile file: %s\n"), g_strTemplateFile);
         return all;
@@ -139,7 +139,7 @@ CStringA ParseSourceFiles()
         for (int k=0; k<(int)arrFile.GetCount(); k++)
         {
             CStringA line("\t\t<Unit filename=\"");
-            line += g_strPathPrefix;
+            line += g_strPathPrefix.c_str();
             line += arrFile[k];
             line += "\"";
 
@@ -167,7 +167,7 @@ int GenerateCbProj()
 
     // replace PROJECTNAME with g_strPrjName
     CStringA strPrjName_Template(PROJECTNAME);
-    CStringA strPrjNameA(g_strPrjName);
+    CStringA strPrjNameA(g_strPrjName.c_str());
     strProjA.Replace(strPrjName_Template, strPrjNameA);
 
     // Parse soure file list
@@ -179,7 +179,7 @@ int GenerateCbProj()
 
     // write project
     CFile file;
-    CString fileOut = g_strPrjName + _T(".cbp");
+    CString fileOut = CString(g_strPrjName.c_str()) + _T(".cbp");
     if (!file.Open(fileOut, CFile::modeCreate | CFile::modeWrite))
     {
         _tprintf(_T("Cannot open file for writing: %s\n"), fileOut);
