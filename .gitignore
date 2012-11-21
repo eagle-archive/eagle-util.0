@@ -4,6 +4,7 @@
 *.user
 *.aps
 *.pdb
+_UpgradeReport_Files/
 
 # VC 2010 files
 *.sdf
@@ -13,6 +14,7 @@ ipch/
 # VC build output directories
 Debug/
 Release/
+
 
 # Code Blocks files
 *.layout
