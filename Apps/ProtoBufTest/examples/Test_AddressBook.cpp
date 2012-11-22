@@ -3,6 +3,7 @@
 #include <string>
 #include "addressbook.pb.h"
 
+// Refer to https://developers.google.com/protocol-buffers/docs/cpptutorial
 
 using namespace std;
 
@@ -83,7 +84,7 @@ void ListPeople(const tutorial::AddressBook& address_book) {
 }
 
 int Test_AddressBook() {
-    const char FILE_NAME[] = "AddressBook.data";
+    const char FILE_NAME[] = "Temp/AddressBook.data";
     tutorial::AddressBook address_book;
 
     {
