@@ -1,0 +1,37 @@
+package com.sap.nic.itrafic;
+
+/*
+create column table "ITRAFFIC"."PROTO_ODBC_SINGLE"(
+    "GPSDATA_ID" DECIMAL (20) null,
+    "DEVID" VARCHAR (20) null,
+    "STIME" TIMESTAMP null,
+    "ALARMFLAG" DECIMAL (6) null,
+    "STATE" DECIMAL (6) null,
+    "LATITUDE" DOUBLE null,
+    "LONGTITUDE" DOUBLE null,
+    "SPEED" INTEGER null,
+    "ORIENTATION" DOUBLE null,
+    "GPSTIME" TIMESTAMP null,
+    "ODOMETER" DOUBLE null,
+    "OILGAUGE" DOUBLE null)
+*/
+
+// NOTE: for each member, the default vaule is used as null
+message Report {
+    optional fixed64    gpsdata_id = 1;
+    required string     devid = 2;
+    optional fixed64    stime = 3; // unix time
+    optional fixed32    alarmflag = 4;
+    optional fixed32    state = 5;
+    optional double     latitude = 6;
+    optional double     longtitude = 7;
+    optional sint32     speed = 8;
+    optional double     orientation = 9;
+    required fixed64    gpstime = 10; // unix time
+    optional double     odometer = 11;
+    optional double     oilgauge = 12;
+}
+
+message VehicleReports {
+    repeated Report report = 1;
+}

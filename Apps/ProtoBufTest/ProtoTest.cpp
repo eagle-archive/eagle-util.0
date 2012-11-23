@@ -5,6 +5,7 @@
 #include "examples/addressbook.pb.h"
 
 extern int Test_AddressBook();
+extern int Test_VehicleRecords();
 
 int main()
 {
@@ -14,9 +15,15 @@ int main()
     // compatible with the version of the headers we compiled against.
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
+/*
     if (0 == Test_AddressBook())
     {
         printf("Test_AddressBook: testing failed!\n");
+    }
+*/
+    if (0 == Test_VehicleRecords())
+    {
+        printf("Test_VehicleRecords: testing failed!\n");
     }
 
     // Optional:  Delete all global objects allocated by libprotobuf.
