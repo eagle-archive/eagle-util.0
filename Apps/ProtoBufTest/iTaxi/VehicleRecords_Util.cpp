@@ -21,6 +21,36 @@ using namespace com::sap::nic::itrafic;
 // Local functions
 
 static
+long long TimestampToInt64(const SQL_TIMESTAMP_STRUCT &st) {
+    struct tm stm;
+    memset(&stm, 0, sizeof(struct tm));
+    stm.tm_year = st.year - 1900;
+    stm.tm_mon = st.month - 1;
+    stm.tm_mday = st.day;
+    stm.tm_hour = st.hour;
+    stm.tm_min = st.minute;
+    stm.tm_sec = st.second;
+    return _mktime64(&stm);
+}
+
+static
+void Int64ToTimestamp(long long t64, SQL_TIMESTAMP_STRUCT &st) {
+    struct tm stm;
+#ifdef _WIN32
+    _gmtime64_s(&stm, &t64);
+#else
+    localtime64_r(&64t, &stm);
+#endif
+    st.year = stm.tm_year + 1900;
+    st.month = stm.tm_mon + 1;
+    st.day = stm.tm_mday;
+    st.hour = stm.tm_hour;
+    st.minute = stm.tm_min;
+    st.second = stm.tm_sec;
+    st.fraction = 0;
+}
+
+static
 void GetCurTimestamp(SQL_TIMESTAMP_STRUCT &st) {
     time_t t;
     time(&t);
@@ -40,35 +70,11 @@ void GetCurTimestamp(SQL_TIMESTAMP_STRUCT &st) {
     st.fraction = 0;
 }
 
-static
-long long TimestampToInt64(const SQL_TIMESTAMP_STRUCT &st) {
-    struct tm stm;
-    memset(&stm, 0, sizeof(struct tm));
-    stm.tm_year = st.year - 1900;
-    stm.tm_mon = st.month - 1;
-    stm.tm_mday = st.day;
-    stm.tm_hour = st.hour;
-    stm.tm_min = st.minute;
-    stm.tm
-    return _mktime64(&stm);
-}
-
-static
-void Int64ToTimestamp(long long t64, SQL_TIMESTAMP_STRUCT &st) {
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // class VehicleRecord
 
-VehicleRecords_Column::VehicleRecords_Column() {
+void VehicleRecords_Column::Clear() {
     this->mCount = 0;
-}
-
-VehicleRecords_Column::~VehicleRecords_Column() {
-}
-
-void VehicleRecords_Column::GenerateRecords(int count) {
-    this->mCount = count;
     this->ARR_GPSDATA_ID.clear();
     this->ARR_DEVID.clear();
     this->ARR_DEVID_LEN.clear();
@@ -82,6 +88,30 @@ void VehicleRecords_Column::GenerateRecords(int count) {
     this->ARR_GPSTIME.clear();
     this->ARR_ODOMETER.clear();
     this->ARR_OILGAUGE.clear();
+}
+
+void VehicleRecords_Column::CopyFrom(const VehicleRecords_Column& from) {
+    this->mCount = from.mCount;
+
+    ARR_GPSDATA_ID  = from.ARR_GPSDATA_ID;
+    ARR_DEVID       = from.ARR_DEVID;
+    ARR_DEVID_LEN   = from.ARR_DEVID_LEN;
+    ARR_ALARMFLAG   = from.ARR_ALARMFLAG;
+    ARR_STATE       = from.ARR_STATE;
+    ARR_STIME       = from.ARR_STIME;
+    ARR_LATITUDE    = from.ARR_LATITUDE;
+    ARR_LONGTITUDE  = from.ARR_LONGTITUDE;
+    ARR_SPEED       = from.ARR_SPEED;
+    ARR_ORIENTATION = from.ARR_ORIENTATION;
+    ARR_GPSTIME     = from.ARR_GPSTIME;
+    ARR_ODOMETER    = from.ARR_ODOMETER;
+    ARR_OILGAUGE    = from.ARR_OILGAUGE;
+}
+
+// Generate random records
+void VehicleRecords_Column::GenerateRecords(int count) {
+    Clear();
+    this->mCount = count;
 
     for (int i=0; i<count; i++) {
         {
@@ -144,35 +174,41 @@ void VehicleRecords_Column::GenerateRecords(int count) {
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-// class VehicleRecordUtil
-
-void VehicleRecordUtil::ToProtoBuf(const VehicleRecords_Column &vr,
-    com::sap::nic::itrafic::VehicleReports &pvr) {
-
-    for (int i=0; i<vr.mCount; i++) {
+void VehicleRecords_Column::ToProtoBuf(VehicleReports &pvr) {
+    pvr.Clear();
+    for (int i=0; i<mCount; i++) {
         Report *pReport = pvr.add_report();
-        pReport->set_gpsdata_id(vr.ARR_GPSDATA_ID[i]);
+        pReport->set_gpsdata_id(ARR_GPSDATA_ID[i]);
         // for devid
         {
             char devid[DEVID_LEN + 1];
             devid[DEVID_LEN] = '\0';
-            if (vr.ARR_DEVID_LEN[i] == SQL_NTS) {
-                strncpy(devid, vr.ARR_DEVID.data() + i * DEVID_LEN, sizeof(devid));
+            if (ARR_DEVID_LEN[i] == SQL_NTS) {
+                strncpy(devid, ARR_DEVID.data() + i * DEVID_LEN, sizeof(devid));
             } else {
-                memcpy(devid, vr.ARR_DEVID.data() + i * DEVID_LEN, DEVID_LEN);
+                memcpy(devid, ARR_DEVID.data() + i * DEVID_LEN, DEVID_LEN);
             }
             pReport->set_devid(devid);
         }
-        pReport->set_stime(TimestampToInt64(vr.ARR_STIME[i]));
-        pReport->set_alarmflag(vr.ARR_ALARMFLAG[i]);
-        pReport->set_state(vr.ARR_STATE[i]);
-        pReport->set_latitude(vr.ARR_LATITUDE[i]);
-        pReport->set_longtitude(vr.ARR_LONGTITUDE[i]);
-        pReport->set_speed(vr.ARR_SPEED[i]);
-        pReport->set_orientation(vr.ARR_ORIENTATION[i]);
-        pReport->set_gpstime(TimestampToInt64(vr.ARR_GPSTIME[i]));
-        pReport->set_odometer(vr.ARR_ODOMETER[i]);
-        pReport->set_oilgauge(vr.ARR_OILGAUGE[i]);
+        pReport->set_stime(TimestampToInt64(ARR_STIME[i]));
+        pReport->set_alarmflag(ARR_ALARMFLAG[i]);
+        pReport->set_state(ARR_STATE[i]);
+        pReport->set_latitude(ARR_LATITUDE[i]);
+        pReport->set_longtitude(ARR_LONGTITUDE[i]);
+        pReport->set_speed(ARR_SPEED[i]);
+        pReport->set_orientation(ARR_ORIENTATION[i]);
+        pReport->set_gpstime(TimestampToInt64(ARR_GPSTIME[i]));
+        pReport->set_odometer(ARR_ODOMETER[i]);
+        pReport->set_oilgauge(ARR_OILGAUGE[i]);
+    }
+}
+
+void VehicleRecords_Column::FromProtoBuf(const com::sap::nic::itrafic::VehicleReports &pvr) {
+    Clear();
+    mCount = pvr.report_size();
+
+    // TODO: implement
+    for (int i=0; i<mCount; i++) {
+
     }
 }

@@ -36,14 +36,23 @@ create column table "ITRAFFIC"."PROTO_ODBC_SINGLE"(
 */
 class VehicleRecords_Column {
 public:
-    VehicleRecords_Column();
-    virtual ~VehicleRecords_Column();
+    VehicleRecords_Column() {
+        mCount = 0;
+    };
+    VehicleRecords_Column(const VehicleRecords_Column& from) {
+        CopyFrom(from);
+    };
+    virtual ~VehicleRecords_Column() {};
 
 public:
+    void Clear();
+    void CopyFrom(const VehicleRecords_Column& from);
     void GenerateRecords(int count);
+    void ToProtoBuf(com::sap::nic::itrafic::VehicleReports &pvr);
+    void FromProtoBuf(const com::sap::nic::itrafic::VehicleReports &pvr);
 
 protected:
-    int                                 mCount;
+    int mCount;
 
     std::vector<SQLUBIGINT>             ARR_GPSDATA_ID;
     std::vector<char>                   ARR_DEVID;
@@ -56,16 +65,8 @@ protected:
     std::vector<SQLINTEGER>             ARR_SPEED;
     std::vector<SQLDOUBLE>              ARR_ORIENTATION;
     std::vector<SQL_TIMESTAMP_STRUCT>   ARR_GPSTIME;
-
     std::vector<SQLDOUBLE>              ARR_ODOMETER;
     std::vector<SQLDOUBLE>              ARR_OILGAUGE;
-
-friend class VehicleRecordUtil;
-};
-
-class VehicleRecordUtil {
-public:
-    static void ToProtoBuf(const VehicleRecords_Column &vr, com::sap::nic::itrafic::VehicleReports &pvr);
 };
 
 #ifdef __cplusplus
