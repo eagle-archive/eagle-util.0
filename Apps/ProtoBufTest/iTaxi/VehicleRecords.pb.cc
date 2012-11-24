@@ -113,10 +113,10 @@ void protobuf_AddDesc_VehicleRecords_2eproto() {
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\024VehicleRecords.proto\022\023com.sap.nic.itra"
     "fic\"\333\001\n\006Report\022\022\n\ngpsdata_id\030\001 \001(\006\022\r\n\005de"
-    "vid\030\002 \002(\t\022\r\n\005stime\030\003 \001(\006\022\021\n\talarmflag\030\004 "
+    "vid\030\002 \002(\t\022\r\n\005stime\030\003 \001(\020\022\021\n\talarmflag\030\004 "
     "\001(\007\022\r\n\005state\030\005 \001(\007\022\020\n\010latitude\030\006 \001(\001\022\022\n\n"
     "longtitude\030\007 \001(\001\022\r\n\005speed\030\010 \001(\021\022\023\n\013orien"
-    "tation\030\t \001(\001\022\017\n\007gpstime\030\n \002(\006\022\020\n\010odomete"
+    "tation\030\t \001(\001\022\017\n\007gpstime\030\n \002(\020\022\020\n\010odomete"
     "r\030\013 \001(\001\022\020\n\010oilgauge\030\014 \001(\001\"=\n\016VehicleRepo"
     "rts\022+\n\006report\030\001 \003(\0132\033.com.sap.nic.itrafi"
     "c.Report", 328);
@@ -172,14 +172,14 @@ void Report::SharedCtor() {
   _cached_size_ = 0;
   gpsdata_id_ = GOOGLE_ULONGLONG(0);
   devid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  stime_ = GOOGLE_ULONGLONG(0);
+  stime_ = GOOGLE_LONGLONG(0);
   alarmflag_ = 0u;
   state_ = 0u;
   latitude_ = 0;
   longtitude_ = 0;
   speed_ = 0;
   orientation_ = 0;
-  gpstime_ = GOOGLE_ULONGLONG(0);
+  gpstime_ = GOOGLE_LONGLONG(0);
   odometer_ = 0;
   oilgauge_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -225,7 +225,7 @@ void Report::Clear() {
         devid_->clear();
       }
     }
-    stime_ = GOOGLE_ULONGLONG(0);
+    stime_ = GOOGLE_LONGLONG(0);
     alarmflag_ = 0u;
     state_ = 0u;
     latitude_ = 0;
@@ -234,7 +234,7 @@ void Report::Clear() {
   }
   if (_has_bits_[8 / 32] & (0xffu << (8 % 32))) {
     orientation_ = 0;
-    gpstime_ = GOOGLE_ULONGLONG(0);
+    gpstime_ = GOOGLE_LONGLONG(0);
     odometer_ = 0;
     oilgauge_ = 0;
   }
@@ -280,13 +280,13 @@ bool Report::MergePartialFromCodedStream(
         break;
       }
       
-      // optional fixed64 stime = 3;
+      // optional sfixed64 stime = 3;
       case 3: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
          parse_stime:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_FIXED64>(
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_SFIXED64>(
                  input, &stime_)));
           set_has_stime();
         } else {
@@ -392,13 +392,13 @@ bool Report::MergePartialFromCodedStream(
         break;
       }
       
-      // required fixed64 gpstime = 10;
+      // required sfixed64 gpstime = 10;
       case 10: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
          parse_gpstime:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_FIXED64>(
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_SFIXED64>(
                  input, &gpstime_)));
           set_has_gpstime();
         } else {
@@ -472,9 +472,9 @@ void Report::SerializeWithCachedSizes(
       2, this->devid(), output);
   }
   
-  // optional fixed64 stime = 3;
+  // optional sfixed64 stime = 3;
   if (has_stime()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFixed64(3, this->stime(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteSFixed64(3, this->stime(), output);
   }
   
   // optional fixed32 alarmflag = 4;
@@ -507,9 +507,9 @@ void Report::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteDouble(9, this->orientation(), output);
   }
   
-  // required fixed64 gpstime = 10;
+  // required sfixed64 gpstime = 10;
   if (has_gpstime()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFixed64(10, this->gpstime(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteSFixed64(10, this->gpstime(), output);
   }
   
   // optional double odometer = 11;
@@ -545,9 +545,9 @@ void Report::SerializeWithCachedSizes(
         2, this->devid(), target);
   }
   
-  // optional fixed64 stime = 3;
+  // optional sfixed64 stime = 3;
   if (has_stime()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFixed64ToArray(3, this->stime(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteSFixed64ToArray(3, this->stime(), target);
   }
   
   // optional fixed32 alarmflag = 4;
@@ -580,9 +580,9 @@ void Report::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(9, this->orientation(), target);
   }
   
-  // required fixed64 gpstime = 10;
+  // required sfixed64 gpstime = 10;
   if (has_gpstime()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFixed64ToArray(10, this->gpstime(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteSFixed64ToArray(10, this->gpstime(), target);
   }
   
   // optional double odometer = 11;
@@ -618,7 +618,7 @@ int Report::ByteSize() const {
           this->devid());
     }
     
-    // optional fixed64 stime = 3;
+    // optional sfixed64 stime = 3;
     if (has_stime()) {
       total_size += 1 + 8;
     }
@@ -657,7 +657,7 @@ int Report::ByteSize() const {
       total_size += 1 + 8;
     }
     
-    // required fixed64 gpstime = 10;
+    // required sfixed64 gpstime = 10;
     if (has_gpstime()) {
       total_size += 1 + 8;
     }

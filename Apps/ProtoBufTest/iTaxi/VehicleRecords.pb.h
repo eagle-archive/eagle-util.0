@@ -112,12 +112,12 @@ class Report : public ::google::protobuf::Message {
   inline ::std::string* mutable_devid();
   inline ::std::string* release_devid();
   
-  // optional fixed64 stime = 3;
+  // optional sfixed64 stime = 3;
   inline bool has_stime() const;
   inline void clear_stime();
   static const int kStimeFieldNumber = 3;
-  inline ::google::protobuf::uint64 stime() const;
-  inline void set_stime(::google::protobuf::uint64 value);
+  inline ::google::protobuf::int64 stime() const;
+  inline void set_stime(::google::protobuf::int64 value);
   
   // optional fixed32 alarmflag = 4;
   inline bool has_alarmflag() const;
@@ -161,12 +161,12 @@ class Report : public ::google::protobuf::Message {
   inline double orientation() const;
   inline void set_orientation(double value);
   
-  // required fixed64 gpstime = 10;
+  // required sfixed64 gpstime = 10;
   inline bool has_gpstime() const;
   inline void clear_gpstime();
   static const int kGpstimeFieldNumber = 10;
-  inline ::google::protobuf::uint64 gpstime() const;
-  inline void set_gpstime(::google::protobuf::uint64 value);
+  inline ::google::protobuf::int64 gpstime() const;
+  inline void set_gpstime(::google::protobuf::int64 value);
   
   // optional double odometer = 11;
   inline bool has_odometer() const;
@@ -213,13 +213,13 @@ class Report : public ::google::protobuf::Message {
   
   ::google::protobuf::uint64 gpsdata_id_;
   ::std::string* devid_;
-  ::google::protobuf::uint64 stime_;
+  ::google::protobuf::int64 stime_;
   ::google::protobuf::uint32 alarmflag_;
   ::google::protobuf::uint32 state_;
   double latitude_;
   double longtitude_;
   double orientation_;
-  ::google::protobuf::uint64 gpstime_;
+  ::google::protobuf::int64 gpstime_;
   double odometer_;
   double oilgauge_;
   ::google::protobuf::int32 speed_;
@@ -406,7 +406,7 @@ inline ::std::string* Report::release_devid() {
   }
 }
 
-// optional fixed64 stime = 3;
+// optional sfixed64 stime = 3;
 inline bool Report::has_stime() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
@@ -417,13 +417,13 @@ inline void Report::clear_has_stime() {
   _has_bits_[0] &= ~0x00000004u;
 }
 inline void Report::clear_stime() {
-  stime_ = GOOGLE_ULONGLONG(0);
+  stime_ = GOOGLE_LONGLONG(0);
   clear_has_stime();
 }
-inline ::google::protobuf::uint64 Report::stime() const {
+inline ::google::protobuf::int64 Report::stime() const {
   return stime_;
 }
-inline void Report::set_stime(::google::protobuf::uint64 value) {
+inline void Report::set_stime(::google::protobuf::int64 value) {
   set_has_stime();
   stime_ = value;
 }
@@ -560,7 +560,7 @@ inline void Report::set_orientation(double value) {
   orientation_ = value;
 }
 
-// required fixed64 gpstime = 10;
+// required sfixed64 gpstime = 10;
 inline bool Report::has_gpstime() const {
   return (_has_bits_[0] & 0x00000200u) != 0;
 }
@@ -571,13 +571,13 @@ inline void Report::clear_has_gpstime() {
   _has_bits_[0] &= ~0x00000200u;
 }
 inline void Report::clear_gpstime() {
-  gpstime_ = GOOGLE_ULONGLONG(0);
+  gpstime_ = GOOGLE_LONGLONG(0);
   clear_has_gpstime();
 }
-inline ::google::protobuf::uint64 Report::gpstime() const {
+inline ::google::protobuf::int64 Report::gpstime() const {
   return gpstime_;
 }
-inline void Report::set_gpstime(::google::protobuf::uint64 value) {
+inline void Report::set_gpstime(::google::protobuf::int64 value) {
   set_has_gpstime();
   gpstime_ = value;
 }

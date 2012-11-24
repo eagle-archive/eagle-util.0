@@ -20,14 +20,14 @@ create column table "ITRAFFIC"."PROTO_ODBC_SINGLE"(
 message Report {
     optional fixed64    gpsdata_id = 1;
     required string     devid = 2;
-    optional fixed64    stime = 3; // unix time
+    optional sfixed64   stime = 3; // unix time
     optional fixed32    alarmflag = 4;
     optional fixed32    state = 5;
     optional double     latitude = 6;
     optional double     longtitude = 7;
     optional sint32     speed = 8;
     optional double     orientation = 9;
-    required fixed64    gpstime = 10; // unix time
+    required sfixed64   gpstime = 10; // unix time
     optional double     odometer = 11;
     optional double     oilgauge = 12;
 }

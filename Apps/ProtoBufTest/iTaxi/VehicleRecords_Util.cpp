@@ -41,13 +41,20 @@ void GetCurTimestamp(SQL_TIMESTAMP_STRUCT &st) {
 }
 
 static
-unsigned long long TimestampToUint64(const SQL_TIMESTAMP_STRUCT &st) {
-    unsigned long long u64 = 0;
-    return u64;
+long long TimestampToInt64(const SQL_TIMESTAMP_STRUCT &st) {
+    struct tm stm;
+    memset(&stm, 0, sizeof(struct tm));
+    stm.tm_year = st.year - 1900;
+    stm.tm_mon = st.month - 1;
+    stm.tm_mday = st.day;
+    stm.tm_hour = st.hour;
+    stm.tm_min = st.minute;
+    stm.tm
+    return _mktime64(&stm);
 }
 
 static
-void Uint64ToTimestamp(unsigned long long u64, SQL_TIMESTAMP_STRUCT &st) {
+void Int64ToTimestamp(long long t64, SQL_TIMESTAMP_STRUCT &st) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -157,14 +164,14 @@ void VehicleRecordUtil::ToProtoBuf(const VehicleRecords_Column &vr,
             }
             pReport->set_devid(devid);
         }
-        pReport->set_stime(TimestampToUint64(vr.ARR_STIME[i]));
+        pReport->set_stime(TimestampToInt64(vr.ARR_STIME[i]));
         pReport->set_alarmflag(vr.ARR_ALARMFLAG[i]);
         pReport->set_state(vr.ARR_STATE[i]);
         pReport->set_latitude(vr.ARR_LATITUDE[i]);
         pReport->set_longtitude(vr.ARR_LONGTITUDE[i]);
         pReport->set_speed(vr.ARR_SPEED[i]);
         pReport->set_orientation(vr.ARR_ORIENTATION[i]);
-        pReport->set_gpstime(TimestampToUint64(vr.ARR_GPSTIME[i]));
+        pReport->set_gpstime(TimestampToInt64(vr.ARR_GPSTIME[i]));
         pReport->set_odometer(vr.ARR_ODOMETER[i]);
         pReport->set_oilgauge(vr.ARR_OILGAUGE[i]);
     }
