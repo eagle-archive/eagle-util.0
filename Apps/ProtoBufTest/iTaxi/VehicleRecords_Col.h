@@ -1,9 +1,9 @@
-#ifndef __VEHICLERECORDS_UTIL_H_
-#define __VEHICLERECORDS_UTIL_H_
+#ifndef __VEHICLERECORDS_COL_H_
+#define __VEHICLERECORDS_COL_H_
 
 #include <vector>
 #include <string>
-#if defined(WIN32)
+#ifdef _WIN32
 #include <windows.h> // required by sqlext.h for WIN32
 #endif
 #include "sqlext.h"
@@ -34,28 +34,30 @@ create column table "ITRAFFIC"."PROTO_ODBC_SINGLE"(
 /*
     Class for vehicle records in cloumn mode
 */
-class VehicleRecords_Column {
+class VehicleRecords_Col {
 public:
-    VehicleRecords_Column() {
+    VehicleRecords_Col() {
         mCount = 0;
     };
-    VehicleRecords_Column(const VehicleRecords_Column& from) {
+    VehicleRecords_Col(const VehicleRecords_Col& from) {
         CopyFrom(from);
     };
-    virtual ~VehicleRecords_Column() {};
+    virtual ~VehicleRecords_Col() {};
 
 public:
     void Clear();
-    void CopyFrom(const VehicleRecords_Column& from);
+    void Reserve(int count);
+    void CopyFrom(const VehicleRecords_Col& from);
     void GenerateRecords(int count);
-    void ToProtoBuf(com::sap::nic::itrafic::VehicleReports &pvr);
-    void FromProtoBuf(const com::sap::nic::itrafic::VehicleReports &pvr);
+    void ToProtoBuf(::com::sap::nic::itrafic::VehicleReports &pvr);
+    void FromProtoBuf(const ::com::sap::nic::itrafic::VehicleReports &pvr);
 
 protected:
     int mCount;
 
+    // For double type, const DBL_MIN is used to represent DB "null"
     std::vector<SQLUBIGINT>             ARR_GPSDATA_ID;
-    std::vector<char>                   ARR_DEVID;
+    std::vector<char>                   ARR_DEVID; // of the size (mCount * DEVID_LEN)
     std::vector<SQLLEN>                 ARR_DEVID_LEN; // for length of ARR_DEVID
     std::vector<SQLUINTEGER>            ARR_ALARMFLAG;
     std::vector<SQLUINTEGER>            ARR_STATE;
@@ -72,4 +74,4 @@ protected:
 #ifdef __cplusplus
 }
 #endif
-#endif // __VEHICLERECORDS_UTIL_H_
+#endif // __VEHICLERECORDS_COL_H_

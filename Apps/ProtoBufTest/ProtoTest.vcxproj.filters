@@ -33,7 +33,7 @@
     <ClInclude Include="iTaxi\VehicleRecords.pb.h">
       <Filter>Source Files\iTaxi</Filter>
     </ClInclude>
-    <ClInclude Include="iTaxi\VehicleRecords_Util.h">
+    <ClInclude Include="iTaxi\VehicleRecords_Col.h">
       <Filter>Source Files\iTaxi</Filter>
     </ClInclude>
   </ItemGroup>
@@ -56,7 +56,7 @@
     <ClCompile Include="iTaxi\Test_VehicleRecords.cpp">
       <Filter>Source Files\iTaxi</Filter>
     </ClCompile>
-    <ClCompile Include="iTaxi\VehicleRecords_Util.cpp">
+    <ClCompile Include="iTaxi\VehicleRecords_Col.cpp">
       <Filter>Source Files\iTaxi</Filter>
     </ClCompile>
   </ItemGroup>

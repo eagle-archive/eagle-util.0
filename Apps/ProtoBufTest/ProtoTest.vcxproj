@@ -83,7 +83,7 @@
   <ItemGroup>
     <ClInclude Include="examples\addressbook.pb.h" />
     <ClInclude Include="iTaxi\VehicleRecords.pb.h" />
-    <ClInclude Include="iTaxi\VehicleRecords_Util.h" />
+    <ClInclude Include="iTaxi\VehicleRecords_Col.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -92,7 +92,7 @@
     <ClCompile Include="examples\Test_AddressBook.cpp" />
     <ClCompile Include="iTaxi\Test_VehicleRecords.cpp" />
     <ClCompile Include="iTaxi\VehicleRecords.pb.cc" />
-    <ClCompile Include="iTaxi\VehicleRecords_Util.cpp" />
+    <ClCompile Include="iTaxi\VehicleRecords_Col.cpp" />
     <ClCompile Include="ProtoTest.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>

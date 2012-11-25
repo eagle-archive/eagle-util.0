@@ -7,7 +7,7 @@
 #include <string.h>
 #include <time.h>
 #include "VehicleRecords.pb.h"
-#include "VehicleRecords_Util.h"
+#include "VehicleRecords_Col.h"
 
 #ifdef _WIN32
 // Windows does not have snprintf, use _snprintf instead
@@ -20,7 +20,7 @@ using namespace com::sap::nic::itrafic;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Local functions
 
-static
+static inline
 long long TimestampToInt64(const SQL_TIMESTAMP_STRUCT &st) {
     struct tm stm;
     memset(&stm, 0, sizeof(struct tm));
@@ -33,11 +33,11 @@ long long TimestampToInt64(const SQL_TIMESTAMP_STRUCT &st) {
     return _mktime64(&stm);
 }
 
-static
+static inline
 void Int64ToTimestamp(long long t64, SQL_TIMESTAMP_STRUCT &st) {
     struct tm stm;
 #ifdef _WIN32
-    _gmtime64_s(&stm, &t64);
+    _localtime64_s(&stm, &t64);
 #else
     localtime64_r(&64t, &stm);
 #endif
@@ -50,13 +50,13 @@ void Int64ToTimestamp(long long t64, SQL_TIMESTAMP_STRUCT &st) {
     st.fraction = 0;
 }
 
-static
+static inline
 void GetCurTimestamp(SQL_TIMESTAMP_STRUCT &st) {
     time_t t;
     time(&t);
     struct tm stm;
 #ifdef _WIN32
-    gmtime_s(&stm, &t);
+    localtime_s(&stm, &t);
 #else
     localtime_r(&t, &stm);
 #endif
@@ -73,7 +73,7 @@ void GetCurTimestamp(SQL_TIMESTAMP_STRUCT &st) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // class VehicleRecord
 
-void VehicleRecords_Column::Clear() {
+void VehicleRecords_Col::Clear() {
     this->mCount = 0;
     this->ARR_GPSDATA_ID.clear();
     this->ARR_DEVID.clear();
@@ -90,7 +90,24 @@ void VehicleRecords_Column::Clear() {
     this->ARR_OILGAUGE.clear();
 }
 
-void VehicleRecords_Column::CopyFrom(const VehicleRecords_Column& from) {
+void VehicleRecords_Col::Reserve(int count) {
+    this->ARR_GPSDATA_ID.reserve(count);
+    this->ARR_DEVID.reserve(count * DEVID_LEN);
+    this->ARR_DEVID_LEN.reserve(count);
+    this->ARR_ALARMFLAG.reserve(count);
+    this->ARR_STATE.reserve(count);
+    this->ARR_STIME.reserve(count);
+    this->ARR_LATITUDE.reserve(count);
+    this->ARR_LONGTITUDE.reserve(count);
+    this->ARR_SPEED.reserve(count);
+    this->ARR_ORIENTATION.reserve(count);
+    this->ARR_GPSTIME.reserve(count);
+    this->ARR_ODOMETER.reserve(count);
+    this->ARR_OILGAUGE.reserve(count);
+}
+
+void VehicleRecords_Col::CopyFrom(const VehicleRecords_Col& from) {
+    assert(this != &from);
     this->mCount = from.mCount;
 
     ARR_GPSDATA_ID  = from.ARR_GPSDATA_ID;
@@ -109,9 +126,10 @@ void VehicleRecords_Column::CopyFrom(const VehicleRecords_Column& from) {
 }
 
 // Generate random records
-void VehicleRecords_Column::GenerateRecords(int count) {
+void VehicleRecords_Col::GenerateRecords(int count) {
     Clear();
     this->mCount = count;
+    Reserve(count);
 
     for (int i=0; i<count; i++) {
         {
@@ -119,14 +137,11 @@ void VehicleRecords_Column::GenerateRecords(int count) {
             this->ARR_GPSDATA_ID.push_back(t);
         }
         {
-            char buff[DEVID_LEN];
-            memset(buff, 0, sizeof(buff));
             long t = (long)((double)rand()/RAND_MAX * 999999999);
-            snprintf(buff, sizeof(buff), "%0ld", t);
-            for (int k=0; k<DEVID_LEN; k++) {
-                this->ARR_DEVID.push_back(buff[k]);
-                this->ARR_DEVID_LEN.push_back(SQL_NTS);
-            }
+            int size = i * DEVID_LEN;
+            ARR_DEVID.resize(size + DEVID_LEN);
+            snprintf(ARR_DEVID.data() + size, DEVID_LEN, "01%09d", t);
+            ARR_DEVID_LEN.push_back(SQL_NTS);
         }
         {
             SQL_TIMESTAMP_STRUCT st;
@@ -168,13 +183,13 @@ void VehicleRecords_Column::GenerateRecords(int count) {
         }
         {
             // ODOMETER and OILGAUGE are all NULLs, what to insert?
-            this->ARR_ODOMETER.push_back(0);
-            this->ARR_OILGAUGE.push_back(0);
+            this->ARR_ODOMETER.push_back(DBL_MIN);
+            this->ARR_OILGAUGE.push_back(DBL_MIN);
         }
     }
 }
 
-void VehicleRecords_Column::ToProtoBuf(VehicleReports &pvr) {
+void VehicleRecords_Col::ToProtoBuf(VehicleReports &pvr) {
     pvr.Clear();
     for (int i=0; i<mCount; i++) {
         Report *pReport = pvr.add_report();
@@ -198,17 +213,61 @@ void VehicleRecords_Column::ToProtoBuf(VehicleReports &pvr) {
         pReport->set_speed(ARR_SPEED[i]);
         pReport->set_orientation(ARR_ORIENTATION[i]);
         pReport->set_gpstime(TimestampToInt64(ARR_GPSTIME[i]));
-        pReport->set_odometer(ARR_ODOMETER[i]);
-        pReport->set_oilgauge(ARR_OILGAUGE[i]);
+        if (ARR_ODOMETER[i] != DBL_MIN) {
+            pReport->set_odometer(ARR_ODOMETER[i]);
+        }
+        if (ARR_OILGAUGE[i] != DBL_MIN) {
+            pReport->set_oilgauge(ARR_OILGAUGE[i]);
+        }
     }
 }
 
-void VehicleRecords_Column::FromProtoBuf(const com::sap::nic::itrafic::VehicleReports &pvr) {
+void VehicleRecords_Col::FromProtoBuf(const VehicleReports &pvr) {
     Clear();
     mCount = pvr.report_size();
+    Reserve(mCount);
 
-    // TODO: implement
     for (int i=0; i<mCount; i++) {
+        const Report &report_i = pvr.report(i);
 
+        ARR_GPSDATA_ID.push_back(report_i.gpsdata_id());
+        {
+            int size = i * DEVID_LEN;
+            ARR_DEVID.resize(size + DEVID_LEN);
+            strncpy(ARR_DEVID.data() + size, report_i.devid().c_str(), DEVID_LEN);
+            ARR_DEVID_LEN.push_back(SQL_NTS);
+        }
+        {
+            SQL_TIMESTAMP_STRUCT st;
+            Int64ToTimestamp(report_i.stime(), st);
+            ARR_STIME.push_back(st);
+        }
+        ARR_ALARMFLAG.push_back(report_i.alarmflag());
+        ARR_STATE.push_back(report_i.state());
+        {
+            ARR_LATITUDE.push_back(report_i.latitude());
+            ARR_LONGTITUDE.push_back(report_i.longtitude());
+        }
+        ARR_SPEED.push_back(report_i.speed());
+        ARR_ORIENTATION.push_back(report_i.orientation());
+        {
+            SQL_TIMESTAMP_STRUCT st;
+            Int64ToTimestamp(report_i.gpstime(), st);
+            ARR_GPSTIME.push_back(st);
+        }
+        {
+            if (report_i.has_odometer()) {
+                ARR_ODOMETER.push_back(report_i.odometer());
+            } else {
+                ARR_ODOMETER.push_back(DBL_MIN); // DBL_MIN is used for "null"
+            }
+        }
+        {
+            if (report_i.has_oilgauge()) {
+                ARR_OILGAUGE.push_back(report_i.oilgauge());
+            } else {
+                ARR_OILGAUGE.push_back(DBL_MIN); // DBL_MIN is used for "null"
+            }
+        }
     }
 }
