@@ -4,8 +4,10 @@
 #endif
 
 #include <string>
+#include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <float.h>
 #include "VehicleRecords.pb.h"
 #include "VehicleRecords_Col.h"
 
@@ -16,6 +18,13 @@
 
 using namespace std;
 using namespace com::sap::nic::itrafic;
+
+#ifndef _WIN32
+// time64_t related functions for Linux
+typedef long long time64_t;
+extern "C" time64_t mktime64 (struct tm *t);
+extern "C" struct tm *localtime64_r (const time64_t *t, struct tm *p);
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Local functions
@@ -30,7 +39,11 @@ long long TimestampToInt64(const SQL_TIMESTAMP_STRUCT &st) {
     stm.tm_hour = st.hour;
     stm.tm_min = st.minute;
     stm.tm_sec = st.second;
+#ifdef _WIN32
     return _mktime64(&stm);
+#else
+    return mktime64(&stm);
+#endif
 }
 
 static inline
@@ -39,7 +52,7 @@ void Int64ToTimestamp(long long t64, SQL_TIMESTAMP_STRUCT &st) {
 #ifdef _WIN32
     _localtime64_s(&stm, &t64);
 #else
-    localtime64_r(&64t, &stm);
+    localtime64_r(&t64, &stm);
 #endif
     st.year = stm.tm_year + 1900;
     st.month = stm.tm_mon + 1;
@@ -140,7 +153,7 @@ void VehicleRecords_Col::GenerateRecords(int count) {
             long t = (long)((double)rand()/RAND_MAX * 999999999);
             int size = i * DEVID_LEN;
             ARR_DEVID.resize(size + DEVID_LEN);
-            snprintf(ARR_DEVID.data() + size, DEVID_LEN, "01%09d", t);
+            snprintf(ARR_DEVID.data() + size, DEVID_LEN, "01%09ld", t);
             ARR_DEVID_LEN.push_back(SQL_NTS);
         }
         {
