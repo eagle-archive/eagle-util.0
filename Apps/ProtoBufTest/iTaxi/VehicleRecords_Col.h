@@ -51,10 +51,10 @@ public:
     void GenerateRecords(int count);
     void ToProtoBuf(::com::sap::nic::itrafic::VehicleReports &pvr);
     void FromProtoBuf(const ::com::sap::nic::itrafic::VehicleReports &pvr);
+    int  GetCount() {return mCount;};
+    bool RemoveAt(int index);
 
-protected:
-    int mCount;
-
+public:
     // For double type, const DBL_MIN is used to represent DB "null"
     std::vector<SQLUBIGINT>             ARR_GPSDATA_ID;
     std::vector<char>                   ARR_DEVID; // of the size (mCount * DEVID_LEN)
@@ -69,6 +69,9 @@ protected:
     std::vector<SQL_TIMESTAMP_STRUCT>   ARR_GPSTIME;
     std::vector<SQLDOUBLE>              ARR_ODOMETER;
     std::vector<SQLDOUBLE>              ARR_OILGAUGE;
+
+protected:
+    int mCount;
 };
 
 #ifdef __cplusplus
