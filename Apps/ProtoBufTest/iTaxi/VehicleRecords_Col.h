@@ -5,8 +5,10 @@
 #include <string>
 #ifdef _WIN32
 #include <windows.h> // required by sqlext.h for WIN32
-#endif
 #include "sqlext.h"
+#else
+#include "/usr/sap/hdbclient/sdk/odbc/incl/sqlext.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
