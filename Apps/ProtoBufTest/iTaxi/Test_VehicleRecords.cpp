@@ -60,19 +60,32 @@ int Test_Get()
         szHead = httpRequest.QueryHTTPResponseHeader();
         szHTML = httpRequest.QueryHTTPResponse(dwHtmlLen);
     }
-
+    httpRequest.Close();
     return 0;
 }
 
 int Test_Post()
 {
+    GenericHTTPClient *pClient=new GenericHTTPClient();
+    PBYTE szResult;
+    DWORD dwRseLen = 0;
 
+    pClient->InitilizePostArguments();
+    pClient->AddPostArguments(_T("TAG_USRID"), _T("szUserID"));
+
+    if(pClient->Request(_T("http://192.168.1.27:8000/hello"), 
+        GenericHTTPClient::RequestPostMethod)){        
+            szResult = pClient->QueryHTTPResponse(dwRseLen);
+    }
+    pClient->Close();
+    delete pClient;
 
     return 0;
 }
 
 int Test_HttpPostWithVehicleRecords()
 {
-    Test_Get();
+    //Test_Get();
+    Test_Post();
     return 0;
 }

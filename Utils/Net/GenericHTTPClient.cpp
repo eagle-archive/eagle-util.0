@@ -244,7 +244,7 @@ BOOL GenericHTTPClient::RequestGet(LPCTSTR szURI){
 
 BOOL GenericHTTPClient::RequestPost(LPCTSTR szURI){
 
-    CONST TCHAR *szAcceptType=__HTTP_ACCEPT_TYPE;
+    LPCWSTR szAcceptTypes[] = {__HTTP_ACCEPT_TYPE, NULL};
     TCHAR			szPostArguments[__SIZE_BUFFER]=_T("");
     LPCTSTR szContentType=TEXT("Content-Type: application/x-www-form-urlencoded\r\n");
 
@@ -255,7 +255,7 @@ BOOL GenericHTTPClient::RequestPost(LPCTSTR szURI){
         szURI, // Object Name
         HTTP_VERSION, // Version
         _T(""), // Reference
-        &szAcceptType, // Accept Type
+        szAcceptTypes, // Accept Type
         INTERNET_FLAG_KEEP_CONNECTION | INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_FORMS_SUBMIT,
         0); // context call-back point
 
