@@ -6,6 +6,7 @@
 
 extern int Test_AddressBook();
 extern int Test_VehicleRecords();
+extern int Test_HttpPostWithVehicleRecords();
 
 int main()
 {
@@ -16,18 +17,23 @@ int main()
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
 #if 0
-    if (0 == Test_AddressBook())
+    if (0 != Test_AddressBook())
     {
         printf("Test_AddressBook: testing failed!\n");
     }
 #endif
-#if 1
-    if (0 == Test_VehicleRecords())
+#if 0
+    if (0 != Test_VehicleRecords())
     {
         printf("Test_VehicleRecords: testing failed!\n");
     }
 #endif
-
+#if 1
+    if (0 != Test_HttpPostWithVehicleRecords())
+    {
+        printf("Test_HttpPostWithVehicleRecords: testing failed!\n");
+    }
+#endif
     // Optional:  Delete all global objects allocated by libprotobuf.
     google::protobuf::ShutdownProtobufLibrary();
 

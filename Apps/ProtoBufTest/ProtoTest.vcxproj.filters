@@ -19,6 +19,12 @@
     <Filter Include="Source Files\iTaxi">
       <UniqueIdentifier>{2a7a9832-0d21-46e0-856f-27f6f61cbdf8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{46092a42-242d-416f-b47b-5cc43aab7840}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\Inet">
+      <UniqueIdentifier>{4387bb6f-2fc0-4c4e-9f15-c80cd8843dbd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -35,6 +41,9 @@
     </ClInclude>
     <ClInclude Include="iTaxi\VehicleRecords_Col.h">
       <Filter>Source Files\iTaxi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Utils\Net\GenericHTTPClient.h">
+      <Filter>Utils\Inet</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +67,9 @@
     </ClCompile>
     <ClCompile Include="iTaxi\VehicleRecords_Col.cpp">
       <Filter>Source Files\iTaxi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Utils\Net\GenericHTTPClient.cpp">
+      <Filter>Utils\Inet</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

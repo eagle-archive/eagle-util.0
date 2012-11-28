@@ -1,3 +1,4 @@
+#include "afxwin.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -41,5 +42,37 @@ int Test_VehicleRecords() {
         assert(s1 == s2);
     }
 
+    return 0;
+}
+
+#include "Utils\Net\GenericHTTPClient.h"
+
+const TCHAR SERVER[] = _T("192.168.1.27");
+const INTERNET_PORT PORT = 8000; // INTERNET_DEFAULT_HTTP_PORT
+
+int Test_Get()
+{
+    GenericHTTPClient httpRequest;
+    PBYTE szHead, szHTML;
+    DWORD dwHtmlLen = 0;
+
+    if(httpRequest.Request(_T("http://192.168.1.27:8000/hello"))){
+        szHead = httpRequest.QueryHTTPResponseHeader();
+        szHTML = httpRequest.QueryHTTPResponse(dwHtmlLen);
+    }
+
+    return 0;
+}
+
+int Test_Post()
+{
+
+
+    return 0;
+}
+
+int Test_HttpPostWithVehicleRecords()
+{
+    Test_Get();
     return 0;
 }

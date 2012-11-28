@@ -62,7 +62,6 @@
       <AdditionalIncludeDirectories>..\..\Utils;..\..\Utils\Basic;..\..\External;.\</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MinimalRebuild>true</MinimalRebuild>
     </ClCompile>
     <Link>

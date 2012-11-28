@@ -21,12 +21,16 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Static</UseOfMfc>
+    <UseOfAtl>Static</UseOfAtl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Static</UseOfMfc>
+    <UseOfAtl>Static</UseOfAtl>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -51,13 +55,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\External\protobuf-2.4.1\src;C:\Program Files\sap\hdbclient\sdk\odbc\incl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\External\protobuf-2.4.1\src;C:\Program Files\sap\hdbclient\sdk\odbc\incl;./;..\..\External\WinDDK\7600.16385.1\inc\mfc42;../../;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\External\protobuf-2.4.1\vsprojects\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\External\WinDDK\7600.16385.1\lib\MFC\i386;..\..\External\protobuf-2.4.1\vsprojects\Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libprotobuf.lib;WinInet.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -69,18 +74,20 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\External\protobuf-2.4.1\src;C:\Program Files\sap\hdbclient\sdk\odbc\incl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\External\protobuf-2.4.1\src;C:\Program Files\sap\hdbclient\sdk\odbc\incl;./;..\..\External\WinDDK\7600.16385.1\inc\mfc42;../../;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\External\protobuf-2.4.1\vsprojects\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\External\WinDDK\7600.16385.1\lib\MFC\i386;..\..\External\protobuf-2.4.1\vsprojects\Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libprotobuf.lib;WinInet.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Utils\Net\GenericHTTPClient.h" />
     <ClInclude Include="examples\addressbook.pb.h" />
     <ClInclude Include="iTaxi\VehicleRecords.pb.h" />
     <ClInclude Include="iTaxi\VehicleRecords_Col.h" />
@@ -88,6 +95,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Utils\Net\GenericHTTPClient.cpp" />
     <ClCompile Include="examples\addressbook.pb.cc" />
     <ClCompile Include="examples\Test_AddressBook.cpp" />
     <ClCompile Include="iTaxi\Test_VehicleRecords.cpp" />
