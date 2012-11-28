@@ -1,4 +1,4 @@
-package com.sap.nic.itrafic;
+package com.sap.nic.itraffic;
 
 /*
 create column table "ITRAFFIC"."PROTO_ODBC_SINGLE"(

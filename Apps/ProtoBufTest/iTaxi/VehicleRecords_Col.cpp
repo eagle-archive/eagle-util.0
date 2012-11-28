@@ -17,7 +17,7 @@
 #endif
 
 using namespace std;
-using namespace com::sap::nic::itrafic;
+using namespace com::sap::nic::itraffic;
 
 #ifndef _WIN32
 // time64_t related functions for Linux

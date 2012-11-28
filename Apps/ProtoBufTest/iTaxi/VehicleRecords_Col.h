@@ -51,8 +51,8 @@ public:
     void Reserve(int count);
     void CopyFrom(const VehicleRecords_Col& from);
     void GenerateRecords(int count);
-    void ToProtoBuf(::com::sap::nic::itrafic::VehicleReports &pvr);
-    void FromProtoBuf(const ::com::sap::nic::itrafic::VehicleReports &pvr);
+    void ToProtoBuf(::com::sap::nic::itraffic::VehicleReports &pvr);
+    void FromProtoBuf(const ::com::sap::nic::itraffic::VehicleReports &pvr);
     int  GetCount() {return mCount;};
     bool RemoveAt(int index);
 

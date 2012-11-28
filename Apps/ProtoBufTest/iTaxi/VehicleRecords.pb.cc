@@ -16,7 +16,7 @@
 namespace com {
 namespace sap {
 namespace nic {
-namespace itrafic {
+namespace itraffic {
 
 namespace {
 
@@ -111,15 +111,15 @@ void protobuf_AddDesc_VehicleRecords_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\024VehicleRecords.proto\022\023com.sap.nic.itra"
-    "fic\"\333\001\n\006Report\022\022\n\ngpsdata_id\030\001 \001(\006\022\r\n\005de"
-    "vid\030\002 \002(\t\022\r\n\005stime\030\003 \001(\020\022\021\n\talarmflag\030\004 "
-    "\001(\007\022\r\n\005state\030\005 \001(\007\022\020\n\010latitude\030\006 \001(\001\022\022\n\n"
-    "longtitude\030\007 \001(\001\022\r\n\005speed\030\010 \001(\021\022\023\n\013orien"
-    "tation\030\t \001(\001\022\017\n\007gpstime\030\n \002(\020\022\020\n\010odomete"
-    "r\030\013 \001(\001\022\020\n\010oilgauge\030\014 \001(\001\"=\n\016VehicleRepo"
-    "rts\022+\n\006report\030\001 \003(\0132\033.com.sap.nic.itrafi"
-    "c.Report", 328);
+    "\n\024VehicleRecords.proto\022\024com.sap.nic.itra"
+    "ffic\"\333\001\n\006Report\022\022\n\ngpsdata_id\030\001 \001(\006\022\r\n\005d"
+    "evid\030\002 \002(\t\022\r\n\005stime\030\003 \001(\020\022\021\n\talarmflag\030\004"
+    " \001(\007\022\r\n\005state\030\005 \001(\007\022\020\n\010latitude\030\006 \001(\001\022\022\n"
+    "\nlongtitude\030\007 \001(\001\022\r\n\005speed\030\010 \001(\021\022\023\n\013orie"
+    "ntation\030\t \001(\001\022\017\n\007gpstime\030\n \002(\020\022\020\n\010odomet"
+    "er\030\013 \001(\001\022\020\n\010oilgauge\030\014 \001(\001\">\n\016VehicleRep"
+    "orts\022,\n\006report\030\001 \003(\0132\034.com.sap.nic.itraf"
+    "fic.Report", 330);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "VehicleRecords.proto", &protobuf_RegisterTypes);
   Report::default_instance_ = new Report();
@@ -854,7 +854,7 @@ bool VehicleReports::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated .com.sap.nic.itrafic.Report report = 1;
+      // repeated .com.sap.nic.itraffic.Report report = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
@@ -887,7 +887,7 @@ bool VehicleReports::MergePartialFromCodedStream(
 
 void VehicleReports::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // repeated .com.sap.nic.itrafic.Report report = 1;
+  // repeated .com.sap.nic.itraffic.Report report = 1;
   for (int i = 0; i < this->report_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       1, this->report(i), output);
@@ -901,7 +901,7 @@ void VehicleReports::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* VehicleReports::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // repeated .com.sap.nic.itrafic.Report report = 1;
+  // repeated .com.sap.nic.itraffic.Report report = 1;
   for (int i = 0; i < this->report_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
@@ -918,7 +918,7 @@ void VehicleReports::SerializeWithCachedSizes(
 int VehicleReports::ByteSize() const {
   int total_size = 0;
   
-  // repeated .com.sap.nic.itrafic.Report report = 1;
+  // repeated .com.sap.nic.itraffic.Report report = 1;
   total_size += 1 * this->report_size();
   for (int i = 0; i < this->report_size(); i++) {
     total_size +=
@@ -995,7 +995,7 @@ void VehicleReports::Swap(VehicleReports* other) {
 
 // @@protoc_insertion_point(namespace_scope)
 
-}  // namespace itrafic
+}  // namespace itraffic
 }  // namespace nic
 }  // namespace sap
 }  // namespace com

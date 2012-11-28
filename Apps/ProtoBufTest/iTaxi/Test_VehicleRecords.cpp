@@ -6,7 +6,7 @@
 #include "VehicleRecords_Col.h"
 
 using namespace std;
-using namespace com::sap::nic::itrafic;
+using namespace com::sap::nic::itraffic;
 
 int Test_VehicleRecords() {
     int nCase = 1;

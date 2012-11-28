@@ -28,7 +28,7 @@
 namespace com {
 namespace sap {
 namespace nic {
-namespace itrafic {
+namespace itraffic {
 
 // Internal implementation detail -- do not call these.
 void  protobuf_AddDesc_VehicleRecords_2eproto();
@@ -182,7 +182,7 @@ class Report : public ::google::protobuf::Message {
   inline double oilgauge() const;
   inline void set_oilgauge(double value);
   
-  // @@protoc_insertion_point(class_scope:com.sap.nic.itrafic.Report)
+  // @@protoc_insertion_point(class_scope:com.sap.nic.itraffic.Report)
  private:
   inline void set_has_gpsdata_id();
   inline void clear_has_gpsdata_id();
@@ -290,24 +290,24 @@ class VehicleReports : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // repeated .com.sap.nic.itrafic.Report report = 1;
+  // repeated .com.sap.nic.itraffic.Report report = 1;
   inline int report_size() const;
   inline void clear_report();
   static const int kReportFieldNumber = 1;
-  inline const ::com::sap::nic::itrafic::Report& report(int index) const;
-  inline ::com::sap::nic::itrafic::Report* mutable_report(int index);
-  inline ::com::sap::nic::itrafic::Report* add_report();
-  inline const ::google::protobuf::RepeatedPtrField< ::com::sap::nic::itrafic::Report >&
+  inline const ::com::sap::nic::itraffic::Report& report(int index) const;
+  inline ::com::sap::nic::itraffic::Report* mutable_report(int index);
+  inline ::com::sap::nic::itraffic::Report* add_report();
+  inline const ::google::protobuf::RepeatedPtrField< ::com::sap::nic::itraffic::Report >&
       report() const;
-  inline ::google::protobuf::RepeatedPtrField< ::com::sap::nic::itrafic::Report >*
+  inline ::google::protobuf::RepeatedPtrField< ::com::sap::nic::itraffic::Report >*
       mutable_report();
   
-  // @@protoc_insertion_point(class_scope:com.sap.nic.itrafic.VehicleReports)
+  // @@protoc_insertion_point(class_scope:com.sap.nic.itraffic.VehicleReports)
  private:
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
-  ::google::protobuf::RepeatedPtrField< ::com::sap::nic::itrafic::Report > report_;
+  ::google::protobuf::RepeatedPtrField< ::com::sap::nic::itraffic::Report > report_;
   
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
@@ -630,27 +630,27 @@ inline void Report::set_oilgauge(double value) {
 
 // VehicleReports
 
-// repeated .com.sap.nic.itrafic.Report report = 1;
+// repeated .com.sap.nic.itraffic.Report report = 1;
 inline int VehicleReports::report_size() const {
   return report_.size();
 }
 inline void VehicleReports::clear_report() {
   report_.Clear();
 }
-inline const ::com::sap::nic::itrafic::Report& VehicleReports::report(int index) const {
+inline const ::com::sap::nic::itraffic::Report& VehicleReports::report(int index) const {
   return report_.Get(index);
 }
-inline ::com::sap::nic::itrafic::Report* VehicleReports::mutable_report(int index) {
+inline ::com::sap::nic::itraffic::Report* VehicleReports::mutable_report(int index) {
   return report_.Mutable(index);
 }
-inline ::com::sap::nic::itrafic::Report* VehicleReports::add_report() {
+inline ::com::sap::nic::itraffic::Report* VehicleReports::add_report() {
   return report_.Add();
 }
-inline const ::google::protobuf::RepeatedPtrField< ::com::sap::nic::itrafic::Report >&
+inline const ::google::protobuf::RepeatedPtrField< ::com::sap::nic::itraffic::Report >&
 VehicleReports::report() const {
   return report_;
 }
-inline ::google::protobuf::RepeatedPtrField< ::com::sap::nic::itrafic::Report >*
+inline ::google::protobuf::RepeatedPtrField< ::com::sap::nic::itraffic::Report >*
 VehicleReports::mutable_report() {
   return &report_;
 }
@@ -658,7 +658,7 @@ VehicleReports::mutable_report() {
 
 // @@protoc_insertion_point(namespace_scope)
 
-}  // namespace itrafic
+}  // namespace itraffic
 }  // namespace nic
 }  // namespace sap
 }  // namespace com
