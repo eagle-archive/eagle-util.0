@@ -8,6 +8,12 @@
 using namespace std;
 using namespace com::sap::nic::itraffic;
 
+static void GenerateProtoBuff(VehicleReports &vr, int num) {
+    VehicleRecords_Col vrc;
+    vrc.GenerateRecords(num);
+    vrc.ToProtoBuf(vr);
+}
+
 int Test_VehicleRecords() {
     int nCase = 1;
     printf("%d: verify the convertion from auto-generated records to proto buffer\n", nCase++);
@@ -47,18 +53,16 @@ int Test_VehicleRecords() {
 
 #include "Utils\Net\GenericHTTPClient.h"
 
-const TCHAR SERVER[] = _T("192.168.1.27");
-const INTERNET_PORT PORT = 8000; // INTERNET_DEFAULT_HTTP_PORT
+const char URL[] = "http://192.168.1.27:8000/hello";
 
 int Test_Get()
 {
     GenericHTTPClient httpRequest;
-    PBYTE szHead, szHTML;
-    DWORD dwHtmlLen = 0;
+    std::string szHead, szHTML;
 
-    if(httpRequest.Request(_T("http://192.168.1.27:8000/hello"))){
+    if (httpRequest.Request(URL)) {
         szHead = httpRequest.QueryHTTPResponseHeader();
-        szHTML = httpRequest.QueryHTTPResponse(dwHtmlLen);
+        szHTML = httpRequest.QueryHTTPResponse();
     }
     httpRequest.Close();
     return 0;
@@ -67,17 +71,22 @@ int Test_Get()
 int Test_Post()
 {
     GenericHTTPClient *pClient=new GenericHTTPClient();
-    PBYTE szResult;
+    string szResult;
     DWORD dwRseLen = 0;
 
-    pClient->InitilizePostArguments();
-    pClient->AddPostArguments(_T("TAG_USRID"), _T("szUserID"));
+    VehicleReports vr;
+    GenerateProtoBuff(vr, 3);
+    //printf(vr.DebugString().c_str());
+    string strVR = vr.SerializeAsString();
 
-    if(pClient->Request(_T("http://192.168.1.27:8000/hello"), 
-        GenericHTTPClient::RequestPostMethod)){        
-            szResult = pClient->QueryHTTPResponse(dwRseLen);
+    pClient->InitilizePostArguments();
+    pClient->AddPostArguments("VehicleReports", (PBYTE)strVR.c_str(), strVR.size(), TRUE);
+
+    if (pClient->Request(URL, GenericHTTPClient::RequestPostMethod)) {
+        szResult = pClient->QueryHTTPResponse();
     }
     pClient->Close();
+
     delete pClient;
 
     return 0;
