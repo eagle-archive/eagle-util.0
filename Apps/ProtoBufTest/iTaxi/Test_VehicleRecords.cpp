@@ -74,21 +74,22 @@ int Test_Post()
     string szResult;
     DWORD dwRseLen = 0;
 
-    VehicleReports vr;
-    GenerateProtoBuff(vr, 3);
+    VehicleReports items;
+    GenerateProtoBuff(items, 1000);
+    printf("Number of generated reports: %d\n", items.report_size()); // for debug only
     //printf(vr.DebugString().c_str());
-    string strVR = vr.SerializeAsString();
+    string strVR = items.SerializeAsString();
 
     pClient->InitilizePostArguments();
     pClient->AddPostArguments("VehicleReports", (PBYTE)strVR.c_str(), strVR.size(), TRUE);
 
     if (pClient->Request(URL, GenericHTTPClient::RequestPostMethod)) {
         szResult = pClient->QueryHTTPResponse();
+        printf("Response: %s\n", szResult.c_str());
     }
     pClient->Close();
 
     delete pClient;
-
     return 0;
 }
 

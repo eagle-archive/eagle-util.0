@@ -127,7 +127,7 @@ BOOL GenericHTTPClient::Request(LPCSTR szURL, int nMethod, LPCSTR szAgent){
             bReturn=FALSE;
         }else{
             if(!Response(_szHTTPResponseHeader, _szHTTPResponseHTML)){
-                bReturn=FALSE;		
+                bReturn=FALSE;
             }
         }
         Close();
