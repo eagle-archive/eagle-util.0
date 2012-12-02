@@ -32,6 +32,9 @@ message Report {
     optional double     oilgauge = 12;
 }
 
+// TODO: need a number field?
+// required fixed32     number = 1;
+
 message VehicleReports {
     repeated Report report = 1;
 }
