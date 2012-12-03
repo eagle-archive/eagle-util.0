@@ -16,7 +16,6 @@ create column table "ITRAFFIC"."PROTO_ODBC_SINGLE"(
     "OILGAUGE" DOUBLE null)
 */
 
-// NOTE: for each member, the default vaule is used as null
 message Report {
     optional fixed64    gpsdata_id = 1;
     required string     devid = 2;
@@ -32,9 +31,11 @@ message Report {
     optional double     oilgauge = 12;
 }
 
-// TODO: need a number field?
-// required fixed32     number = 1;
-
 message VehicleReports {
-    repeated Report report = 1;
+    // The report number field is used to check whether the repeated report array contain all
+    // the reports
+    required uint32     report_numer = 1;
+
+    repeated Report     report = 2;
 }
+

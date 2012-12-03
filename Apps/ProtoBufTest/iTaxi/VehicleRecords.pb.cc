@@ -63,7 +63,8 @@ void protobuf_AssignDesc_VehicleRecords_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Report));
   VehicleReports_descriptor_ = file->message_type(1);
-  static const int VehicleReports_offsets_[1] = {
+  static const int VehicleReports_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleReports, report_numer_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(VehicleReports, report_),
   };
   VehicleReports_reflection_ =
@@ -117,9 +118,9 @@ void protobuf_AddDesc_VehicleRecords_2eproto() {
     " \001(\007\022\r\n\005state\030\005 \001(\007\022\020\n\010latitude\030\006 \001(\001\022\022\n"
     "\nlongtitude\030\007 \001(\001\022\r\n\005speed\030\010 \001(\021\022\023\n\013orie"
     "ntation\030\t \001(\001\022\017\n\007gpstime\030\n \002(\020\022\020\n\010odomet"
-    "er\030\013 \001(\001\022\020\n\010oilgauge\030\014 \001(\001\">\n\016VehicleRep"
-    "orts\022,\n\006report\030\001 \003(\0132\034.com.sap.nic.itraf"
-    "fic.Report", 330);
+    "er\030\013 \001(\001\022\020\n\010oilgauge\030\014 \001(\001\"T\n\016VehicleRep"
+    "orts\022\024\n\014report_numer\030\001 \002(\r\022,\n\006report\030\002 \003"
+    "(\0132\034.com.sap.nic.itraffic.Report", 352);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "VehicleRecords.proto", &protobuf_RegisterTypes);
   Report::default_instance_ = new Report();
@@ -791,6 +792,7 @@ void Report::Swap(Report* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
+const int VehicleReports::kReportNumerFieldNumber;
 const int VehicleReports::kReportFieldNumber;
 #endif  // !_MSC_VER
 
@@ -810,6 +812,7 @@ VehicleReports::VehicleReports(const VehicleReports& from)
 
 void VehicleReports::SharedCtor() {
   _cached_size_ = 0;
+  report_numer_ = 0u;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -843,6 +846,9 @@ VehicleReports* VehicleReports::New() const {
 }
 
 void VehicleReports::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    report_numer_ = 0u;
+  }
   report_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -854,8 +860,23 @@ bool VehicleReports::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated .com.sap.nic.itraffic.Report report = 1;
+      // required uint32 report_numer = 1;
       case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &report_numer_)));
+          set_has_report_numer();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(18)) goto parse_report;
+        break;
+      }
+      
+      // repeated .com.sap.nic.itraffic.Report report = 2;
+      case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_report:
@@ -864,7 +885,7 @@ bool VehicleReports::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(10)) goto parse_report;
+        if (input->ExpectTag(18)) goto parse_report;
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -887,10 +908,15 @@ bool VehicleReports::MergePartialFromCodedStream(
 
 void VehicleReports::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // repeated .com.sap.nic.itraffic.Report report = 1;
+  // required uint32 report_numer = 1;
+  if (has_report_numer()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->report_numer(), output);
+  }
+  
+  // repeated .com.sap.nic.itraffic.Report report = 2;
   for (int i = 0; i < this->report_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      1, this->report(i), output);
+      2, this->report(i), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -901,11 +927,16 @@ void VehicleReports::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* VehicleReports::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // repeated .com.sap.nic.itraffic.Report report = 1;
+  // required uint32 report_numer = 1;
+  if (has_report_numer()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->report_numer(), target);
+  }
+  
+  // repeated .com.sap.nic.itraffic.Report report = 2;
   for (int i = 0; i < this->report_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        1, this->report(i), target);
+        2, this->report(i), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -918,7 +949,16 @@ void VehicleReports::SerializeWithCachedSizes(
 int VehicleReports::ByteSize() const {
   int total_size = 0;
   
-  // repeated .com.sap.nic.itraffic.Report report = 1;
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required uint32 report_numer = 1;
+    if (has_report_numer()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->report_numer());
+    }
+    
+  }
+  // repeated .com.sap.nic.itraffic.Report report = 2;
   total_size += 1 * this->report_size();
   for (int i = 0; i < this->report_size(); i++) {
     total_size +=
@@ -952,6 +992,11 @@ void VehicleReports::MergeFrom(const ::google::protobuf::Message& from) {
 void VehicleReports::MergeFrom(const VehicleReports& from) {
   GOOGLE_CHECK_NE(&from, this);
   report_.MergeFrom(from.report_);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_report_numer()) {
+      set_report_numer(from.report_numer());
+    }
+  }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
@@ -968,6 +1013,7 @@ void VehicleReports::CopyFrom(const VehicleReports& from) {
 }
 
 bool VehicleReports::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
   
   for (int i = 0; i < report_size(); i++) {
     if (!this->report(i).IsInitialized()) return false;
@@ -977,6 +1023,7 @@ bool VehicleReports::IsInitialized() const {
 
 void VehicleReports::Swap(VehicleReports* other) {
   if (other != this) {
+    std::swap(report_numer_, other->report_numer_);
     report_.Swap(&other->report_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);

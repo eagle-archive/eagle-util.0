@@ -290,10 +290,17 @@ class VehicleReports : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // repeated .com.sap.nic.itraffic.Report report = 1;
+  // required uint32 report_numer = 1;
+  inline bool has_report_numer() const;
+  inline void clear_report_numer();
+  static const int kReportNumerFieldNumber = 1;
+  inline ::google::protobuf::uint32 report_numer() const;
+  inline void set_report_numer(::google::protobuf::uint32 value);
+  
+  // repeated .com.sap.nic.itraffic.Report report = 2;
   inline int report_size() const;
   inline void clear_report();
-  static const int kReportFieldNumber = 1;
+  static const int kReportFieldNumber = 2;
   inline const ::com::sap::nic::itraffic::Report& report(int index) const;
   inline ::com::sap::nic::itraffic::Report* mutable_report(int index);
   inline ::com::sap::nic::itraffic::Report* add_report();
@@ -304,13 +311,16 @@ class VehicleReports : public ::google::protobuf::Message {
   
   // @@protoc_insertion_point(class_scope:com.sap.nic.itraffic.VehicleReports)
  private:
+  inline void set_has_report_numer();
+  inline void clear_has_report_numer();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   ::google::protobuf::RepeatedPtrField< ::com::sap::nic::itraffic::Report > report_;
+  ::google::protobuf::uint32 report_numer_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
   
   friend void  protobuf_AddDesc_VehicleRecords_2eproto();
   friend void protobuf_AssignDesc_VehicleRecords_2eproto();
@@ -630,7 +640,29 @@ inline void Report::set_oilgauge(double value) {
 
 // VehicleReports
 
-// repeated .com.sap.nic.itraffic.Report report = 1;
+// required uint32 report_numer = 1;
+inline bool VehicleReports::has_report_numer() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void VehicleReports::set_has_report_numer() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void VehicleReports::clear_has_report_numer() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void VehicleReports::clear_report_numer() {
+  report_numer_ = 0u;
+  clear_has_report_numer();
+}
+inline ::google::protobuf::uint32 VehicleReports::report_numer() const {
+  return report_numer_;
+}
+inline void VehicleReports::set_report_numer(::google::protobuf::uint32 value) {
+  set_has_report_numer();
+  report_numer_ = value;
+}
+
+// repeated .com.sap.nic.itraffic.Report report = 2;
 inline int VehicleReports::report_size() const {
   return report_.size();
 }

@@ -204,6 +204,8 @@ void VehicleRecords_Col::GenerateRecords(int count) {
 
 void VehicleRecords_Col::ToProtoBuf(VehicleReports &pvr) {
     pvr.Clear();
+    pvr.set_report_numer(mCount);
+
     for (int i=0; i<mCount; i++) {
         Report *pReport = pvr.add_report();
         pReport->set_gpsdata_id(ARR_GPSDATA_ID[i]);

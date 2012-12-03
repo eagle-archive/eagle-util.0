@@ -53,7 +53,7 @@ int Test_VehicleRecords() {
 
 #include "Utils\Net\GenericHTTPClient.h"
 
-const char URL[] = "http://192.168.1.27:8000/hello";
+const char URL[] = "http://192.168.1.62:8000/hello";
 
 int Test_Get()
 {
