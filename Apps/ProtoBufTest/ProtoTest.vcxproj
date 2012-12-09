@@ -55,14 +55,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\External\protobuf-2.4.1\src;C:\Program Files\sap\hdbclient\sdk\odbc\incl;./;..\..\External\WinDDK\7600.16385.1\inc\mfc42;../../;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\External\protobuf-2.4.1\src;C:\Program Files\sap\hdbclient\sdk\odbc\incl;./;..\..\External\WinDDK\7600.16385.1\inc\mfc42;../../;../../External\libcurl-7.19.3-win32-ssl-msvc\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\External\WinDDK\7600.16385.1\lib\MFC\i386;..\..\External\protobuf-2.4.1\vsprojects\Debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libprotobuf.lib;WinInet.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\External\WinDDK\7600.16385.1\lib\MFC\i386;..\..\External\protobuf-2.4.1\vsprojects\Debug;..\..\External\libcurl-7.19.3-win32-ssl-msvc\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libprotobuf.lib;WinInet.lib;libcurl_imp.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

@@ -8,6 +8,8 @@
 using namespace std;
 using namespace com::sap::nic::itraffic;
 
+const char POST_URL[] = "http://192.168.124.129:8000/hello";
+
 static void GenerateProtoBuff(VehicleReports &vr, int num) {
     VehicleRecords_Col vrc;
     vrc.GenerateRecords(num);
@@ -53,14 +55,12 @@ int Test_VehicleRecords() {
 
 #include "Utils\Net\GenericHTTPClient.h"
 
-const char URL[] = "http://192.168.211.130:8000/hello";
-
 int Test_Get()
 {
     GenericHTTPClient httpRequest;
     std::string szHead, szHTML;
 
-    if (httpRequest.Request(URL)) {
+    if (httpRequest.Request(POST_URL)) {
         szHead = httpRequest.QueryHTTPResponseHeader();
         szHTML = httpRequest.QueryHTTPResponse();
     }
@@ -83,7 +83,7 @@ int Test_Post()
     pClient->InitilizePostArguments();
     pClient->AddPostArguments("VehicleReports", (PBYTE)strVR.c_str(), strVR.size(), TRUE);
 
-    if (pClient->Request(URL, GenericHTTPClient::RequestPostMethod)) {
+    if (pClient->Request(POST_URL, GenericHTTPClient::RequestPostMethod)) {
         szResult = pClient->QueryHTTPResponse();
         printf("Response: %s\n", szResult.c_str());
     }
@@ -93,9 +93,45 @@ int Test_Post()
     return 0;
 }
 
+#include "curl/curl.h"
+// refer to http://curl.haxx.se/libcurl/c/simplepost.html
+int Test_CurlPost()
+{
+    VehicleReports items;
+    GenerateProtoBuff(items, 10);
+    printf("Number of generated reports: %d\n", items.report_size()); // for debug only
+    //printf(vr.DebugString().c_str());
+    string strVR = "VehicleReports=" + items.SerializeAsString();
+
+    CURL *curl;
+    CURLcode res;
+
+    curl = curl_easy_init();
+    if(curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, POST_URL);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, strVR.c_str());
+
+        /* if we don't provide POSTFIELDSIZE, libcurl will strlen() by
+        itself */ 
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)strVR.size());
+
+        /* Perform the request, res will get the return code */ 
+        res = curl_easy_perform(curl);
+        /* Check for errors */ 
+        if(res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n",
+            curl_easy_strerror(res));
+
+        /* always cleanup */ 
+        curl_easy_cleanup(curl);
+    }
+    return 0;
+}
+
 int Test_HttpPostWithVehicleRecords()
 {
     //Test_Get();
-    Test_Post();
+    //Test_Post();
+    Test_CurlPost();
     return 0;
 }
