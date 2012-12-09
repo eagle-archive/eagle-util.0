@@ -13,13 +13,14 @@
 // 3. each blocks a few lines, each lines contains specified numbers of call NOs, e.g. 10
 // OA system has the limiation that each time to input limited call NOs to send SMS to customers
 
-const CString EXCEL_FILE = _T("D:\\Dev\\MyProgram\\eagle-utils\\Apps\\Excel2Txt\\Data\\Œ¥”≤¿¶∞Û÷–∏ﬂ∂À6‘¬.xls");
-const CString SHEET_NAME = _T("Sheet1");
-const char    COLUMN[] = "A";
+const CString EXCEL_FILE = _T("D:\\Dev\\MyProgram\\eagle-utils\\Apps\\Excel2Txt\\Data\\Õ¯¡‰”≈ª›-œƒ√Ù.xls");
+const char    COLUMN[] = "G";
+const TCHAR DELIMETER = _T(',');
+
 const CString MANAGER_NAME = L"œƒ√Ù";
 const CString MANAGER_NUMBER = _T("13901585721");
 
-const TCHAR DELIMETER = _T(',');
+const CString SHEET_NAME = _T("Sheet1");
 const BOOL  EMAIL_ADDRESS = 0;
 const BOOL  ADD_MANAGER_NUMBER_AT_END_OF_EACH_BLOCK = 0;
 
@@ -107,7 +108,7 @@ int _tmain(int argc, _TCHAR* argv[])
         CString str1, str2;
 
         excel.Open(EXCEL_FILE);
-        excel.SelectSheet(SHEET_NAME);
+        //excel.SelectSheet(SHEET_NAME);
 
         int ROW_END = excel.GetUsedRowCount();
         CStringArray arrNum;

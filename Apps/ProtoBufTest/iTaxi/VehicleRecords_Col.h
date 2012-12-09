@@ -34,7 +34,7 @@ create column table "ITRAFFIC"."PROTO_ODBC_SINGLE"(
 #define DEVID_LEN       20
 
 /*
-    Class for vehicle records in cloumn mode
+    Class for vehicle records in column mode
 */
 class VehicleRecords_Col {
 public:
@@ -54,7 +54,6 @@ public:
     void ToProtoBuf(::com::sap::nic::itraffic::VehicleReports &pvr);
     void FromProtoBuf(const ::com::sap::nic::itraffic::VehicleReports &pvr);
     int  GetCount() {return mCount;};
-    bool RemoveAt(int index);
 
 public:
     // For double type, const DBL_MIN is used to represent DB "null"
