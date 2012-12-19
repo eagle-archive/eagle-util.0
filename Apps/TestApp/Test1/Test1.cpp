@@ -3,10 +3,11 @@
 
 #include "stdafx.h"
 
+int Test_CircularQueue();
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-
+    //Test_CircularQueue();
 	return 0;
 }
 

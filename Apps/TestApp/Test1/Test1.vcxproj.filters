@@ -41,5 +41,8 @@
     <ClCompile Include="..\..\..\Utils\Data\CircularQueue.cpp">
       <Filter>Utils\Data</Filter>
     </ClCompile>
+    <ClCompile Include="Test_CircularQueue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
