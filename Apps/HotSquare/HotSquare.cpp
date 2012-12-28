@@ -5,7 +5,6 @@
 #include "HotSquare.h"
 
 
-#define SEGMENTS_CSV_PATH   "Data\\WAY_SEGMENTS\\data"
 
 
 using namespace std;
@@ -13,11 +12,13 @@ using namespace std;
 int main()
 {
     vector<SEGMENT_T> segments;
+
     if (false == ReadFromCSV(SEGMENTS_CSV_PATH, segments))
     {
         printf("Error: cannot read CSV file: %s\n", SEGMENTS_CSV_PATH);
         return 1;
     }
+
 
 
 	return 0;
