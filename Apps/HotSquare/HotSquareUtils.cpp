@@ -25,7 +25,7 @@ bool get_line(std::ifstream &fs, std::string &line) {
     return false;
 }
 
-bool ReadFromCSV(const char *path, vector<SEGMENT_T> &segments)
+bool ReadFromCsv(const char *path, vector<SEGMENT_T> &segments)
 {
     segments.clear();
     std::ifstream in(path);
@@ -53,4 +53,20 @@ bool ReadFromCSV(const char *path, vector<SEGMENT_T> &segments)
     }
 
     return !segments.empty();
+}
+
+unsigned long long CoordinateToSquareId(const COORDINATE_T *pCoord)
+{
+    unsigned int hi = (unsigned int)(pCoord->lat * LAT_DEGREE_TO_METER / SQUARE_LAT_SPAN + 0.5);
+    unsigned int low = (unsigned int)(pCoord->lng * LNT_DEGREE_TO_METER / SQUARE_LNG_SPAN + 0.5);
+    unsigned long long id = (unsigned long long)hi << 32 | low;
+    return id;
+}
+
+void SquareIdToCoordinate(unsigned long long id, COORDINATE_T *pCoord)
+{
+    unsigned int hi = (unsigned int)(id >> 32);
+    unsigned int low = (unsigned int)id;
+    pCoord->lat = hi * (double)SQUARE_LAT_SPAN / LAT_DEGREE_TO_METER;
+    pCoord->lng = low * (double)SQUARE_LNG_SPAN / LNT_DEGREE_TO_METER;
 }

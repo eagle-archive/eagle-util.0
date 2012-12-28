@@ -82,6 +82,7 @@
     <ClCompile Include="HotSquare.cpp" />
     <ClCompile Include="HotSquareUtils.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="Test\Test_HotSquare.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -6,11 +6,15 @@
 // to save debug time, need to be comment out for real computation
 #define SEGMENTS_CSV_READ_LIMIT  1000
 
+#define LAT_DEGREE_TO_METER     65355
+#define LNT_DEGREE_TO_METER     111190
+
+
 #define SEGMENTS_CSV_PATH   "Data\\WAY_SEGMENTS\\data"
 
 // square size (in meter)
-#define SQUARE_LAT_WIDTH    7
-#define SQUARE_LNG_HEIGHT   7
+#define SQUARE_LAT_SPAN     7
+#define SQUARE_LNG_SPAN     7
 
 
 /*
@@ -39,7 +43,8 @@ typedef struct {
     double weight;
 } SEGMENT_T;
 
-bool ReadFromCSV(const char *path, std::vector<SEGMENT_T> &segments);
-//unsigned long long 
+bool ReadFromCsv(const char *path, std::vector<SEGMENT_T> &segments);
+unsigned long long CoordinateToSquareId(const COORDINATE_T *pCoord);
+void SquareIdToCoordinate(unsigned long long id, COORDINATE_T *pCoord);
 
 #endif // HOT_SQUARE_H_
