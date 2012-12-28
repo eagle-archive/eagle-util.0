@@ -3,6 +3,9 @@
 
 #include <vector>
 
+#define CSV_READ_LIMIT  1000 // to save debug time
+
+
 typedef struct {
     double lat;
     double lng;
@@ -12,9 +15,10 @@ typedef struct {
     unsigned int seg_id;
     COORDINATE_T from;
     COORDINATE_T to;
-    unsigned int way_id;
-    unsigned int length;
-    int weight;
+    unsigned long long way_id;
+    short int one_way;
+    double length;
+    double weight;
 } SEGMENT_T;
 
 bool ReadFromCSV(const char *path, std::vector<SEGMENT_T> &segments);

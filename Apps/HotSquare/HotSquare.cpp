@@ -5,7 +5,7 @@
 #include "HotSquare.h"
 
 
-#define SEGMENTS_CSV_PATH   "Data\\???"
+#define SEGMENTS_CSV_PATH   "Data\\WAY_SEGMENTS\\data"
 
 
 using namespace std;
