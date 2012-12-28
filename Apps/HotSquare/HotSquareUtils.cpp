@@ -1,9 +1,10 @@
-// HotSquare.cpp : Defines the entry point for the console application.
-//
+#ifdef _WIN32
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 
-#include "stdafx.h"
 #include <string>
 #include <fstream>
+#include <hash_set>
 #include "HotSquare.h"
 
 using namespace std;
@@ -46,27 +47,91 @@ bool ReadFromCsv(const char *path, vector<SEGMENT_T> &segments)
         }
 
 #ifdef SEGMENTS_CSV_READ_LIMIT
-        if (segments.size() >= SEGMENTS_CSV_READ_LIMIT) {
+        if (SEGMENTS_CSV_READ_LIMIT > 0
+            && segments.size() >= SEGMENTS_CSV_READ_LIMIT) {
             break;
         }
 #endif
     }
-
+    in.close();
     return !segments.empty();
 }
 
-unsigned long long CoordinateToSquareId(const COORDINATE_T *pCoord)
+SQUARE_ID_T CoordinateToSquareId(const COORDINATE_T *pCoord)
 {
     unsigned int hi = (unsigned int)(pCoord->lat * LAT_DEGREE_TO_METER / SQUARE_LAT_SPAN + 0.5);
-    unsigned int low = (unsigned int)(pCoord->lng * LNT_DEGREE_TO_METER / SQUARE_LNG_SPAN + 0.5);
-    unsigned long long id = (unsigned long long)hi << 32 | low;
+    unsigned int low = (unsigned int)(pCoord->lng * LNG_DEGREE_TO_METER / SQUARE_LNG_SPAN + 0.5);
+    unsigned long long id = ((unsigned long long)hi << 32) | low;
     return id;
 }
 
-void SquareIdToCoordinate(unsigned long long id, COORDINATE_T *pCoord)
+void SquareIdToCoordinate(SQUARE_ID_T id, COORDINATE_T *pCoord)
 {
-    unsigned int hi = (unsigned int)(id >> 32);
-    unsigned int low = (unsigned int)id;
-    pCoord->lat = hi * (double)SQUARE_LAT_SPAN / LAT_DEGREE_TO_METER;
-    pCoord->lng = low * (double)SQUARE_LNG_SPAN / LNT_DEGREE_TO_METER;
+    pCoord->lat = (unsigned int)(id >> 32) * (double)SQUARE_LAT_SPAN / LAT_DEGREE_TO_METER;
+    pCoord->lng = (unsigned int)id * (double)SQUARE_LNG_SPAN / LNG_DEGREE_TO_METER;
+    return;
+}
+
+static const double LAT_MARGIN = 20.0 / LAT_DEGREE_TO_METER;
+static const double LNG_MARGIN = 20.0 / LNG_DEGREE_TO_METER;
+static const double LAT_STEP = 2.5 / LAT_DEGREE_TO_METER;
+static const double LNG_STEP = 2.5 / LNG_DEGREE_TO_METER;
+
+bool GetSegmentNeighboringSquareIds(const SEGMENT_T *pSegment, vector<SQUARE_ID_T> &squareIds)
+{
+    double lat1 = pSegment->from.lat;
+    double lng1 = pSegment->from.lng;
+    double lat2 = pSegment->to.lat;
+    double lng2 = pSegment->to.lng;
+    if (lat1 > lat2) {
+        double t = lat1; lat1 = lat2; lat2 = t;
+    }
+    if (lng1 > lng2) {
+        double t = lng1; lng1 = lng2; lng2 = t;
+    }
+
+    lat1 -= LAT_MARGIN;
+    lat2 += LAT_MARGIN;
+    lng1 -= LNG_MARGIN;
+    lng2 += LNG_MARGIN;
+
+    COORDINATE_T coord;
+    squareIds.clear();
+    for (coord.lat = lat1; coord.lat <= lat2; coord.lat += LAT_STEP) {
+        for (coord.lng = lng1; coord.lng < lng2; coord.lng += LNG_STEP) {
+            SQUARE_ID_T id = CoordinateToSquareId(&coord);
+            bool found = false;
+            for (int i=squareIds.size()-1; i>=0; i--) {
+                if (squareIds[i] == id) {
+                    found  = true;
+                    break;
+                }
+            }
+            if (!found) {
+                squareIds.push_back(id);
+            }
+        }
+    }
+
+    return !squareIds.empty();
+}
+
+bool CalculateSquareIds(const SEGMENT_T segments[], int count, hash_set<SQUARE_ID_T> &squareIdSet)
+{
+    vector<SQUARE_ID_T> squareIds;
+
+    squareIdSet.clear();
+    for (int i=0; i<count; i++) {
+        squareIds.clear();
+        GetSegmentNeighboringSquareIds(&segments[i], squareIds);
+
+        for (int k=(int)squareIds.size()-1; k>=0; k--) {
+            SQUARE_ID_T &id = squareIds[k];
+            if (squareIdSet.find(id) == squareIdSet.end()) {
+                squareIdSet.insert(id);
+            }
+        }
+    }
+
+    return !squareIdSet.empty();
 }

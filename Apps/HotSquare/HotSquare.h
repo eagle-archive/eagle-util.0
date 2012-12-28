@@ -2,12 +2,13 @@
 #define HOT_SQUARE_H_
 
 #include <vector>
+#include <hash_set>
 
-// to save debug time, need to be comment out for real computation
-#define SEGMENTS_CSV_READ_LIMIT  1000
+// to save debug time, define it to 0 to read all segments
+#define SEGMENTS_CSV_READ_LIMIT  300
 
 #define LAT_DEGREE_TO_METER     65355
-#define LNT_DEGREE_TO_METER     111190
+#define LNG_DEGREE_TO_METER     111190
 
 
 #define SEGMENTS_CSV_PATH   "Data\\WAY_SEGMENTS\\data"
@@ -33,6 +34,8 @@ typedef struct {
     double lng;
 } COORDINATE_T;
 
+typedef unsigned long long SQUARE_ID_T;
+
 typedef struct {
     unsigned long long seg_id;
     COORDINATE_T from;
@@ -44,7 +47,9 @@ typedef struct {
 } SEGMENT_T;
 
 bool ReadFromCsv(const char *path, std::vector<SEGMENT_T> &segments);
-unsigned long long CoordinateToSquareId(const COORDINATE_T *pCoord);
-void SquareIdToCoordinate(unsigned long long id, COORDINATE_T *pCoord);
+SQUARE_ID_T CoordinateToSquareId(const COORDINATE_T *pCoord);
+void SquareIdToCoordinate(SQUARE_ID_T id, COORDINATE_T *pCoord);
+bool GetSegmentNeighboringSquareIds(const SEGMENT_T *pSegment, std::vector<SQUARE_ID_T> &squareIds);
+bool CalculateSquareIds(const SEGMENT_T segments[], int count, stdext::hash_set<SQUARE_ID_T> &squareIdSet);
 
 #endif // HOT_SQUARE_H_

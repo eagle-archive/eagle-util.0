@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include <hash_set>
 #include "HotSquare.h"
 
 
@@ -14,6 +15,7 @@ extern bool Test_Main();
 int main()
 {
     vector<SEGMENT_T> segments;
+    hash_set<SQUARE_ID_T> squareIdSet;
 
     if (false == ReadFromCsv(SEGMENTS_CSV_PATH, segments))
     {
@@ -21,7 +23,9 @@ int main()
         return 1;
     }
 
-    Test_Main();
+    CalculateSquareIds(segments.data(), segments.size(), squareIdSet);
+
+    //Test_Main();
 
 	return 0;
 }
