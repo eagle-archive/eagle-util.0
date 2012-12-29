@@ -138,22 +138,20 @@ bool CalculateSquareIds(const SEGMENT_T segments[], int count, hash_set<SQUARE_I
 }
 
 
-typedef struct MyData {
+typedef struct {
     SEGMENT_T *pSegStart;
     int nSegCount;
-    stdext::hash_set<SQUARE_ID_T> squareIdSet;
+    hash_set<SQUARE_ID_T> squareIdSet;
 } THREAD_DATA;
 
 static DWORD WINAPI MyThreadFunction( LPVOID lpParam ) 
 { 
     THREAD_DATA *pData = (THREAD_DATA *)lpParam;;
-
     CalculateSquareIds(pData->pSegStart, pData->nSegCount, pData->squareIdSet);
-
     return 0; 
 }
 
-bool CalculateSquareIds_Multi(std::vector<SEGMENT_T> segments, int nThreadCount, stdext::hash_set<SQUARE_ID_T> &squareIdSet)
+bool CalculateSquareIds_Multi(std::vector<SEGMENT_T> segments, int nThreadCount, hash_set<SQUARE_ID_T> &squareIdSet)
 {
     if (nThreadCount <= 0 || segments.size() == 0) {
         printf("CalculateSquareIds_Multi: invalid parameter passed in\n");
@@ -188,7 +186,7 @@ bool CalculateSquareIds_Multi(std::vector<SEGMENT_T> segments, int nThreadCount,
 
     // combine the result set
     squareIdSet.clear();
-    const auto squareIdSet_End = squareIdSet.end();
+    const decltype(squareIdSet.end()) squareIdSet_End = squareIdSet.end();
 
     for (int i=0; i<nThreadCount; i++) {
         stdext::hash_set<SQUARE_ID_T> &subSet = dataArray[i].squareIdSet;
