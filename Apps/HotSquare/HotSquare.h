@@ -5,10 +5,10 @@
 #include <hash_set>
 
 // to save debug time, define it to 0 to read all segments
-#define SEGMENTS_CSV_READ_LIMIT  10000
+#define SEGMENTS_CSV_READ_LIMIT  0//10000
 
-#define LAT_DEGREE_TO_METER     65355
-#define LNG_DEGREE_TO_METER     111190
+#define LAT_METERS_PER_DEGREE   65355
+#define LNG_METERS_PER_DEGREE   111190
 
 
 #define SEGMENTS_CSV_PATH   "Data\\WAY_SEGMENTS\\data"

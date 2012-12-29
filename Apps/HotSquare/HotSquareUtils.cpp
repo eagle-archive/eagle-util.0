@@ -60,23 +60,23 @@ bool ReadFromCsv(const char *path, vector<SEGMENT_T> &segments)
 
 SQUARE_ID_T CoordinateToSquareId(const COORDINATE_T *pCoord)
 {
-    unsigned int hi = (unsigned int)(pCoord->lat * LAT_DEGREE_TO_METER / SQUARE_LAT_SPAN + 0.5);
-    unsigned int low = (unsigned int)(pCoord->lng * LNG_DEGREE_TO_METER / SQUARE_LNG_SPAN + 0.5);
+    unsigned int hi = (unsigned int)(pCoord->lat * LAT_METERS_PER_DEGREE / SQUARE_LAT_SPAN + 0.5);
+    unsigned int low = (unsigned int)(pCoord->lng * LNG_METERS_PER_DEGREE / SQUARE_LNG_SPAN + 0.5);
     unsigned long long id = ((unsigned long long)hi << 32) | low;
     return id;
 }
 
 void SquareIdToCoordinate(SQUARE_ID_T id, COORDINATE_T *pCoord)
 {
-    pCoord->lat = (unsigned int)(id >> 32) * (double)SQUARE_LAT_SPAN / LAT_DEGREE_TO_METER;
-    pCoord->lng = (unsigned int)id * (double)SQUARE_LNG_SPAN / LNG_DEGREE_TO_METER;
+    pCoord->lat = (unsigned int)(id >> 32) * (double)SQUARE_LAT_SPAN / LAT_METERS_PER_DEGREE;
+    pCoord->lng = (unsigned int)id * (double)SQUARE_LNG_SPAN / LNG_METERS_PER_DEGREE;
     return;
 }
 
-static const double LAT_MARGIN = 20.0 / LAT_DEGREE_TO_METER;
-static const double LNG_MARGIN = 20.0 / LNG_DEGREE_TO_METER;
-static const double LAT_STEP = 2.0 / LAT_DEGREE_TO_METER;
-static const double LNG_STEP = 2.0 / LNG_DEGREE_TO_METER;
+static const double LAT_MARGIN = 20.0 / LAT_METERS_PER_DEGREE;
+static const double LNG_MARGIN = 20.0 / LNG_METERS_PER_DEGREE;
+static const double LAT_STEP = 2.0 / LAT_METERS_PER_DEGREE;
+static const double LNG_STEP = 2.0 / LNG_METERS_PER_DEGREE;
 
 bool GetSegmentNeighboringSquareIds(const SEGMENT_T *pSegment, vector<SQUARE_ID_T> &squareIds)
 {
@@ -211,7 +211,7 @@ std::string FormatTimeStr(unsigned int uTimeMs)
     return buff;
 }
 
+static unsigned int g_dwStart = ::GetTickCount();
 std::string ElapsedTimeStr() {
-    static unsigned int s_dwStart = ::GetTickCount();
-    return FormatTimeStr(::GetTickCount() - s_dwStart);
+    return FormatTimeStr(::GetTickCount() - g_dwStart);
 }
