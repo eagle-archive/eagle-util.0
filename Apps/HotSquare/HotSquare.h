@@ -5,7 +5,7 @@
 #include <hash_set>
 
 // to save debug time, define it to 0 to read all segments
-#define SEGMENTS_CSV_READ_LIMIT  300
+#define SEGMENTS_CSV_READ_LIMIT  10000
 
 #define LAT_DEGREE_TO_METER     65355
 #define LNG_DEGREE_TO_METER     111190
@@ -51,5 +51,9 @@ SQUARE_ID_T CoordinateToSquareId(const COORDINATE_T *pCoord);
 void SquareIdToCoordinate(SQUARE_ID_T id, COORDINATE_T *pCoord);
 bool GetSegmentNeighboringSquareIds(const SEGMENT_T *pSegment, std::vector<SQUARE_ID_T> &squareIds);
 bool CalculateSquareIds(const SEGMENT_T segments[], int count, stdext::hash_set<SQUARE_ID_T> &squareIdSet);
+bool CalculateSquareIds_Multi(std::vector<SEGMENT_T> segments, int nThreadCount, stdext::hash_set<SQUARE_ID_T> &squareIdSet);
+
+std::string FormatTimeStr(unsigned int uTimeMs);
+std::string ElapsedTimeStr();
 
 #endif // HOT_SQUARE_H_

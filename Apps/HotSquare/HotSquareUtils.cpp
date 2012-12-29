@@ -2,6 +2,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
+#include <Windows.h>
 #include <string>
 #include <fstream>
 #include <hash_set>
@@ -74,8 +75,8 @@ void SquareIdToCoordinate(SQUARE_ID_T id, COORDINATE_T *pCoord)
 
 static const double LAT_MARGIN = 20.0 / LAT_DEGREE_TO_METER;
 static const double LNG_MARGIN = 20.0 / LNG_DEGREE_TO_METER;
-static const double LAT_STEP = 2.5 / LAT_DEGREE_TO_METER;
-static const double LNG_STEP = 2.5 / LNG_DEGREE_TO_METER;
+static const double LAT_STEP = 2.0 / LAT_DEGREE_TO_METER;
+static const double LNG_STEP = 2.0 / LNG_DEGREE_TO_METER;
 
 bool GetSegmentNeighboringSquareIds(const SEGMENT_T *pSegment, vector<SQUARE_ID_T> &squareIds)
 {
@@ -103,7 +104,7 @@ bool GetSegmentNeighboringSquareIds(const SEGMENT_T *pSegment, vector<SQUARE_ID_
             bool found = false;
             for (int i=squareIds.size()-1; i>=0; i--) {
                 if (squareIds[i] == id) {
-                    found  = true;
+                    found = true;
                     break;
                 }
             }
@@ -119,6 +120,7 @@ bool GetSegmentNeighboringSquareIds(const SEGMENT_T *pSegment, vector<SQUARE_ID_
 bool CalculateSquareIds(const SEGMENT_T segments[], int count, hash_set<SQUARE_ID_T> &squareIdSet)
 {
     vector<SQUARE_ID_T> squareIds;
+    stdext::hash_set<SQUARE_ID_T>::iterator itEnd = squareIdSet.end();
 
     squareIdSet.clear();
     for (int i=0; i<count; i++) {
@@ -126,12 +128,90 @@ bool CalculateSquareIds(const SEGMENT_T segments[], int count, hash_set<SQUARE_I
         GetSegmentNeighboringSquareIds(&segments[i], squareIds);
 
         for (int k=(int)squareIds.size()-1; k>=0; k--) {
-            SQUARE_ID_T &id = squareIds[k];
-            if (squareIdSet.find(id) == squareIdSet.end()) {
-                squareIdSet.insert(id);
+            if (squareIdSet.find(squareIds[k]) == itEnd) {
+                squareIdSet.insert(squareIds[k]);
             }
         }
     }
 
     return !squareIdSet.empty();
+}
+
+
+typedef struct MyData {
+    SEGMENT_T *pSegStart;
+    int nSegCount;
+    stdext::hash_set<SQUARE_ID_T> squareIdSet;
+} THREAD_DATA;
+
+static DWORD WINAPI MyThreadFunction( LPVOID lpParam ) 
+{ 
+    THREAD_DATA *pData = (THREAD_DATA *)lpParam;;
+
+    CalculateSquareIds(pData->pSegStart, pData->nSegCount, pData->squareIdSet);
+
+    return 0; 
+}
+
+bool CalculateSquareIds_Multi(std::vector<SEGMENT_T> segments, int nThreadCount, stdext::hash_set<SQUARE_ID_T> &squareIdSet)
+{
+    if (nThreadCount <= 0 || segments.size() == 0) {
+        printf("CalculateSquareIds_Multi: invalid parameter passed in\n");
+        return false;
+    }
+
+    vector<THREAD_DATA> dataArray;
+    vector<DWORD> dwThreadIdArray;
+    vector<HANDLE> hThreadArray;
+
+    dataArray.resize(nThreadCount);
+    dwThreadIdArray.resize(nThreadCount);
+    hThreadArray.resize(nThreadCount);
+
+    const int nAverageCount = int(segments.size() / (double)nThreadCount + 0.5);
+    for (int i = 0; i < nThreadCount; i++) {
+        dataArray[i].pSegStart = segments.data() + nAverageCount * i;
+        dataArray[i].nSegCount = nAverageCount;
+        if (i == nThreadCount - 1) {
+            dataArray[i].nSegCount = segments.size() - nAverageCount * i;
+        }
+
+        hThreadArray[i] = ::CreateThread(NULL, 0, MyThreadFunction, &dataArray[i], 0, &dwThreadIdArray[i]);
+
+    }
+
+    // Wait until all threads have terminated.
+    ::WaitForMultipleObjects(nThreadCount, hThreadArray.data(), TRUE, INFINITE);
+    for(int i=0; i<nThreadCount; i++) {
+        CloseHandle(hThreadArray[i]);
+    }
+
+    // combine the result set
+    squareIdSet.clear();
+    const auto squareIdSet_End = squareIdSet.end();
+
+    for (int i=0; i<nThreadCount; i++) {
+        stdext::hash_set<SQUARE_ID_T> &subSet = dataArray[i].squareIdSet;
+        const auto subSet_End = subSet.end();
+        for (stdext::hash_set<SQUARE_ID_T>::iterator it = subSet.begin(); it != subSet_End; it++) {
+            if (squareIdSet_End == squareIdSet.find(*it)) {
+                squareIdSet.insert(*it);
+            }
+        }
+    }
+
+    return !squareIdSet.empty();
+}
+
+std::string FormatTimeStr(unsigned int uTimeMs)
+{
+    char buff[64];
+    sprintf(buff, "%02d:%02d:%03d",
+        (uTimeMs/60000) % 100, (uTimeMs/1000) % 100, uTimeMs % 1000);
+    return buff;
+}
+
+std::string ElapsedTimeStr() {
+    static unsigned int s_dwStart = ::GetTickCount();
+    return FormatTimeStr(::GetTickCount() - s_dwStart);
 }

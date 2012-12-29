@@ -2,15 +2,15 @@
 //
 
 #include "stdafx.h"
+#include <Windows.h>
 #include <hash_set>
 #include "HotSquare.h"
-
-
 
 
 using namespace std;
 
 extern bool Test_Main();
+
 
 int main()
 {
@@ -22,10 +22,14 @@ int main()
         printf("Error: cannot read Segments CSV file: %s\n", SEGMENTS_CSV_PATH);
         return 1;
     }
+    printf("%s: Found %d segments.\n",
+        ElapsedTimeStr().c_str(), segments.size());
 
-    CalculateSquareIds(segments.data(), segments.size(), squareIdSet);
+    CalculateSquareIds_Multi(segments, 4, squareIdSet);
+    printf("%s: Generated %d squares.\n",
+        ElapsedTimeStr().c_str(), squareIdSet.size());
 
     //Test_Main();
-
+    printf("%s: Done!\n", ElapsedTimeStr().c_str());
 	return 0;
 }
