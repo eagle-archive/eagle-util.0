@@ -2,6 +2,7 @@
 #define HOT_SQUARE_H_
 
 #include <vector>
+#include <map>
 #include <hash_set>
 
 // to save debug time, define it to 0 to read all segments
@@ -20,6 +21,7 @@
 #define SQUARE_LAT_SPAN     7
 #define SQUARE_LNG_SPAN     7
 
+#define TILE_SPAN   200
 
 /*
 CREATE ROW TABLE "HEB_OSM"."WAY_SEGMENTS"  (
@@ -49,14 +51,34 @@ typedef struct {
     double weight;
 } SEGMENT_T;
 
+
+typedef unsigned long long TILE_ID_T;
+
+typedef struct {
+    // low 32 bit from lng coordinate, hi 32 bit from lat coordinate
+    TILE_ID_T tile_id;
+    // hash set for all intersected segments
+    stdext::hash_set<SEGMENT_T> segments;
+    // array of segments containing segments from extra 8 neighbor 
+    std::vector<SEGMENT_T> segmentsWithNeighbor;
+} TILE_T;
+
+typedef std::map<TILE_ID_T, TILE_T *> TILE_MAP_T;
+
+
 bool ReadFromCsv(const char *path, std::vector<SEGMENT_T> &segments);
+std::string FormatTimeStr(unsigned int uTimeMs);
+std::string ElapsedTimeStr();
+
+
 SQUARE_ID_T CoordinateToSquareId(const COORDINATE_T *pCoord);
 void SquareIdToCoordinate(SQUARE_ID_T id, COORDINATE_T *pCoord);
 bool GetSegmentNeighboringSquareIds(const SEGMENT_T *pSegment, std::vector<SQUARE_ID_T> &squareIds);
 bool CalculateSquareIds(const SEGMENT_T segments[], int count, stdext::hash_set<SQUARE_ID_T> &squareIdSet);
-bool CalculateSquareIds_Multi(std::vector<SEGMENT_T> segments, int nThreadCount, stdext::hash_set<SQUARE_ID_T> &squareIdSet);
+bool CalculateSquareIds_Multi(const std::vector<SEGMENT_T> &allSegments, int nThreadCount, stdext::hash_set<SQUARE_ID_T> &squareIdSet);
 
-std::string FormatTimeStr(unsigned int uTimeMs);
-std::string ElapsedTimeStr();
+
+bool GenerateTiles(const std::vector<SEGMENT_T> &allSegments, TILE_MAP_T &mapTiles);
+void ClearTileMap(TILE_MAP_T &tileMap);
 
 #endif // HOT_SQUARE_H_

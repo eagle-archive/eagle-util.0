@@ -62,8 +62,7 @@ SQUARE_ID_T CoordinateToSquareId(const COORDINATE_T *pCoord)
 {
     unsigned int hi = (unsigned int)(pCoord->lat * LAT_METERS_PER_DEGREE / SQUARE_LAT_SPAN + 0.5);
     unsigned int low = (unsigned int)(pCoord->lng * LNG_METERS_PER_DEGREE / SQUARE_LNG_SPAN + 0.5);
-    unsigned long long id = ((unsigned long long)hi << 32) | low;
-    return id;
+    return ((unsigned long long)hi << 32) | low;
 }
 
 void SquareIdToCoordinate(SQUARE_ID_T id, COORDINATE_T *pCoord)
@@ -151,7 +150,8 @@ static DWORD WINAPI MyThreadFunction( LPVOID lpParam )
     return 0; 
 }
 
-bool CalculateSquareIds_Multi(std::vector<SEGMENT_T> segments, int nThreadCount, hash_set<SQUARE_ID_T> &squareIdSet)
+bool CalculateSquareIds_Multi(const std::vector<SEGMENT_T> &segments,
+    int nThreadCount, hash_set<SQUARE_ID_T> &squareIdSet)
 {
     if (nThreadCount <= 0 || segments.size() == 0) {
         printf("CalculateSquareIds_Multi: invalid parameter passed in\n");
@@ -168,7 +168,7 @@ bool CalculateSquareIds_Multi(std::vector<SEGMENT_T> segments, int nThreadCount,
 
     const int nAverageCount = int(segments.size() / (double)nThreadCount + 0.5);
     for (int i = 0; i < nThreadCount; i++) {
-        dataArray[i].pSegStart = segments.data() + nAverageCount * i;
+        dataArray[i].pSegStart = (SEGMENT_T *)segments.data() + nAverageCount * i;
         dataArray[i].nSegCount = nAverageCount;
         if (i == nThreadCount - 1) {
             dataArray[i].nSegCount = segments.size() - nAverageCount * i;
@@ -212,4 +212,57 @@ std::string FormatTimeStr(unsigned int uTimeMs)
 static unsigned int g_dwStart = ::GetTickCount();
 std::string ElapsedTimeStr() {
     return FormatTimeStr(::GetTickCount() - g_dwStart);
+}
+
+static inline TILE_ID_T CoordToTileId(const COORDINATE_T &coord) {
+    unsigned int hi = int(coord.lat * ((double)LAT_METERS_PER_DEGREE / TILE_SPAN) + 0.5);
+    unsigned int low = int(coord.lng * ((double)LNG_METERS_PER_DEGREE / TILE_SPAN) + 0.5);
+    return ((unsigned long long)hi << 32) | low;
+}
+
+static 
+
+bool GenerateTiles(const std::vector<SEGMENT_T> &allSegments, TILE_MAP_T &tileMap)
+{
+    ClearTileMap(tileMap);
+
+    const auto tileMap_End = tileMap.end();
+    const int nSegCount = allSegments.size();
+
+    for (int i = 0; i < nSegCount; i++) {
+        const SEGMENT_T &seg = allSegments[i];
+        TILE_ID_T tileId1 = CoordToTileId(seg.from);
+        TILE_ID_T tileId2 = CoordToTileId(seg.to);
+
+        TILE_MAP_T::iterator it1 = tileMap.find(tileId1);
+        TILE_T *pTile;
+        if (it1 == tileMap_End) {
+            pTile = new TILE_T;
+            pTile->tile_id = tileId1;
+            tileMap.insert(TILE_MAP_T::value_type(tileId1, pTile));
+        } else {
+            pTile = it1->second;
+        }
+        //pTile->segments.insert(seg);
+/*
+        if (tileId2 == tileId1) {
+            TILE_T *pTile = new TILE_T;
+            pTile->tile_id = tileId2;
+            tileMap.insert(TILE_MAP_T::value_type(tileId2, pTile));
+        }
+*/
+    }
+
+    return !tileMap.empty();
+}
+
+void ClearTileMap(TILE_MAP_T &tileMap)
+{
+    for (TILE_MAP_T::iterator it = tileMap.begin(); it != tileMap.end(); it++) {
+        if (it->second != NULL) {
+            delete it->second;
+            it->second = NULL;
+        }
+    }
+    tileMap.clear();
 }
