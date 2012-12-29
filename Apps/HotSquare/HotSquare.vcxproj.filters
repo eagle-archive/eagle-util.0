@@ -41,5 +41,8 @@
     <ClCompile Include="Test\Test_HotSquare.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="SegManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

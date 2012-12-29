@@ -81,6 +81,7 @@
   <ItemGroup>
     <ClCompile Include="HotSquare.cpp" />
     <ClCompile Include="HotSquareUtils.cpp" />
+    <ClCompile Include="SegManager.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Test\Test_HotSquare.cpp" />
   </ItemGroup>

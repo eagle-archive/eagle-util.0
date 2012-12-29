@@ -51,6 +51,21 @@ typedef struct {
     double weight;
 } SEGMENT_T;
 
+class SegManager {
+public:
+    SegManager();
+    ~SegManager();
+
+    SEGMENT_T *GetSegArray();
+    int GetSegArrayCount() const;
+    bool LoadFromCsvFile(const char *path);
+    const SEGMENT_T *GetSegByID(unsigned long long segId);
+
+private:
+    typedef std::map<unsigned long long, int> SEG_ID_MAP;
+    SEG_ID_MAP mSegIdMap;
+    std::vector<SEGMENT_T> mAllSegs;
+};
 
 typedef unsigned long long TILE_ID_T;
 
@@ -66,7 +81,7 @@ typedef struct {
 typedef std::map<TILE_ID_T, TILE_T *> TILE_MAP_T;
 
 
-bool ReadFromCsv(const char *path, std::vector<SEGMENT_T> &segments);
+
 std::string FormatTimeStr(unsigned int uTimeMs);
 std::string ElapsedTimeStr();
 
@@ -75,7 +90,7 @@ SQUARE_ID_T CoordinateToSquareId(const COORDINATE_T *pCoord);
 void SquareIdToCoordinate(SQUARE_ID_T id, COORDINATE_T *pCoord);
 bool GetSegmentNeighboringSquareIds(const SEGMENT_T *pSegment, std::vector<SQUARE_ID_T> &squareIds);
 bool CalculateSquareIds(const SEGMENT_T segments[], int count, stdext::hash_set<SQUARE_ID_T> &squareIdSet);
-bool CalculateSquareIds_Multi(const std::vector<SEGMENT_T> &allSegments, int nThreadCount, stdext::hash_set<SQUARE_ID_T> &squareIdSet);
+bool CalculateSquareIds_Multi(const SEGMENT_T segments[], int count, int nThreadCount, stdext::hash_set<SQUARE_ID_T> &squareIdSet);
 
 
 bool GenerateTiles(const std::vector<SEGMENT_T> &allSegments, TILE_MAP_T &mapTiles);

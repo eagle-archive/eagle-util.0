@@ -11,52 +11,6 @@
 using namespace std;
 
 
-static
-bool get_line(std::ifstream &fs, std::string &line) {
-    line.clear();
-    do{
-        if(getline(fs, line)) {
-            if(fs.good() && line.empty()){
-                continue;
-            }
-            return true;
-        } else {
-            return false;
-        }
-    } while(true);
-    return false;
-}
-
-bool ReadFromCsv(const char *path, vector<SEGMENT_T> &segments)
-{
-    segments.clear();
-    std::ifstream in(path);
-    std::string line;
-
-    while (get_line(in, line)) {
-        SEGMENT_T seg;
-        int one_way;
-
-        int r = sscanf(line.c_str(), "%lld,%lf,%lf,%lf,%lf,%lld,%d,%lf,%lf",
-            &seg.seg_id, &seg.from.lat, &seg.from.lng, &seg.to.lat, &seg.to.lng,
-            &seg.way_id, &one_way, &seg.length, &seg.weight);
-        if (r == 9) {
-            seg.one_way = one_way;
-            segments.push_back(seg);
-        } else {
-            printf("incorrect line in CSV: %s\n", line.c_str());
-        }
-
-#ifdef SEGMENTS_CSV_READ_LIMIT
-        if (SEGMENTS_CSV_READ_LIMIT > 0
-            && segments.size() >= SEGMENTS_CSV_READ_LIMIT) {
-            break;
-        }
-#endif
-    }
-    in.close();
-    return !segments.empty();
-}
 
 SQUARE_ID_T CoordinateToSquareId(const COORDINATE_T *pCoord)
 {
@@ -150,10 +104,10 @@ static DWORD WINAPI MyThreadFunction( LPVOID lpParam )
     return 0; 
 }
 
-bool CalculateSquareIds_Multi(const std::vector<SEGMENT_T> &segments,
+bool CalculateSquareIds_Multi(const SEGMENT_T segments[], int nSegs,
     int nThreadCount, hash_set<SQUARE_ID_T> &squareIdSet)
 {
-    if (nThreadCount <= 0 || segments.size() == 0) {
+    if (segments == NULL || nThreadCount <= 0 || nSegs == 0) {
         printf("CalculateSquareIds_Multi: invalid parameter passed in\n");
         return false;
     }
@@ -166,12 +120,12 @@ bool CalculateSquareIds_Multi(const std::vector<SEGMENT_T> &segments,
     dwThreadIdArray.resize(nThreadCount);
     hThreadArray.resize(nThreadCount);
 
-    const int nAverageCount = int(segments.size() / (double)nThreadCount + 0.5);
+    const int nAverageCount = int(nSegs / (double)nThreadCount + 0.5);
     for (int i = 0; i < nThreadCount; i++) {
-        dataArray[i].pSegStart = (SEGMENT_T *)segments.data() + nAverageCount * i;
+        dataArray[i].pSegStart = (SEGMENT_T *)segments + nAverageCount * i;
         dataArray[i].nSegCount = nAverageCount;
         if (i == nThreadCount - 1) {
-            dataArray[i].nSegCount = segments.size() - nAverageCount * i;
+            dataArray[i].nSegCount = nSegs - nAverageCount * i;
         }
 
         hThreadArray[i] = ::CreateThread(NULL, 0, MyThreadFunction, &dataArray[i], 0, &dwThreadIdArray[i]);
