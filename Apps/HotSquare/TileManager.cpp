@@ -53,7 +53,7 @@ static inline void CheckUpdateTile(TILE_MAP_T &tileMap, const TILE_ID_T &tileId,
 
 // return number of neighboring tiles
 // NOTE: count of neiTiles[] must be 8
-static inline int GetNeighborTiles(TILE_MAP_T &tileMap, TILE_T *pThisTile, TILE_PTR_T neiTiles[]) {
+static inline int GetNeighborTiles(TILE_MAP_T &tileMap, TILE_T *pThisTile, P_TILE_T neiTiles[]) {
     unsigned int low = (unsigned int)pThisTile->tile_id;
     unsigned int hi = (unsigned int)(pThisTile->tile_id >> 32);
 
@@ -103,7 +103,7 @@ static inline void UpdateTileForNeighborSegs(TILE_MAP_T &tileMap, TILE_T *pTile)
     }
 
     // copy the neighboring segments into pTile->segsWithNeighbors
-    TILE_PTR_T neiTiles[8];
+    P_TILE_T neiTiles[8];
     int count = GetNeighborTiles(tileMap, pTile, neiTiles);
     for (int i = 0; i < count; i++) {
         AddToSegsNoDuplicate(pTile->segsWithNeighbors, neiTiles[i]->segIdsSet);
@@ -136,4 +136,10 @@ bool TileManager::GenerateTiles(SegManager &mSegMgr)
     }
 
     return !mTileMap.empty();
+}
+
+TILE_T *TileManager::GetTileByCoord(const COORDINATE_T &coord)
+{
+    TILE_ID_T tid = CoordToTileId(coord);
+    return GetTileById(tid);
 }

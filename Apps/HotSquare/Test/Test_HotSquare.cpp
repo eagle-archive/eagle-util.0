@@ -3,6 +3,8 @@
 
 using namespace std;
 
+extern SegManager gSegManager;
+extern TileManager gTileManager;
 
 bool Test_CoordinateMapping()
 {
@@ -14,10 +16,23 @@ bool Test_CoordinateMapping()
     return true;
 }
 
+bool Test_CoordinateToTile()
+{
+    COORDINATE_T coord;
+    coord.lat = 45.720608;
+    coord.lng = 126.602420;
+    TILE_T *pTile = gTileManager.GetTileByCoord(coord);
+
+    return pTile != NULL;
+}
+
 bool Test_Main()
 {
     if (false == Test_CoordinateMapping()) {
         printf("Test_CoordinateMapping failed!");
+    }
+    if (false == Test_CoordinateToTile()) {
+        printf("Test_CoordinateToTile failed!");
     }
 
     return true;

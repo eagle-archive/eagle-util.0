@@ -77,7 +77,7 @@ typedef struct {
     stdext::hash_set<SEG_ID_T> segIdsSet;
     // array of segments containing segments from extra 8 neighbor 
     std::vector<SEG_ID_T> segsWithNeighbors;
-} TILE_T, *TILE_PTR_T;
+} TILE_T, *P_TILE_T;
 
 
 typedef std::map<TILE_ID_T, TILE_T *> TILE_MAP_T;
@@ -96,9 +96,7 @@ public:
     TILE_T *GetTileById(TILE_ID_T tileId) {
         return mTileMap[tileId];
     };
-    TILE_T *GetTileById(const TILE_ID_T &tileId) {
-        return mTileMap[tileId];
-    };
+    TILE_T *GetTileByCoord(const COORDINATE_T &coord);
     TILE_MAP_T &GetTileMap() {
         return mTileMap;
     };
