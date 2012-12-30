@@ -84,6 +84,7 @@
     <ClCompile Include="SegManager.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Test\Test_HotSquare.cpp" />
+    <ClCompile Include="TileManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

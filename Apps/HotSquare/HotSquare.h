@@ -6,7 +6,7 @@
 #include <hash_set>
 
 // to save debug time, define it to 0 to read all segments
-#define SEGMENTS_CSV_READ_LIMIT  10000
+#define SEGMENTS_CSV_READ_LIMIT  0//10000
 
 // Below two defines are specific to Harbin
 // Refer to http://www.hhlink.com/%E7%BB%8F%E7%BA%AC%E5%BA%A6
@@ -21,7 +21,7 @@
 #define SQUARE_LAT_SPAN     7
 #define SQUARE_LNG_SPAN     7
 
-#define TILE_SPAN   200
+#define TILE_SPAN   400
 
 /*
 CREATE ROW TABLE "HEB_OSM"."WAY_SEGMENTS"  (
@@ -40,9 +40,10 @@ typedef struct {
 } COORDINATE_T;
 
 typedef unsigned long long SQUARE_ID_T;
+typedef unsigned long long SEG_ID_T;
 
 typedef struct {
-    unsigned long long seg_id;
+    SEG_ID_T seg_id;
     COORDINATE_T from;
     COORDINATE_T to;
     unsigned long long way_id;
@@ -59,7 +60,7 @@ public:
     SEGMENT_T *GetSegArray();
     int GetSegArrayCount() const;
     bool LoadFromCsvFile(const char *path);
-    const SEGMENT_T *GetSegByID(unsigned long long segId);
+    const SEGMENT_T *GetSegByID(SEG_ID_T segId);
 
 private:
     typedef std::map<unsigned long long, int> SEG_ID_MAP;
@@ -73,18 +74,45 @@ typedef struct {
     // low 32 bit from lng coordinate, hi 32 bit from lat coordinate
     TILE_ID_T tile_id;
     // hash set for all intersected segments
-    stdext::hash_set<SEGMENT_T> segments;
+    stdext::hash_set<SEG_ID_T> segIdsSet;
     // array of segments containing segments from extra 8 neighbor 
-    std::vector<SEGMENT_T> segmentsWithNeighbor;
-} TILE_T;
+    std::vector<SEG_ID_T> segsWithNeighbors;
+} TILE_T, *TILE_PTR_T;
+
 
 typedef std::map<TILE_ID_T, TILE_T *> TILE_MAP_T;
 
+class TileManager {
+public:
+    TileManager() {
+        mpSegMgr = NULL;
+    };
+    ~TileManager() {
+        ClearTileMap();
+    };
+    int GetTileCount() const {
+        return mTileMap.size();
+    };
+    TILE_T *GetTileById(TILE_ID_T tileId) {
+        return mTileMap[tileId];
+    };
+    TILE_T *GetTileById(const TILE_ID_T &tileId) {
+        return mTileMap[tileId];
+    };
+    TILE_MAP_T &GetTileMap() {
+        return mTileMap;
+    };
+    bool GenerateTiles(SegManager &segMgr);
+
+private:
+    void ClearTileMap();
+    SegManager *mpSegMgr;
+    TILE_MAP_T mTileMap;
+};
 
 
 std::string FormatTimeStr(unsigned int uTimeMs);
 std::string ElapsedTimeStr();
-
 
 SQUARE_ID_T CoordinateToSquareId(const COORDINATE_T *pCoord);
 void SquareIdToCoordinate(SQUARE_ID_T id, COORDINATE_T *pCoord);
@@ -92,8 +120,5 @@ bool GetSegmentNeighboringSquareIds(const SEGMENT_T *pSegment, std::vector<SQUAR
 bool CalculateSquareIds(const SEGMENT_T segments[], int count, stdext::hash_set<SQUARE_ID_T> &squareIdSet);
 bool CalculateSquareIds_Multi(const SEGMENT_T segments[], int count, int nThreadCount, stdext::hash_set<SQUARE_ID_T> &squareIdSet);
 
-
-bool GenerateTiles(const std::vector<SEGMENT_T> &allSegments, TILE_MAP_T &mapTiles);
-void ClearTileMap(TILE_MAP_T &tileMap);
 
 #endif // HOT_SQUARE_H_

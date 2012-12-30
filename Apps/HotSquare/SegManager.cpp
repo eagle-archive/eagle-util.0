@@ -45,6 +45,8 @@ bool get_line(std::ifstream &fs, std::string &line) {
 bool SegManager::LoadFromCsvFile(const char *path)
 {
     mAllSegs.clear();
+    mAllSegs.reserve(30000);
+
     std::ifstream in(path);
     std::string line;
 
@@ -81,7 +83,7 @@ bool SegManager::LoadFromCsvFile(const char *path)
     return !mAllSegs.empty();
 }
 
-const SEGMENT_T *SegManager::GetSegByID(unsigned long long segId)
+const SEGMENT_T *SegManager::GetSegByID(SEG_ID_T segId)
 {
     SEG_ID_MAP::iterator it = mSegIdMap.find(segId);
     return it == mSegIdMap.end() ? NULL : &mAllSegs[it->second];
