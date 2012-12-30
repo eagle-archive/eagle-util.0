@@ -79,7 +79,9 @@ bool SegManager::LoadFromCsvFile(const char *path)
         }
 #endif
     }
+
     in.close();
+    mAllSegs.shrink_to_fit();
     return !mAllSegs.empty();
 }
 

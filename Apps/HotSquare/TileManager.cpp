@@ -8,6 +8,17 @@
 
 using namespace std;
 
+#ifndef COUNT_OF
+#define COUNT_OF(a) (sizeof(a)/sizeof(*a))
+#endif
+
+#define MAKE_TILE_ID(low, hi) ((TILE_ID_T)(low) | ((TILE_ID_T)(hi) << 32))
+#define NEIGHBOR_ID_ARRAY(arr_name, low, hi) \
+    TILE_ID_T arr_name[] = { \
+        MAKE_TILE_ID(low-1, hi-1), MAKE_TILE_ID(low, hi-1), MAKE_TILE_ID(low+1, hi-1), \
+        MAKE_TILE_ID(low-1, hi),                            MAKE_TILE_ID(low+1, hi), \
+        MAKE_TILE_ID(low-1, hi+1), MAKE_TILE_ID(low, hi+1), MAKE_TILE_ID(low+1, hi+1)}
+
 
 void TileManager::ClearTileMap()
 {
@@ -26,54 +37,45 @@ static inline TILE_ID_T CoordToTileId(const COORDINATE_T &coord) {
     return ((unsigned long long)hi << 32) | low;
 }
 
-/*
- * If the tile ID is new, create a new tile for it and insert it to the tile map.
- * If the file ID is in tile map, update the related segment ID
-*/
-static inline void CheckUpdateTile(TILE_MAP_T &tileMap, const TILE_ID_T &tileId,
-    const SEG_ID_T &segId) {
-
-    TILE_MAP_T::iterator it = tileMap.find(tileId);
-    TILE_T *pTile;
-
-    if (it == tileMap.end()) {
-        pTile = new TILE_T;
-        pTile->tile_id = tileId;
-        pTile->segIdsSet.insert(segId);
-        tileMap.insert(TILE_MAP_T::value_type(tileId, pTile));
-    } else {
-        pTile = it->second;
-        if (pTile->segIdsSet.find(segId) == pTile->segIdsSet.end()) {
-            pTile->segIdsSet.insert(segId);
-        }
-    }
-}
-
-
-
 // return number of neighboring tiles
 // NOTE: count of neiTiles[] must be 8
 static inline int GetNeighborTiles(TILE_MAP_T &tileMap, TILE_T *pThisTile, P_TILE_T neiTiles[]) {
     unsigned int low = (unsigned int)pThisTile->tile_id;
     unsigned int hi = (unsigned int)(pThisTile->tile_id >> 32);
 
-#define MAKE_TILE_ID(low, hi) ((TILE_ID_T)(low) | ((TILE_ID_T)(hi) << 32))
-
-    TILE_ID_T idNeighbors[] = {
-        MAKE_TILE_ID(low-1, hi-1), MAKE_TILE_ID(low, hi-1), MAKE_TILE_ID(low+1, hi-1),
-        MAKE_TILE_ID(low-1, hi),                            MAKE_TILE_ID(low+1, hi),
-        MAKE_TILE_ID(low-1, hi+1), MAKE_TILE_ID(low, hi+1), MAKE_TILE_ID(low+1, hi+1)};
-
+    NEIGHBOR_ID_ARRAY(idNeighbors, low, hi);
     int count = 0;
-    for (int i = 0; i < sizeof(idNeighbors)/idNeighbors[0]; i++) {
-        TILE_T *pTile = tileMap[idNeighbors[i]];
-        if (pTile) {
-            neiTiles[count] = pTile;
+    for (int i = 0; i < COUNT_OF(idNeighbors); i++) {
+        auto it = tileMap.find(idNeighbors[i]);
+        if (it != tileMap.end()) {
+            neiTiles[count] = it->second;
             count++;
         }
     }
 
-    return 0;
+    return count;
+}
+
+/*
+ * If the tile ID is new, create a new tile for it and insert it to the tile map.
+ * If the tile ID is already in tile map, update the related segment ID
+*/
+static inline void CheckUpdateTile(TILE_MAP_T &tileMap, const TILE_ID_T &tileId,
+    const SEG_ID_T &segId) {
+
+    TILE_MAP_T::iterator it = tileMap.find(tileId);
+    if (it == tileMap.end()) {
+        TILE_T *pTile = new TILE_T();
+        pTile->tile_id = tileId;
+        pTile->segIdsSet.insert(segId);
+        tileMap.insert(TILE_MAP_T::value_type(tileId, pTile));
+    } else {
+        // The tile for the tile ID already in the map, segment ID => segment ID set
+        TILE_T *pTile = it->second;
+        if (pTile->segIdsSet.find(segId) == pTile->segIdsSet.end()) {
+            pTile->segIdsSet.insert(segId);
+        }
+    }
 }
 
 static inline void AddToSegsNoDuplicate(std::vector<SEG_ID_T> &segs, hash_set<SEG_ID_T> &segIdsSet) {
@@ -92,22 +94,45 @@ static inline void AddToSegsNoDuplicate(std::vector<SEG_ID_T> &segs, hash_set<SE
     }
 }
 
+// Make sure this tile has 8 neighboring tiles, even though some of them are empty.
+// This is because in this way, if a point falls on one of the neighboring tiles (e.g., E2),
+// it can still find "This" tile to get the segment.
+//  E1   E2   E3
+//  E4   This E5
+//  E6   E7   E8
+static inline void CheckAddEmptyNeighborTiles(TILE_MAP_T &tileMap, TILE_ID_T tileId) {
+    unsigned int low = (unsigned int)tileId;
+    unsigned int hi = (unsigned int)(tileId >> 32);
+    NEIGHBOR_ID_ARRAY(nbTileIdArray, low, hi);
+    for (int i = 0; i < COUNT_OF(nbTileIdArray); i++) {
+        auto it = tileMap.find(nbTileIdArray[i]);
+        if (it == tileMap.end()) {
+            // Simply inser an empty tile for the neighbor
+            TILE_T *pTile = new TILE_T();
+            pTile->tile_id = nbTileIdArray[i];
+            tileMap.insert(TILE_MAP_T::value_type(nbTileIdArray[i], pTile));
+        }
+    }
+}
+
+// This function only update pTile->segsWithNeighbors[]
 static inline void UpdateTileForNeighborSegs(TILE_MAP_T &tileMap, TILE_T *pTile) {
     pTile->segsWithNeighbors.clear();
     pTile->segsWithNeighbors.reserve(pTile->segIdsSet.size() * 3);
 
     // copy the segments into pTile->segsWithNeighbors
-    for (hash_set<SEG_ID_T>::iterator it = pTile->segIdsSet.begin();
-        it != pTile->segIdsSet.end(); it++) {
-            pTile->segsWithNeighbors.push_back(*it);
+    for (auto it = pTile->segIdsSet.begin(); it != pTile->segIdsSet.end(); it++) {
+        pTile->segsWithNeighbors.push_back(*it);
     }
 
     // copy the neighboring segments into pTile->segsWithNeighbors
-    P_TILE_T neiTiles[8];
-    int count = GetNeighborTiles(tileMap, pTile, neiTiles);
+    P_TILE_T nbTiles[8];
+    int count = GetNeighborTiles(tileMap, pTile, nbTiles);
     for (int i = 0; i < count; i++) {
-        AddToSegsNoDuplicate(pTile->segsWithNeighbors, neiTiles[i]->segIdsSet);
+        AddToSegsNoDuplicate(pTile->segsWithNeighbors, nbTiles[i]->segIdsSet);
     }
+
+    pTile->segsWithNeighbors.shrink_to_fit();
 }
 
 bool TileManager::GenerateTiles(SegManager &mSegMgr)
@@ -128,6 +153,17 @@ bool TileManager::GenerateTiles(SegManager &mSegMgr)
         } else {
             CheckUpdateTile(mTileMap, tileId1, seg.seg_id);
             CheckUpdateTile(mTileMap, tileId2, seg.seg_id);
+        }
+    }
+
+    {
+        vector<TILE_ID_T> arrTileIds;
+        arrTileIds.reserve(mTileMap.size());
+        for (auto it = mTileMap.begin(); it != mTileMap.end(); it++) {
+            arrTileIds.push_back(it->first);
+        }
+        for (int i = (int)arrTileIds.size() - 1; i >= 0; i--) {
+            CheckAddEmptyNeighborTiles(mTileMap, arrTileIds[i]);
         }
     }
 

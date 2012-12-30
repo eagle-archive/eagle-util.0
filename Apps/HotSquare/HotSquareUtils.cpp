@@ -11,6 +11,11 @@
 using namespace std;
 
 
+static const double LAT_MARGIN = 60.0 / LAT_METERS_PER_DEGREE;
+static const double LNG_MARGIN = 60.0 / LNG_METERS_PER_DEGREE;
+static const double LAT_STEP = 2.0 / LAT_METERS_PER_DEGREE;
+static const double LNG_STEP = 2.0 / LNG_METERS_PER_DEGREE;
+
 
 SQUARE_ID_T CoordinateToSquareId(const COORDINATE_T *pCoord)
 {
@@ -25,11 +30,6 @@ void SquareIdToCoordinate(SQUARE_ID_T id, COORDINATE_T *pCoord)
     pCoord->lng = (unsigned int)id * (double)SQUARE_LNG_SPAN / LNG_METERS_PER_DEGREE;
     return;
 }
-
-static const double LAT_MARGIN = 20.0 / LAT_METERS_PER_DEGREE;
-static const double LNG_MARGIN = 20.0 / LNG_METERS_PER_DEGREE;
-static const double LAT_STEP = 2.0 / LAT_METERS_PER_DEGREE;
-static const double LNG_STEP = 2.0 / LNG_METERS_PER_DEGREE;
 
 bool GetSegmentNeighboringSquareIds(const SEGMENT_T *pSegment, vector<SQUARE_ID_T> &squareIds)
 {

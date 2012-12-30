@@ -21,7 +21,7 @@
 #define SQUARE_LAT_SPAN     7
 #define SQUARE_LNG_SPAN     7
 
-#define TILE_SPAN   400
+#define TILE_SPAN   200 // tile span in meters
 
 /*
 CREATE ROW TABLE "HEB_OSM"."WAY_SEGMENTS"  (
@@ -94,7 +94,8 @@ public:
         return mTileMap.size();
     };
     TILE_T *GetTileById(TILE_ID_T tileId) {
-        return mTileMap[tileId];
+        auto it = mTileMap.find(tileId);
+        return it == mTileMap.end() ? NULL : it->second;
     };
     TILE_T *GetTileByCoord(const COORDINATE_T &coord);
     TILE_MAP_T &GetTileMap() {
