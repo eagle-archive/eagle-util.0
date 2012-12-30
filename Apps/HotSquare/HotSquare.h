@@ -5,6 +5,9 @@
 #include <map>
 #include <hash_set>
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Global Constants
+
 // to save debug time, define it to 0 to read all segments
 #define SEGMENTS_CSV_READ_LIMIT  0//10000
 
@@ -14,7 +17,6 @@
 #define LAT_METERS_PER_DEGREE   111190
 #define LNG_METERS_PER_DEGREE   77628
 
-
 #define SEGMENTS_CSV_PATH   "Data\\WAY_SEGMENTS\\data"
 
 // square size (in meter)
@@ -23,6 +25,9 @@
 
 #define TILE_SPAN   200 // tile span in meters
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// class SegManager
 /*
 CREATE ROW TABLE "HEB_OSM"."WAY_SEGMENTS"  (
     "ID" BIGINT CS_FIXED DEFAULT 0 NOT NULL,
@@ -39,7 +44,6 @@ typedef struct {
     double lng;
 } COORDINATE_T;
 
-typedef unsigned long long SQUARE_ID_T;
 typedef unsigned long long SEG_ID_T;
 
 typedef struct {
@@ -68,6 +72,9 @@ private:
     std::vector<SEGMENT_T> mAllSegs;
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// class TileManager
+
 typedef unsigned long long TILE_ID_T;
 
 typedef struct {
@@ -78,7 +85,6 @@ typedef struct {
     // array of segments containing segments from extra 8 neighbor 
     std::vector<SEG_ID_T> segsWithNeighbors;
 } TILE_T, *P_TILE_T;
-
 
 typedef std::map<TILE_ID_T, TILE_T *> TILE_MAP_T;
 
@@ -109,15 +115,60 @@ private:
     TILE_MAP_T mTileMap;
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// class SquareManager
+
+typedef unsigned long long SQUARE_ID_T;
+
+typedef struct {
+    // low 32 bit from lng coordinate, hi 32 bit from lat coordinate
+    SQUARE_ID_T square_id;
+    SEG_ID_T seg_id1;
+    unsigned int heading1;
+    SEG_ID_T seg_id2;
+    unsigned int heading2;
+} SQUARE_T, *P_SQUARE_T;
+
+typedef std::map<SQUARE_ID_T, P_SQUARE_T> SQUARE_MAP_T;
+
+class SquareManager {
+public:
+    SquareManager() { mpSegMgr = NULL; };
+    ~SquareManager() { ClearSquareMap();};
+
+    bool BuildSquareMap_Multi(SegManager &segMgr, int nThreadCount);
+
+    SQUARE_MAP_T &GetSquareMap() {
+        return mSquareMap;
+    };
+    int GetSquareCount() {
+        return mSquareMap.size();
+    };
+    static inline SQUARE_ID_T CoordinateToSquareId(const COORDINATE_T *pCoord);
+    static inline void SquareIdToCoordinate(SQUARE_ID_T id, COORDINATE_T *pCoord);
+
+private:
+    void ClearSquareMap();
+
+    SegManager  *mpSegMgr;
+    SQUARE_MAP_T mSquareMap;
+};
+
+SQUARE_ID_T SquareManager::CoordinateToSquareId(const COORDINATE_T *pCoord) {
+    unsigned int hi = (unsigned int)(pCoord->lat * LAT_METERS_PER_DEGREE / SQUARE_LAT_SPAN + 0.5);
+    unsigned int low = (unsigned int)(pCoord->lng * LNG_METERS_PER_DEGREE / SQUARE_LNG_SPAN + 0.5);
+    return ((unsigned long long)hi << 32) | low;
+}
+
+void SquareManager::SquareIdToCoordinate(SQUARE_ID_T id, COORDINATE_T *pCoord) {
+    pCoord->lat = (unsigned int)(id >> 32) * (double)SQUARE_LAT_SPAN / LAT_METERS_PER_DEGREE;
+    pCoord->lng = (unsigned int)id * (double)SQUARE_LNG_SPAN / LNG_METERS_PER_DEGREE;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::string FormatTimeStr(unsigned int uTimeMs);
 std::string ElapsedTimeStr();
-
-SQUARE_ID_T CoordinateToSquareId(const COORDINATE_T *pCoord);
-void SquareIdToCoordinate(SQUARE_ID_T id, COORDINATE_T *pCoord);
-bool GetSegmentNeighboringSquareIds(const SEGMENT_T *pSegment, std::vector<SQUARE_ID_T> &squareIds);
-bool CalculateSquareIds(const SEGMENT_T segments[], int count, stdext::hash_set<SQUARE_ID_T> &squareIdSet);
-bool CalculateSquareIds_Multi(const SEGMENT_T segments[], int count, int nThreadCount, stdext::hash_set<SQUARE_ID_T> &squareIdSet);
 
 
 #endif // HOT_SQUARE_H_

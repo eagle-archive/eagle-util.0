@@ -13,6 +13,7 @@ extern bool Test_Main();
 
 SegManager gSegManager;
 TileManager gTileManager;
+SquareManager gSquareManager;
 
 int main()
 {
@@ -33,10 +34,8 @@ int main()
 
     Test_Main();
 
-    hash_set<SQUARE_ID_T> squareIdSet;
-    CalculateSquareIds_Multi(gSegManager.GetSegArray(), gSegManager.GetSegArrayCount(), 4, squareIdSet);
-    printf("%s: Generated %d squares.\n",
-        ElapsedTimeStr().c_str(), squareIdSet.size());
+    gSquareManager.BuildSquareMap_Multi(gSegManager, 4);
+    printf("%s: Generated %d squares.\n", ElapsedTimeStr().c_str(), gSquareManager.GetSquareCount());
 
     printf("%s: Done!\n", ElapsedTimeStr().c_str());
 	return 0;

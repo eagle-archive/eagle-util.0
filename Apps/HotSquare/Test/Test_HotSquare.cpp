@@ -11,8 +11,8 @@ bool Test_CoordinateMapping()
     COORDINATE_T coord, coord2;
     coord.lat = 0.000500;
     coord.lng = 0.000500;
-    unsigned long long id = CoordinateToSquareId(&coord);
-    SquareIdToCoordinate(id, &coord2);
+    unsigned long long id = SquareManager::CoordinateToSquareId(&coord);
+    SquareManager::SquareIdToCoordinate(id, &coord2);
     return true;
 }
 
