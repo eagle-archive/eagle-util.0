@@ -10,6 +10,7 @@
 
 // Device [0, 360) into 8 levels
 // Level 0: [-22.5, 22.5), Level 1: [22.5, 45+22.5), ...
+// NOTE: make sure it can be divided by 360
 #define HEADING_LEVEL_COUNT     8
 
 /*
@@ -56,7 +57,7 @@ public:
 
     static double GetHeading(const COORDINATE_T &coFrom, const COORDINATE_T &coTo);
     static int GetHeadingLevel(const COORDINATE_T &coFrom, const COORDINATE_T &coTo) {
-        return int((GetHeading(coFrom, coTo) + 22.5) / 45.0) % HEADING_LEVEL_COUNT;
+        return int((GetHeading(coFrom, coTo) + (180.0/HEADING_LEVEL_COUNT)) / (360.0/HEADING_LEVEL_COUNT)) % HEADING_LEVEL_COUNT;
     }
     static double CalcDistance(const COORDINATE_T &coord, const SEGMENT_T &seg);
 

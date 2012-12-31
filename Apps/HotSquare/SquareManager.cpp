@@ -149,21 +149,31 @@ static void SquareSetToArray(hash_set<SQUARE_ID_T> &squareIdSet, vector<SQUARE_I
     }
 }
 
-static
-void FindSeg(TileManager &tileMgr, const COORDINATE_T &coord, int nHeadingLevel)
+
+static bool GenerateSquareArray(TileManager &tileMgr, SQUARE_ID_T squareIds[], int num,
+    vector<SQUARE_T> &squareArr)
 {
-    TILE_ID_T tileId = TileManager::CoordToTileId(coord);
-    auto &tileMap = tileMgr.GetTileMap();
-    auto it = tileMap.find(tileId);
-    if (it == tileMap.end())
-        return;
+    squareArr.clear();
+    squareArr.reserve(num);
 
-    TILE_T *pTile = it->second;
-    auto arrSegs = pTile->segsWithNeighbors;
+    SQUARE_T sq;
+    for (int i = 0; i < num; i++) {
+        sq.square_id = squareIds[i];
+        if ((i % 100000) == 0) {
+            printf("%s: Pre-calculate for square ID %d\n", ElapsedTimeStr().c_str(), i);
+        }
 
-    for (int i = (int)arrSegs.size() - 1; i >= 0; i--) {
-        // TODO:
+        COORDINATE_T centerCoord;
+        SquareManager::SquareIdToCenterCoordinate(sq.square_id, &centerCoord);
+
+        // Get seg ID for each heading for the coordinate
+        for (int level = HEADING_LEVEL_COUNT - 1; level != 0; level--) {
+            sq.seg_id_heading_levels[level] =
+                tileMgr.AssignSegment(centerCoord, level * (360 / HEADING_LEVEL_COUNT));
+        }
     }
+
+    return !squareArr.empty();
 }
 
 bool SquareManager::BuildSquareMap_Multi(SegManager &segMgr, TileManager &tileMgr, int nThreadCount)
@@ -184,20 +194,8 @@ bool SquareManager::BuildSquareMap_Multi(SegManager &segMgr, TileManager &tileMg
     squareIdSet.clear();
     //printf("%s: after SetToArray\n", ElapsedTimeStr().c_str());
 
-    for (size_t i = 0; i < squareIdArr.size(); i++)
-    {
-        if ((i % 1000) == 0) {
-            printf("%s: Pre-calculate for square ID %d\n", ElapsedTimeStr().c_str(), i);
-        }
-
-        COORDINATE_T centerCoord;
-        SquareIdToCenterCoordinate(squareIdArr[i], &centerCoord);
-
-        for (int level = HEADING_LEVEL_COUNT - 1; level != 0; level--) {
-            FindSeg(tileMgr, centerCoord, 0);
-        }
-    }
-
+    vector<SQUARE_T> squareArr;
+    GenerateSquareArray(tileMgr, squareIdArr.data(), squareIdArr.size(), squareArr);
     return res;
 }
 

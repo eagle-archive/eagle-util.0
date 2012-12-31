@@ -15,10 +15,8 @@ typedef unsigned long long SQUARE_ID_T;
 typedef struct {
     // low 32 bit from lng coordinate, hi 32 bit from lat coordinate
     SQUARE_ID_T square_id;
-    SEG_ID_T seg_id1;
-    unsigned int heading1;
-    SEG_ID_T seg_id2;
-    unsigned int heading2;
+    // Array of segment IDs for all the heading levels
+    SEG_ID_T seg_id_heading_levels[HEADING_LEVEL_COUNT];
 } SQUARE_T, *P_SQUARE_T;
 
 typedef std::map<SQUARE_ID_T, P_SQUARE_T> SQUARE_MAP_T;
