@@ -231,6 +231,7 @@ bool SquareManager::SaveToCsvFile(const char *filename)
 
     for (auto it = mSquareMap.begin(); it != mSquareMap.end(); it++) {
         SQUARE_T *pSq = it->second;
+#if 0
         for (int i = 0; i < HEADING_LEVEL_COUNT; i++) {
             if (pSq->seg_id_heading_levels[i] == 0)
                 continue;
@@ -238,6 +239,22 @@ bool SquareManager::SaveToCsvFile(const char *filename)
             sprintf(buff, "%lld,%d,%lld\n",
                 pSq->square_id, i, pSq->seg_id_heading_levels[i]);
             out << buff;
+        }
+#endif
+        for (int i1 = 0; i1 < HEADING_LEVEL_COUNT;) {
+            char buff[1024];
+
+            int i2 = i1;
+            while(i2 < HEADING_LEVEL_COUNT &&
+                pSq->seg_id_heading_levels[i2] == pSq->seg_id_heading_levels[i1]) i2++;
+            i2--;
+            if (pSq->seg_id_heading_levels[i1] != 0) {
+                // "seqare id, heading_from, heading_to, segment id"
+                sprintf(buff, "%lld,%d,%d,%lld\n",
+                    pSq->square_id, i1, i2, pSq->seg_id_heading_levels[i1]);
+                out << buff;
+            }
+            i1 = i2 + 1;
         }
     }
     out.close();
