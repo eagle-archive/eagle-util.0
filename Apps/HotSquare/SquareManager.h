@@ -38,6 +38,8 @@ public:
         auto it = mSquareMap.find(id);
         return (it == mSquareMap.end()) ? NULL : it->second;
     };
+    bool SaveToCsvFile(const char *filename);
+
     static inline SQUARE_ID_T CoordinateToSquareId(const COORDINATE_T *pCoord);
     static inline void SquareIdToCenterCoordinate(const SQUARE_ID_T &id, COORDINATE_T *pCoord);
 

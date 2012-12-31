@@ -37,7 +37,12 @@ int main()
     //Test_Main();
 
     gSquareManager.BuildSquareMap_Multi(gSegManager, gTileManager, 4);
-    printf("%s: Generated %d squares.\n", ElapsedTimeStr().c_str(), gSquareManager.GetSquareCount());
+    printf("%s: Generated %d squares.\n",
+        ElapsedTimeStr().c_str(), gSquareManager.GetSquareCount());
+
+    gSquareManager.SaveToCsvFile("Data\\Squares.txt");
+    printf("%s: Squares saved to file Data\\Squares.txt\n",
+        ElapsedTimeStr().c_str());
 
     printf("%s: Done!\n", ElapsedTimeStr().c_str());
 	return 0;

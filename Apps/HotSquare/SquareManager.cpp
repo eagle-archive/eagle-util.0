@@ -3,6 +3,7 @@
 #endif
 
 #include <Windows.h>
+#include <fstream>
 #include "HotSquare.h"
 #include "SquareManager.h"
 
@@ -167,10 +168,12 @@ static bool GenerateSquareArray(TileManager &tileMgr, SQUARE_ID_T squareIds[], i
         SquareManager::SquareIdToCenterCoordinate(sq.square_id, &centerCoord);
 
         // Get seg ID for each heading for the coordinate
-        for (int level = HEADING_LEVEL_COUNT - 1; level != 0; level--) {
+        for (int level = HEADING_LEVEL_COUNT - 1; level >= 0; level--) {
             sq.seg_id_heading_levels[level] =
                 tileMgr.AssignSegment(centerCoord, level * (360 / HEADING_LEVEL_COUNT));
         }
+
+        squareArr.push_back(sq);
     }
 
     return !squareArr.empty();
@@ -196,7 +199,17 @@ bool SquareManager::BuildSquareMap_Multi(SegManager &segMgr, TileManager &tileMg
 
     vector<SQUARE_T> squareArr;
     GenerateSquareArray(tileMgr, squareIdArr.data(), squareIdArr.size(), squareArr);
-    return res;
+    squareIdArr.clear();
+
+    // build mSquareMap
+    mSquareMap.clear();
+    for (int i = 0; i < (int)squareArr.size(); i++) {
+        SQUARE_T *pSq = new SQUARE_T;
+        *pSq = squareArr[i];
+        mSquareMap.insert(SQUARE_MAP_T::value_type(pSq->square_id, pSq));
+    }
+
+    return !mSquareMap.empty();
 }
 
 void SquareManager::ClearSquareMap()
@@ -208,4 +221,25 @@ void SquareManager::ClearSquareMap()
         }
     }
     mSquareMap.clear();
+}
+
+bool SquareManager::SaveToCsvFile(const char *filename)
+{
+    std::ofstream out(filename);
+    if (!out.good())
+        return false;
+
+    for (auto it = mSquareMap.begin(); it != mSquareMap.end(); it++) {
+        SQUARE_T *pSq = it->second;
+        for (int i = 0; i < HEADING_LEVEL_COUNT; i++) {
+            if (pSq->seg_id_heading_levels[i] == 0)
+                continue;
+            char buff[1024];
+            sprintf(buff, "%lld,%d,%lld\n",
+                pSq->square_id, i, pSq->seg_id_heading_levels[i]);
+            out << buff;
+        }
+    }
+    out.close();
+    return true;
 }
