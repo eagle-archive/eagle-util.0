@@ -4,6 +4,7 @@
 
 #include <Windows.h>
 #include "HotSquare.h"
+#include "SquareManager.h"
 
 using namespace std;
 

@@ -5,6 +5,8 @@
 #include <string>
 #include <fstream>
 #include "HotSquare.h"
+#include "SegManager.h"
+
 
 using namespace std;
 

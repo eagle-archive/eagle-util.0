@@ -5,6 +5,7 @@
 #include <Windows.h>
 #include <hash_set>
 #include "HotSquare.h"
+#include "SquareManager.h"
 
 
 using namespace std;

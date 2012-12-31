@@ -4,7 +4,7 @@
 
 #include <string>
 #include <fstream>
-#include "HotSquare.h"
+#include "TileManager.h"
 
 using namespace std;
 
