@@ -19,6 +19,10 @@ using namespace std;
         MAKE_TILE_ID(low-1, hi),                            MAKE_TILE_ID(low+1, hi), \
         MAKE_TILE_ID(low-1, hi+1), MAKE_TILE_ID(low, hi+1), MAKE_TILE_ID(low+1, hi+1)}
 
+static inline bool InSameDirection(int heading1, int heading2) {
+    int diff = (heading2 + 360 - heading1) % 360;
+    return diff < 90 || diff > 270;
+}
 
 void TileManager::ClearTileMap()
 {
@@ -207,7 +211,6 @@ void TileManager::GetTileCoordinates(const TILE_ID_T &tileId, COORDINATE_T *pCoo
 
 SEG_ID_T TileManager::AssignSegment(const COORDINATE_T &coord, int nHeading)
 {
-    SEG_ID_T segId = 0;
     TILE_ID_T tileId = TileManager::CoordToTileId(coord);
     auto it = mTileMap.find(tileId);
     if (it == mTileMap.end())
@@ -217,22 +220,22 @@ SEG_ID_T TileManager::AssignSegment(const COORDINATE_T &coord, int nHeading)
     auto arrSegs = pTile->segsWithNeighbors;
 
     double distanceMin = DBL_MAX;
-    int minIndex = 0;
+    int minIndex = -1;
 
     for (int i = (int)arrSegs.size() - 1; i >= 0; i--) {
         const SEG_ID_T &segId = arrSegs[i];
         const SEGMENT_T *pSeg = mpSegMgr->GetSegByID(segId);
-        if (!pSeg) continue;
 
         // If not the same direction, ignore
-
-        // get the min distance
-        double distance = SegManager::CalcDistance(coord, *pSeg);
-        if (distance < distanceMin) {
-            minIndex = i;
-            distanceMin = distance;
+        if (pSeg != NULL && InSameDirection((int)(pSeg->heading + 0.5), nHeading)) {
+            // get the min distance
+            double distance = SegManager::CalcDistance(coord, *pSeg);
+            if (distance < distanceMin) {
+                minIndex = i;
+                distanceMin = distance;
+            }
         }
     }
 
-    return segId;
+    return minIndex < 0 ? 0 : arrSegs[minIndex];
 }
