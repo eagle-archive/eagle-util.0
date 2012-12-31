@@ -64,11 +64,14 @@ public:
     SEGMENT_T *GetSegArray();
     int GetSegArrayCount() const;
     bool LoadFromCsvFile(const char *path);
-    const SEGMENT_T *GetSegByID(SEG_ID_T segId);
+    const SEGMENT_T *GetSegByID(const SEG_ID_T &segId) {
+        SEG_ID_MAP::iterator it = mSegIdMap.find(segId);
+        return (it == mSegIdMap.end()) ? NULL : &mAllSegs[it->second];
+    };
 
 private:
-    typedef std::map<unsigned long long, int> SEG_ID_MAP;
-    SEG_ID_MAP mSegIdMap;
+    typedef std::map<SEG_ID_T, int> SEG_ID_MAP;
+    SEG_ID_MAP mSegIdMap; // map seg ID to the index of mAllSegs
     std::vector<SEGMENT_T> mAllSegs;
 };
 
@@ -99,21 +102,40 @@ public:
     int GetTileCount() const {
         return mTileMap.size();
     };
-    TILE_T *GetTileById(TILE_ID_T tileId) {
+    TILE_T *GetTileById(const TILE_ID_T &tileId) {
         auto it = mTileMap.find(tileId);
         return it == mTileMap.end() ? NULL : it->second;
     };
-    TILE_T *GetTileByCoord(const COORDINATE_T &coord);
+    TILE_T *GetTileByCoord(const COORDINATE_T &coord) {
+        return GetTileById(CoordToTileId(coord));
+    };
     TILE_MAP_T &GetTileMap() {
         return mTileMap;
     };
     bool GenerateTiles(SegManager &segMgr);
+    bool SaveToCsvFile(const char *filename);
+
+    static void GetTileCoordinates(const TILE_ID_T &tileId, COORDINATE_T *pCoord1, COORDINATE_T *pCoord2);
+    static inline TILE_ID_T CoordToTileId(const COORDINATE_T &coord);
+    static inline void TileIdToCenterCoord(const TILE_ID_T &tileId, COORDINATE_T *pCoord);
 
 private:
     void ClearTileMap();
     SegManager *mpSegMgr;
     TILE_MAP_T mTileMap;
 };
+
+void TileManager::TileIdToCenterCoord(const TILE_ID_T &tileId, COORDINATE_T *pCoord)
+{
+    pCoord->lat = (unsigned int)(tileId >> 32) * (double)TILE_SPAN / LAT_METERS_PER_DEGREE;
+    pCoord->lng = (unsigned int)tileId * (double)TILE_SPAN / LNG_METERS_PER_DEGREE;
+}
+
+TILE_ID_T TileManager::CoordToTileId(const COORDINATE_T &coord) {
+    unsigned int hi = int(coord.lat * ((double)LAT_METERS_PER_DEGREE / TILE_SPAN) + 0.5);
+    unsigned int low = int(coord.lng * ((double)LNG_METERS_PER_DEGREE / TILE_SPAN) + 0.5);
+    return ((unsigned long long)hi << 32) | low;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // class SquareManager
@@ -145,7 +167,7 @@ public:
         return mSquareMap.size();
     };
     static inline SQUARE_ID_T CoordinateToSquareId(const COORDINATE_T *pCoord);
-    static inline void SquareIdToCoordinate(SQUARE_ID_T id, COORDINATE_T *pCoord);
+    static inline void SquareIdToCenterCoordinate(SQUARE_ID_T id, COORDINATE_T *pCoord);
 
 private:
     void ClearSquareMap();
@@ -160,7 +182,7 @@ SQUARE_ID_T SquareManager::CoordinateToSquareId(const COORDINATE_T *pCoord) {
     return ((unsigned long long)hi << 32) | low;
 }
 
-void SquareManager::SquareIdToCoordinate(SQUARE_ID_T id, COORDINATE_T *pCoord) {
+void SquareManager::SquareIdToCenterCoordinate(SQUARE_ID_T id, COORDINATE_T *pCoord) {
     pCoord->lat = (unsigned int)(id >> 32) * (double)SQUARE_LAT_SPAN / LAT_METERS_PER_DEGREE;
     pCoord->lng = (unsigned int)id * (double)SQUARE_LNG_SPAN / LNG_METERS_PER_DEGREE;
 }

@@ -31,12 +31,6 @@ void TileManager::ClearTileMap()
     mTileMap.clear();
 }
 
-static inline TILE_ID_T CoordToTileId(const COORDINATE_T &coord) {
-    unsigned int hi = int(coord.lat * ((double)LAT_METERS_PER_DEGREE / TILE_SPAN) + 0.5);
-    unsigned int low = int(coord.lng * ((double)LNG_METERS_PER_DEGREE / TILE_SPAN) + 0.5);
-    return ((unsigned long long)hi << 32) | low;
-}
-
 // return number of neighboring tiles
 // NOTE: count of neiTiles[] must be 8
 static inline int GetNeighborTiles(TILE_MAP_T &tileMap, TILE_T *pThisTile, P_TILE_T neiTiles[]) {
@@ -174,8 +168,39 @@ bool TileManager::GenerateTiles(SegManager &mSegMgr)
     return !mTileMap.empty();
 }
 
-TILE_T *TileManager::GetTileByCoord(const COORDINATE_T &coord)
+bool TileManager::SaveToCsvFile(const char *filename)
 {
-    TILE_ID_T tid = CoordToTileId(coord);
-    return GetTileById(tid);
+    std::ofstream out(filename);
+    if (!out.good())
+        return false;
+
+    for (TILE_MAP_T::iterator it = mTileMap.begin(); it != mTileMap.end(); it++) {
+        COORDINATE_T coord1, coord2;
+        GetTileCoordinates(it->second->tile_id, &coord1, &coord2);
+
+        char buff[1024];
+        sprintf(buff, "%lld,%lf,%lf,%lf,%lf\n", it->second->tile_id,
+            coord1.lat, coord1.lng, coord2.lat, coord2.lng);
+        out << buff;
+    }
+    out.close();
+    return true;
+}
+
+void TileManager::GetTileCoordinates(const TILE_ID_T &tileId, COORDINATE_T *pCoord1, COORDINATE_T *pCoord2)
+{
+    if (pCoord1 == NULL && pCoord2 == NULL)
+        return;
+
+    COORDINATE_T centerCoord;
+    TileIdToCenterCoord(tileId, &centerCoord);
+
+    if (pCoord1) {
+        pCoord1->lat = centerCoord.lat - TILE_SPAN / 2.0 / LAT_METERS_PER_DEGREE;
+        pCoord1->lng = centerCoord.lng - TILE_SPAN / 2.0 / LNG_METERS_PER_DEGREE;
+    }
+    if (pCoord2) {
+        pCoord2->lat = centerCoord.lat + TILE_SPAN / 2.0 / LAT_METERS_PER_DEGREE;
+        pCoord2->lng = centerCoord.lng + TILE_SPAN / 2.0 / LNG_METERS_PER_DEGREE;
+    }
 }

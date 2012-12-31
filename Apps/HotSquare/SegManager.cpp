@@ -84,9 +84,3 @@ bool SegManager::LoadFromCsvFile(const char *path)
     mAllSegs.shrink_to_fit();
     return !mAllSegs.empty();
 }
-
-const SEGMENT_T *SegManager::GetSegByID(SEG_ID_T segId)
-{
-    SEG_ID_MAP::iterator it = mSegIdMap.find(segId);
-    return it == mSegIdMap.end() ? NULL : &mAllSegs[it->second];
-}

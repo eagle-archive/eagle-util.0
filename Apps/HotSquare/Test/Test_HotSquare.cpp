@@ -12,7 +12,7 @@ bool Test_CoordinateMapping()
     coord.lat = 0.000500;
     coord.lng = 0.000500;
     unsigned long long id = SquareManager::CoordinateToSquareId(&coord);
-    SquareManager::SquareIdToCoordinate(id, &coord2);
+    SquareManager::SquareIdToCenterCoordinate(id, &coord2);
     return true;
 }
 

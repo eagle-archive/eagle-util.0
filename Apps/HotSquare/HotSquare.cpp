@@ -31,6 +31,7 @@ int main()
     }
     printf("%s: Generated %d tiles.\n",
         ElapsedTimeStr().c_str(), gTileManager.GetTileCount());
+    gTileManager.SaveToCsvFile("Data\\Tiles.txt");
 
     Test_Main();
 
