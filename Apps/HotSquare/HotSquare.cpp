@@ -32,11 +32,11 @@ int main()
     }
     printf("%s: Generated %d tiles.\n",
         ElapsedTimeStr().c_str(), gTileManager.GetTileCount());
-    gTileManager.SaveToCsvFile("Data\\Tiles.txt");
+    //gTileManager.SaveToCsvFile("Data\\Tiles.txt");
 
-    Test_Main();
+    //Test_Main();
 
-    gSquareManager.BuildSquareMap_Multi(gSegManager, 4);
+    gSquareManager.BuildSquareMap_Multi(gSegManager, gTileManager, 4);
     printf("%s: Generated %d squares.\n", ElapsedTimeStr().c_str(), gSquareManager.GetSquareCount());
 
     printf("%s: Done!\n", ElapsedTimeStr().c_str());

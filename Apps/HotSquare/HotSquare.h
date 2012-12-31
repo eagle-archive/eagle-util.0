@@ -7,7 +7,7 @@
 // Global Constants
 
 // to save debug time, define it to 0 to read all segments
-#define SEGMENTS_CSV_READ_LIMIT  0//10000
+#define SEGMENTS_CSV_READ_LIMIT  3000
 
 // Below two defines are specific to Harbin
 // Refer to http://www.hhlink.com/%E7%BB%8F%E7%BA%AC%E5%BA%A6

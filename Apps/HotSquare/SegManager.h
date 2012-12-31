@@ -7,6 +7,11 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // class SegManager
+
+// Device [0, 360) into 8 levels
+// Level 0: [-22.5, 22.5), Level 1: [22.5, 45+22.5), ...
+#define HEADING_LEVEL_COUNT     8
+
 /*
 CREATE ROW TABLE "HEB_OSM"."WAY_SEGMENTS"  (
     "ID" BIGINT CS_FIXED DEFAULT 0 NOT NULL,
@@ -33,6 +38,7 @@ typedef struct {
     short int one_way;
     double length;
     double weight;
+    double heading; // not in raw data, dynimically generated
 } SEGMENT_T;
 
 class SegManager {
@@ -47,6 +53,11 @@ public:
         SEG_ID_MAP::iterator it = mSegIdMap.find(segId);
         return (it == mSegIdMap.end()) ? NULL : &mAllSegs[it->second];
     };
+
+    static double GetHeading(const COORDINATE_T &coFrom, const COORDINATE_T &coTo);
+    static int GetHeadingLevel(const COORDINATE_T &coFrom, const COORDINATE_T &coTo) {
+        return int((GetHeading(coFrom, coTo) + 22.5) / 45.0) % HEADING_LEVEL_COUNT;
+    }
 
 private:
     typedef std::map<SEG_ID_T, int> SEG_ID_MAP;

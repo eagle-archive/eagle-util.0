@@ -2,6 +2,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <string>
 #include <fstream>
 #include "HotSquare.h"
@@ -65,6 +67,7 @@ bool SegManager::LoadFromCsvFile(const char *path)
 
             // remove duplicated
             if (mSegIdMap.find(seg.seg_id) == mSegIdMap.end()) {
+                seg.heading = SegManager::GetHeading(seg.from, seg.to);
                 mAllSegs.push_back(seg);
                 mSegIdMap.insert(SEG_ID_MAP::value_type(seg.seg_id, count));
                 count++;
@@ -85,4 +88,21 @@ bool SegManager::LoadFromCsvFile(const char *path)
     in.close();
     mAllSegs.shrink_to_fit();
     return !mAllSegs.empty();
+}
+
+double SegManager::GetHeading(const COORDINATE_T &coFrom, const COORDINATE_T &coTo)
+{
+    double heading;
+    double x1 = coTo.lng - coFrom.lng;
+    double y1 = coTo.lat - coFrom.lat;
+    const double x2 = 0;
+    const double y2 = 1;
+    double cos_value = (x1*x2 + y1*y2) / (sqrt(x1*x1 + y1*y1) * (sqrt(x2*x2 + y2*y2)));
+    double delta_radian = acos(cos_value);
+    if(x1 > 0) {
+        heading = delta_radian * 180.0 / M_PI;
+    }else{
+        heading = 360.0 - delta_radian * 180.0 / M_PI;
+    }
+    return heading;
 }

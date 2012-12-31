@@ -80,11 +80,11 @@ typedef struct {
     SEGMENT_T *pSegStart;
     int nSegCount;
     hash_set<SQUARE_ID_T> squareIdSet;
-} THREAD_DATA;
+} THREAD_DATA1;
 
-static DWORD WINAPI MyThreadFunction( LPVOID lpParam ) 
+static unsigned long WINAPI ThreadFun_GenSquareIds( LPVOID lpParam ) 
 { 
-    THREAD_DATA *pData = (THREAD_DATA *)lpParam;;
+    THREAD_DATA1 *pData = (THREAD_DATA1 *)lpParam;;
     GenerateSquareIds(pData->pSegStart, pData->nSegCount, pData->squareIdSet);
     return 0; 
 }
@@ -97,7 +97,7 @@ bool GenerateSquareIds_Multi(const SEGMENT_T segments[], int nSegs,
         return false;
     }
 
-    vector<THREAD_DATA> dataArray;
+    vector<THREAD_DATA1> dataArray;
     vector<DWORD> dwThreadIdArray;
     vector<HANDLE> hThreadArray;
 
@@ -113,8 +113,8 @@ bool GenerateSquareIds_Multi(const SEGMENT_T segments[], int nSegs,
             dataArray[i].nSegCount = nSegs - nAverageCount * i;
         }
 
-        hThreadArray[i] = ::CreateThread(NULL, 0, MyThreadFunction, &dataArray[i], 0, &dwThreadIdArray[i]);
-
+        hThreadArray[i] = ::CreateThread(NULL, 0, ThreadFun_GenSquareIds,
+            &dataArray[i], 0, &dwThreadIdArray[i]);
     }
 
     // Wait until all threads have terminated.
@@ -140,17 +140,63 @@ bool GenerateSquareIds_Multi(const SEGMENT_T segments[], int nSegs,
     return !squareIdSet.empty();
 }
 
-bool SquareManager::BuildSquareMap_Multi(SegManager &segMgr, int nThreadCount)
+
+static void SquareSetToArray(hash_set<SQUARE_ID_T> &squareIdSet, vector<SQUARE_ID_T> &arrIds)
+{
+    arrIds.reserve(squareIdSet.size());
+    for (auto it = squareIdSet.begin(); it != squareIdSet.end(); it++) {
+        arrIds.push_back(*it);
+    }
+}
+
+static
+void FindSeg(TileManager &tileMgr, const COORDINATE_T &coord, int nHeadingLevel)
+{
+    TILE_ID_T tileId = TileManager::CoordToTileId(coord);
+    auto &tileMap = tileMgr.GetTileMap();
+    auto it = tileMap.find(tileId);
+    if (it == tileMap.end())
+        return;
+
+    TILE_T *pTile = it->second;
+    auto arrSegs = pTile->segsWithNeighbors;
+
+    for (int i = (int)arrSegs.size() - 1; i >= 0; i--) {
+        
+    }
+}
+
+bool SquareManager::BuildSquareMap_Multi(SegManager &segMgr, TileManager &tileMgr, int nThreadCount)
 {
     mpSegMgr = &segMgr;
+    mpTileMgr = &tileMgr;
     
     hash_set<SQUARE_ID_T> squareIdSet;
     bool res = GenerateSquareIds_Multi(segMgr.GetSegArray(), segMgr.GetSegArrayCount(),
         nThreadCount, squareIdSet);
     if (res == false)
         return res;
+    printf("%s: GenerateSquareIds_Multi, result: %d\n", ElapsedTimeStr().c_str(), squareIdSet.size());
 
-    //TODO: more...
+    //printf("%s: before SetToArray\n", ElapsedTimeStr().c_str());
+    vector<SQUARE_ID_T> squareIdArr;
+    SquareSetToArray(squareIdSet, squareIdArr);
+    squareIdSet.clear();
+    //printf("%s: after SetToArray\n", ElapsedTimeStr().c_str());
+
+    for (size_t i = 0; i < squareIdArr.size(); i++)
+    {
+        if ((i % 1000) == 0) {
+            printf("%s: Pre-calculate for square ID %d\n", ElapsedTimeStr().c_str(), i);
+        }
+
+        COORDINATE_T centerCoord;
+        SquareIdToCenterCoordinate(squareIdArr[i], &centerCoord);
+
+        for (int level = HEADING_LEVEL_COUNT - 1; level != 0; level--) {
+            FindSeg(tileMgr, centerCoord, 0);
+        }
+    }
 
     return res;
 }

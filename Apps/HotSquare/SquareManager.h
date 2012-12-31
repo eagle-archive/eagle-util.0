@@ -2,6 +2,7 @@
 #define SQUARE_SQUARE_H_
 
 #include "HotSquare.h"
+#include "SegManager.h"
 #include "TileManager.h"
 
 
@@ -9,6 +10,7 @@
 // class SquareManager
 
 typedef unsigned long long SQUARE_ID_T;
+
 
 typedef struct {
     // low 32 bit from lng coordinate, hi 32 bit from lat coordinate
@@ -26,7 +28,7 @@ public:
     SquareManager() { mpSegMgr = NULL; };
     ~SquareManager() { ClearSquareMap();};
 
-    bool BuildSquareMap_Multi(SegManager &segMgr, int nThreadCount);
+    bool BuildSquareMap_Multi(SegManager &segMgr, TileManager &tileMgr, int nThreadCount);
 
     SQUARE_MAP_T &GetSquareMap() {
         return mSquareMap;
@@ -34,13 +36,18 @@ public:
     int GetSquareCount() {
         return mSquareMap.size();
     };
+    SQUARE_T *GetSquareById(const SQUARE_ID_T &id) {
+        auto it = mSquareMap.find(id);
+        return (it == mSquareMap.end()) ? NULL : it->second;
+    };
     static inline SQUARE_ID_T CoordinateToSquareId(const COORDINATE_T *pCoord);
-    static inline void SquareIdToCenterCoordinate(SQUARE_ID_T id, COORDINATE_T *pCoord);
+    static inline void SquareIdToCenterCoordinate(const SQUARE_ID_T &id, COORDINATE_T *pCoord);
 
 private:
     void ClearSquareMap();
 
     SegManager  *mpSegMgr;
+    TileManager *mpTileMgr;
     SQUARE_MAP_T mSquareMap;
 };
 
@@ -50,7 +57,7 @@ SQUARE_ID_T SquareManager::CoordinateToSquareId(const COORDINATE_T *pCoord) {
     return ((unsigned long long)hi << 32) | low;
 }
 
-void SquareManager::SquareIdToCenterCoordinate(SQUARE_ID_T id, COORDINATE_T *pCoord) {
+void SquareManager::SquareIdToCenterCoordinate(const SQUARE_ID_T &id, COORDINATE_T *pCoord) {
     pCoord->lat = (unsigned int)(id >> 32) * (double)SQUARE_LAT_SPAN / LAT_METERS_PER_DEGREE;
     pCoord->lng = (unsigned int)id * (double)SQUARE_LNG_SPAN / LNG_METERS_PER_DEGREE;
 }
