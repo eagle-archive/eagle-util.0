@@ -106,3 +106,40 @@ double SegManager::GetHeading(const COORDINATE_T &coFrom, const COORDINATE_T &co
     }
     return heading;
 }
+
+/*
+    Double "LONGITUDE" p_x,
+    Double "LATITUDE" p_y,
+    Double "FROM_LNG" a_x,
+    Double "FROM_LAT" a_y,
+    Double "TO_LNG" b_x,
+    Double "TO_LAT" b_y,
+    Double "DISTANCE" & distance)
+
+    Double apx = p_x - a_x;
+    Double apy = p_y - a_y;
+    Double abx = b_x - a_x;
+    Double aby = b_y - a_y;
+    Double ab2 = abx * abx + aby * aby;
+    Double ap_ab = apx * abx + apy * aby;
+    Double t = ap_ab / ab2;
+            
+    if (t < Double(0)) {
+            t = Double(0);
+    } else if (t > Double(1)) {
+            t = Double(1);
+    }
+            
+    distance = (p_x - a_x + abx * t)*(p_x - a_x + abx * t) + (a_y + aby * t)*(a_y + aby * t);
+*/
+double SegManager::CalcDistance(const COORDINATE_T &coord, const SEGMENT_T &seg)
+{
+    double apx = coord.lng - seg.from.lng;
+    double apy = coord.lat - seg.from.lat;
+    double abx = seg.to.lng - seg.from.lng;
+    double aby = seg.to.lat - a_y;
+    double ab2 = abx * abx + aby * aby;
+    double ap_ab = apx * abx + apy * aby;
+    double t = ap_ab / ab2;
+    return 0;
+}

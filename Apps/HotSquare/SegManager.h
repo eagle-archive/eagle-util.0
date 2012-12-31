@@ -58,6 +58,7 @@ public:
     static int GetHeadingLevel(const COORDINATE_T &coFrom, const COORDINATE_T &coTo) {
         return int((GetHeading(coFrom, coTo) + 22.5) / 45.0) % HEADING_LEVEL_COUNT;
     }
+    static double CalcDistance(const COORDINATE_T &coord, const SEGMENT_T &seg);
 
 private:
     typedef std::map<SEG_ID_T, int> SEG_ID_MAP;

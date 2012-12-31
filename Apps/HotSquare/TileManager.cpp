@@ -204,3 +204,35 @@ void TileManager::GetTileCoordinates(const TILE_ID_T &tileId, COORDINATE_T *pCoo
         pCoord2->lng = centerCoord.lng + TILE_SPAN / 2.0 / LNG_METERS_PER_DEGREE;
     }
 }
+
+SEG_ID_T TileManager::AssignSegment(const COORDINATE_T &coord, int nHeading)
+{
+    SEG_ID_T segId = 0;
+    TILE_ID_T tileId = TileManager::CoordToTileId(coord);
+    auto it = mTileMap.find(tileId);
+    if (it == mTileMap.end())
+        return false;
+
+    TILE_T *pTile = it->second;
+    auto arrSegs = pTile->segsWithNeighbors;
+
+    double distanceMin = DBL_MAX;
+    int minIndex = 0;
+
+    for (int i = (int)arrSegs.size() - 1; i >= 0; i--) {
+        const SEG_ID_T &segId = arrSegs[i];
+        const SEGMENT_T *pSeg = mpSegMgr->GetSegByID(segId);
+        if (!pSeg) continue;
+
+        // If not the same direction, ignore
+
+        // get the min distance
+        double distance = SegManager::CalcDistance(coord, *pSeg);
+        if (distance < distanceMin) {
+            minIndex = i;
+            distanceMin = distance;
+        }
+    }
+
+    return segId;
+}

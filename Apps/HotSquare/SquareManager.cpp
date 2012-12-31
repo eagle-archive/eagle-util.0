@@ -162,7 +162,7 @@ void FindSeg(TileManager &tileMgr, const COORDINATE_T &coord, int nHeadingLevel)
     auto arrSegs = pTile->segsWithNeighbors;
 
     for (int i = (int)arrSegs.size() - 1; i >= 0; i--) {
-        
+        // TODO:
     }
 }
 
