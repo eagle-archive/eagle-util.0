@@ -166,13 +166,33 @@ static bool GenerateSquareArray(TileManager &tileMgr, SQUARE_ID_T squareIds[], i
 
         COORDINATE_T centerCoord;
         SquareManager::SquareIdToCenterCoordinate(sq.square_id, &centerCoord);
-
+        SEG_ID_T seg_id_heading_levels[HEADING_LEVEL_COUNT];
         // Get seg ID for each heading for the coordinate
         for (int level = HEADING_LEVEL_COUNT - 1; level >= 0; level--) {
-            sq.seg_id_heading_levels[level] =
+            seg_id_heading_levels[level] =
                 tileMgr.AssignSegment(centerCoord, level * (360 / HEADING_LEVEL_COUNT));
         }
 
+        sq.arr_headings_seg_id.clear();
+        sq.arr_headings_seg_id.reserve(HEADING_LEVEL_COUNT);
+
+        for (int i1 = 0; i1 < HEADING_LEVEL_COUNT;) {
+            int i2 = i1;
+            while(i2 < HEADING_LEVEL_COUNT && seg_id_heading_levels[i2] == seg_id_heading_levels[i1]) {
+                i2++;
+            }
+            i2--;
+            if (seg_id_heading_levels[i1] != 0) {
+                HEADINGS_TO_SEG_IDS_T heads_segid;
+                heads_segid.from_level = i1;
+                heads_segid.to_level = i2;
+                heads_segid.seg_id = seg_id_heading_levels[i1];
+                sq.arr_headings_seg_id.push_back(heads_segid);
+            }
+            i1 = i2 + 1;
+        }
+
+        sq.arr_headings_seg_id.shrink_to_fit();
         squareArr.push_back(sq);
     }
 
@@ -232,15 +252,6 @@ bool SquareManager::SaveToCsvFile(const char *filename)
     for (auto it = mSquareMap.begin(); it != mSquareMap.end(); it++) {
         SQUARE_T *pSq = it->second;
 #if 0
-        for (int i = 0; i < HEADING_LEVEL_COUNT; i++) {
-            if (pSq->seg_id_heading_levels[i] == 0)
-                continue;
-            char buff[1024];
-            sprintf(buff, "%lld,%d,%lld\n",
-                pSq->square_id, i, pSq->seg_id_heading_levels[i]);
-            out << buff;
-        }
-#endif
         for (int i1 = 0; i1 < HEADING_LEVEL_COUNT;) {
             char buff[1024];
 
@@ -255,6 +266,16 @@ bool SquareManager::SaveToCsvFile(const char *filename)
                 out << buff;
             }
             i1 = i2 + 1;
+        }
+#endif
+
+        for (size_t i = 0; i < pSq->arr_headings_seg_id.size(); i++) {
+            char buff[512];
+            // "seqare id, heading_from, heading_to, segment id"
+            sprintf(buff, "%lld,%d,%d,%lld\n", pSq->square_id,
+                pSq->arr_headings_seg_id[i].from_level, pSq->arr_headings_seg_id[i].to_level,
+                pSq->arr_headings_seg_id[i].seg_id);
+            out << buff;
         }
     }
     out.close();
