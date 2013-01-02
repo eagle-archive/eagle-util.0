@@ -22,30 +22,43 @@ void PrintCoord(const char *str, const COORDINATE_T &coord)
     printf("%s: %lf, %lf\n", str, coord.lng, coord.lat);
 }
 
-bool Test_CoordinateToTile()
+bool Test_TileManager()
 {
-    COORDINATE_T coord;
-    coord.lng = 126.602420;
-    coord.lat = 45.720608;
-    PrintCoord("coord", coord);
-    TILE_T *pTile = gTileManager.GetTileByCoord(coord);
-    if (pTile == NULL)
-        return false;
+    {
+        COORDINATE_T coord;
+        coord.lng = 126.602420;
+        coord.lat = 45.720608;
+        TILE_ID_T tileId = TileManager::CoordToTileId(coord);
+        PrintCoord("coord", coord);
+        printf("tile ID: 0x%llX\n", tileId);
 
-    COORDINATE_T coord1, coord2;
-    TileManager::GetTileCoordinates(pTile->tile_id, &coord1, &coord2);
-    PrintCoord("coord1", coord1);
-    PrintCoord("coord2", coord2);
+        TileManager::TileIdToCenterCoord(tileId, &coord);
+        PrintCoord("coord", coord);
+    }
+    {
+        COORDINATE_T coord;
+        coord.lng = 126.602420;
+        coord.lat = 45.720608;
+        PrintCoord("coord", coord);
+        TILE_T *pTile = gTileManager.GetTileByCoord(coord);
+        if (pTile == NULL)
+            return false;
+
+        COORDINATE_T coord1, coord2;
+        TileManager::GetTileCoordinates(pTile->tile_id, &coord1, &coord2);
+        PrintCoord("coord1", coord1);
+        PrintCoord("coord2", coord2);
+    }
     return true;
 }
 
 bool Test_Main()
 {
     if (false == Test_CoordinateMapping()) {
-        printf("Test_CoordinateMapping failed!");
+        printf("Test_CoordinateMapping failed!\n");
     }
-    if (false == Test_CoordinateToTile()) {
-        printf("Test_CoordinateToTile failed!");
+    if (false == Test_TileManager()) {
+        printf("Test_TileManager failed!\n");
     }
 
     return true;

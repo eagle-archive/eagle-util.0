@@ -194,10 +194,10 @@ bool TileManager::SaveToCsvFile(const char *filename)
 void TileManager::GetBoundingBox(const TILE_ID_T &tileId,
     double &north, double &south, double &east, double &west)
 {
-    north = LatIdToLat((unsigned int)tileId);
-    south = LatIdToLat((unsigned int)tileId + 1);
-    west = LngIdToLng((unsigned int)(tileId >> 32));
-    east = LngIdToLng((unsigned int)(tileId >> 32) + 1);
+    north = LatIdToLat((unsigned int)(tileId >> 32));
+    south = LatIdToLat((unsigned int)(tileId >> 32) + 1);
+    west = LngIdToLng((unsigned int)tileId);
+    east = LngIdToLng((unsigned int)tileId + 1);
 }
 
 void TileManager::GetTileCoordinates(const TILE_ID_T &tileId, COORDINATE_T *pCoord1, COORDINATE_T *pCoord2)
