@@ -45,8 +45,15 @@ public:
     };
     bool SaveToCsvFile(const char *filename);
 
-    static inline SQUARE_ID_T CoordinateToSquareId(const COORDINATE_T *pCoord);
-    static inline void SquareIdToCenterCoordinate(const SQUARE_ID_T &id, COORDINATE_T *pCoord);
+    static inline SQUARE_ID_T CoordinateToSquareId(const COORDINATE_T &coord) {
+        unsigned int hi = (unsigned int)(coord.lat * LAT_METERS_PER_DEGREE / SQUARE_LAT_SPAN + 0.5);
+        unsigned int low = (unsigned int)(coord.lng * LNG_METERS_PER_DEGREE / SQUARE_LNG_SPAN + 0.5);
+        return ((unsigned long long)hi << 32) | low;
+    };
+    static inline void SquareIdToCenterCoordinate(const SQUARE_ID_T &id, COORDINATE_T *pCoord) {
+        pCoord->lat = (unsigned int)(id >> 32) * (double)SQUARE_LAT_SPAN / LAT_METERS_PER_DEGREE;
+        pCoord->lng = (unsigned int)id * (double)SQUARE_LNG_SPAN / LNG_METERS_PER_DEGREE;
+    };
 
 private:
     void ClearSquareMap();
@@ -55,16 +62,5 @@ private:
     TileManager *mpTileMgr;
     SQUARE_MAP_T mSquareMap;
 };
-
-SQUARE_ID_T SquareManager::CoordinateToSquareId(const COORDINATE_T *pCoord) {
-    unsigned int hi = (unsigned int)(pCoord->lat * LAT_METERS_PER_DEGREE / SQUARE_LAT_SPAN + 0.5);
-    unsigned int low = (unsigned int)(pCoord->lng * LNG_METERS_PER_DEGREE / SQUARE_LNG_SPAN + 0.5);
-    return ((unsigned long long)hi << 32) | low;
-}
-
-void SquareManager::SquareIdToCenterCoordinate(const SQUARE_ID_T &id, COORDINATE_T *pCoord) {
-    pCoord->lat = (unsigned int)(id >> 32) * (double)SQUARE_LAT_SPAN / LAT_METERS_PER_DEGREE;
-    pCoord->lng = (unsigned int)id * (double)SQUARE_LNG_SPAN / LNG_METERS_PER_DEGREE;
-}
 
 #endif // SQUARE_SQUARE_H_

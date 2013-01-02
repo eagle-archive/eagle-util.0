@@ -231,9 +231,8 @@ SEG_ID_T TileManager::AssignSegment(const COORDINATE_T &coord, int nHeading)
     double distanceMin = DBL_MAX;
     int minIndex = -1;
 
-    for (int i = (int)arrSegs.size() - 1; i >= 0; i--) {
-        const SEG_ID_T &segId = arrSegs[i];
-        const SEGMENT_T *pSeg = mpSegMgr->GetSegByID(segId);
+    for (size_t i = 0; i < arrSegs.size(); i++) {
+        const SEGMENT_T *pSeg = mpSegMgr->GetSegByID(arrSegs[i]);
 
         // If not the same direction, ignore
         if (pSeg != NULL && InSameDirection((int)(pSeg->heading + 0.5), nHeading)) {

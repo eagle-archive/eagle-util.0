@@ -12,7 +12,7 @@ bool Test_CoordinateMapping()
     COORDINATE_T coord, coord2;
     coord.lat = 0.000500;
     coord.lng = 0.000500;
-    unsigned long long id = SquareManager::CoordinateToSquareId(&coord);
+    unsigned long long id = SquareManager::CoordinateToSquareId(coord);
     SquareManager::SquareIdToCenterCoordinate(id, &coord2);
     return true;
 }
@@ -20,6 +20,16 @@ bool Test_CoordinateMapping()
 void PrintCoord(const char *str, const COORDINATE_T &coord)
 {
     printf("%s: %lf, %lf\n", str, coord.lng, coord.lat);
+}
+
+void PrintTileId(const char *str, const TILE_ID_T &tileId)
+{
+    printf("%s: 0x%llX, %lld\n", str, tileId, tileId);
+}
+
+void PrintSquareId(const char *str, const SQUARE_ID_T &sId)
+{
+    printf("%s: 0x%llX, %lld\n", str, sId, sId);
 }
 
 bool Test_TileManager()
@@ -52,6 +62,28 @@ bool Test_TileManager()
     return true;
 }
 
+bool Test_SampleDataAssignment_TileManager()
+{
+    SQUARE_ID_T sId;
+
+    COORDINATE_T coord;
+    coord.lng = 126.63172;
+    coord.lat = 45.76266;
+    int heading = 61;
+    SEG_ID_T seg_id_expected = 15352;
+    sId = SquareManager::CoordinateToSquareId(coord);
+    SEG_ID_T assignedId = gTileManager.AssignSegment(coord, heading);
+
+    coord.lng = 126.63961;
+    coord.lat = 45.78882;
+    heading = 102;
+    seg_id_expected = 20925;
+    sId = SquareManager::CoordinateToSquareId(coord);
+    assignedId = gTileManager.AssignSegment(coord, heading);
+
+    return true;
+}
+
 bool Test_Main()
 {
     if (false == Test_CoordinateMapping()) {
@@ -61,5 +93,6 @@ bool Test_Main()
         printf("Test_TileManager failed!\n");
     }
 
+    Test_SampleDataAssignment_TileManager();
     return true;
 }

@@ -38,7 +38,7 @@ bool GetSegmentNeighboringSquareIds(const SEGMENT_T *pSegment, vector<SQUARE_ID_
     squareIds.clear();
     for (coord.lat = lat1; coord.lat <= lat2; coord.lat += LAT_STEP) {
         for (coord.lng = lng1; coord.lng < lng2; coord.lng += LNG_STEP) {
-            SQUARE_ID_T id = SquareManager::CoordinateToSquareId(&coord);
+            SQUARE_ID_T id = SquareManager::CoordinateToSquareId(coord);
             bool found = false;
             for (int i=squareIds.size()-1; i>=0; i--) {
                 if (squareIds[i] == id) {
@@ -251,28 +251,10 @@ bool SquareManager::SaveToCsvFile(const char *filename)
 
     for (auto it = mSquareMap.begin(); it != mSquareMap.end(); it++) {
         SQUARE_T *pSq = it->second;
-#if 0
-        for (int i1 = 0; i1 < HEADING_LEVEL_COUNT;) {
-            char buff[1024];
-
-            int i2 = i1;
-            while(i2 < HEADING_LEVEL_COUNT &&
-                pSq->seg_id_heading_levels[i2] == pSq->seg_id_heading_levels[i1]) i2++;
-            i2--;
-            if (pSq->seg_id_heading_levels[i1] != 0) {
-                // "seqare id, heading_from, heading_to, segment id"
-                sprintf(buff, "%lld,%d,%d,%lld\n",
-                    pSq->square_id, i1, i2, pSq->seg_id_heading_levels[i1]);
-                out << buff;
-            }
-            i1 = i2 + 1;
-        }
-#endif
-
         for (size_t i = 0; i < pSq->arr_headings_seg_id.size(); i++) {
             char buff[512];
             // "seqare id, heading_from, heading_to, segment id"
-            sprintf(buff, "%lld,%d,%d,%lld\n", pSq->square_id,
+            sprintf(buff, "0x%llX, %lld,%d,%d,%lld\n", pSq->square_id, pSq->square_id,
                 pSq->arr_headings_seg_id[i].from_level, pSq->arr_headings_seg_id[i].to_level,
                 pSq->arr_headings_seg_id[i].seg_id);
             out << buff;

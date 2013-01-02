@@ -8,7 +8,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Global Constants
 
-// to save debug time, define it to 0 to read all segments
+// define it to 0 to read all segments
 #define SEGMENTS_CSV_READ_LIMIT  0//1000
 
 // Below two defines are specific to Harbin
@@ -24,8 +24,8 @@
 #define SQUARE_LNG_SPAN     7
 
 // To change zoom level, update ZOOM_LEVEL & TOTAL_TILE_NUM
-#define ZOOM_LEVEL      ZOOM_18
-#define TOTAL_TILE_NUM  TOTAL_TILE_18
+#define ZOOM_LEVEL      ZOOM_17
+#define TOTAL_TILE_NUM  TOTAL_TILE_17
 
 // Predefined constants, DO NOT CHANGE!
 #define ZOOM_16         16
