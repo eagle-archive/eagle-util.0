@@ -8,11 +8,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // class SegManager
 
-// Device [0, 360) into 8 levels
-// Level 0: [-22.5, 22.5), Level 1: [22.5, 45+22.5), ...
-// NOTE: make sure it can be divided by 360
-#define HEADING_LEVEL_COUNT     8
-
 /*
 CREATE ROW TABLE "HEB_OSM"."WAY_SEGMENTS"  (
     "ID" BIGINT CS_FIXED DEFAULT 0 NOT NULL,

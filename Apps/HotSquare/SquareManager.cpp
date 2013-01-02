@@ -85,7 +85,7 @@ typedef struct {
 
 static unsigned long WINAPI ThreadFun_GenSquareIds( LPVOID lpParam ) 
 { 
-    THREAD_DATA1 *pData = (THREAD_DATA1 *)lpParam;;
+    THREAD_DATA1 *pData = (THREAD_DATA1 *)lpParam;
     GenerateSquareIds(pData->pSegStart, pData->nSegCount, pData->squareIdSet);
     return 0; 
 }
@@ -149,21 +149,22 @@ static void SquareSetToArray(hash_set<SQUARE_ID_T> &squareIdSet, vector<SQUARE_I
     }
 }
 
-static bool GenerateSquareArray(TileManager &tileMgr, SQUARE_ID_T squareIds[], int num,
-    vector<SQUARE_T> &squareArr)
+static bool GenerateSquarePtrArray(TileManager &tileMgr, SQUARE_ID_T squareIds[], int num,
+    int nThreadId, vector<SQUARE_T *> &arrSquarePtr)
 {
-    squareArr.clear();
-    squareArr.reserve(num);
+    arrSquarePtr.clear();
+    arrSquarePtr.reserve(num);
 
-    SQUARE_T sq;
     for (int i = 0; i < num; i++) {
-        sq.square_id = squareIds[i];
+        SQUARE_T *psq = new SQUARE_T;
+        psq->square_id = squareIds[i];
         if ((i % 100000) == 0) {
-            printf("%s: Pre-calculate for square ID %d\n", ElapsedTimeStr().c_str(), i);
+            printf("%s: thread #%d - Pre-calculate for square ID %d\n",
+                ElapsedTimeStr().c_str(), nThreadId, i);
         }
 
         COORDINATE_T centerCoord;
-        SquareManager::SquareIdToCenterCoordinate(sq.square_id, &centerCoord);
+        SquareManager::SquareIdToCenterCoordinate(psq->square_id, &centerCoord);
         SEG_ID_T seg_id_heading_levels[HEADING_LEVEL_COUNT];
         // Get seg ID for each heading for the coordinate
         for (int level = HEADING_LEVEL_COUNT - 1; level >= 0; level--) {
@@ -171,8 +172,8 @@ static bool GenerateSquareArray(TileManager &tileMgr, SQUARE_ID_T squareIds[], i
                 tileMgr.AssignSegment(centerCoord, level * (360 / HEADING_LEVEL_COUNT));
         }
 
-        sq.arr_headings_seg_id.clear();
-        sq.arr_headings_seg_id.reserve(HEADING_LEVEL_COUNT);
+        psq->arr_headings_seg_id.clear();
+        psq->arr_headings_seg_id.reserve(HEADING_LEVEL_COUNT);
 
         for (int i1 = 0; i1 < HEADING_LEVEL_COUNT;) {
             int i2 = i1;
@@ -185,16 +186,76 @@ static bool GenerateSquareArray(TileManager &tileMgr, SQUARE_ID_T squareIds[], i
                 heads_segid.from_level = i1;
                 heads_segid.to_level = i2;
                 heads_segid.seg_id = seg_id_heading_levels[i1];
-                sq.arr_headings_seg_id.push_back(heads_segid);
+                psq->arr_headings_seg_id.push_back(heads_segid);
             }
             i1 = i2 + 1;
         }
 
-        sq.arr_headings_seg_id.shrink_to_fit();
-        squareArr.push_back(sq);
+        psq->arr_headings_seg_id.shrink_to_fit();
+        arrSquarePtr.push_back(psq);
     }
 
-    return !squareArr.empty();
+    return !arrSquarePtr.empty();
+}
+
+typedef struct {
+    int nThreadId;
+    TileManager *pTileManager;
+    SQUARE_ID_T *pSqStart;
+    int nSqCount;
+    vector<SQUARE_T *> arrSquarePtr;
+} THREAD_DATA2;
+
+static unsigned long WINAPI ThreadFun_GenSquareArray( LPVOID lpParam ) 
+{ 
+    THREAD_DATA2 *pData = (THREAD_DATA2 *)lpParam;
+    GenerateSquarePtrArray(*pData->pTileManager, pData->pSqStart, pData->nSqCount,
+        pData->nThreadId, pData->arrSquarePtr);
+    return 0; 
+}
+
+static bool GenerateSquareArray_Multi(TileManager &tileMgr, int nThreadCount, 
+    vector<SQUARE_ID_T> &squareIdArr, SQUARE_MAP_T &sqMap)
+{
+    vector<THREAD_DATA2> dataArray;
+    vector<DWORD> dwThreadIdArray;
+    vector<HANDLE> hThreadArray;
+    dataArray.resize(nThreadCount);
+    dwThreadIdArray.resize(nThreadCount);
+    hThreadArray.resize(nThreadCount);
+
+    const int nAverageCount = int(squareIdArr.size() / (double)nThreadCount + 0.5);
+    for (int i = 0; i < nThreadCount; i++) {
+        dataArray[i].nThreadId = i;
+        dataArray[i].pTileManager = &tileMgr;
+        dataArray[i].pSqStart = (SQUARE_ID_T *)squareIdArr.data() + nAverageCount * i;
+        dataArray[i].nSqCount = nAverageCount;
+        if (i == nThreadCount - 1) {
+            dataArray[i].nSqCount = squareIdArr.size() - nAverageCount * i;
+        }
+
+        hThreadArray[i] = ::CreateThread(NULL, 0, ThreadFun_GenSquareArray,
+            &dataArray[i], 0, &dwThreadIdArray[i]);
+    }
+
+    // Wait until all threads have terminated.
+    ::WaitForMultipleObjects(nThreadCount, hThreadArray.data(), TRUE, INFINITE);
+    for(int i=0; i<nThreadCount; i++) {
+        ::CloseHandle(hThreadArray[i]);
+    }
+
+    // build mSquareMap
+    sqMap.clear();
+    for (size_t n = 0; n < dataArray.size(); n++) {
+        auto arrSquarePtr = dataArray[n].arrSquarePtr;
+        for (size_t i = 0; i < arrSquarePtr.size(); i++) {
+            sqMap.insert(SQUARE_MAP_T::value_type(arrSquarePtr[i]->square_id, arrSquarePtr[i]));
+        }
+
+        arrSquarePtr.clear();
+    }
+
+    return true;
 }
 
 bool SquareManager::BuildSquareMap_Multi(SegManager &segMgr, TileManager &tileMgr, int nThreadCount)
@@ -207,7 +268,7 @@ bool SquareManager::BuildSquareMap_Multi(SegManager &segMgr, TileManager &tileMg
         nThreadCount, squareIdSet);
     if (res == false)
         return res;
-    printf("%s: GenerateSquareIds_Multi, result: %d\n", ElapsedTimeStr().c_str(), squareIdSet.size());
+    printf("%s: Generated square Ids count: %d\n", ElapsedTimeStr().c_str(), squareIdSet.size());
 
     //printf("%s: before SetToArray\n", ElapsedTimeStr().c_str());
     vector<SQUARE_ID_T> squareIdArr;
@@ -215,17 +276,8 @@ bool SquareManager::BuildSquareMap_Multi(SegManager &segMgr, TileManager &tileMg
     squareIdSet.clear();
     //printf("%s: after SetToArray\n", ElapsedTimeStr().c_str());
 
-    vector<SQUARE_T> squareArr;
-    GenerateSquareArray(tileMgr, squareIdArr.data(), squareIdArr.size(), squareArr);
+    GenerateSquareArray_Multi(tileMgr, nThreadCount, squareIdArr, mSquareMap);
     squareIdArr.clear();
-
-    // build mSquareMap
-    mSquareMap.clear();
-    for (int i = 0; i < (int)squareArr.size(); i++) {
-        SQUARE_T *pSq = new SQUARE_T;
-        *pSq = squareArr[i];
-        mSquareMap.insert(SQUARE_MAP_T::value_type(pSq->square_id, pSq));
-    }
 
     return !mSquareMap.empty();
 }

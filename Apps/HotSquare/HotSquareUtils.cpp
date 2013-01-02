@@ -13,8 +13,8 @@ using namespace std;
 std::string FormatTimeStr(unsigned int uTimeMs)
 {
     char buff[64];
-    sprintf(buff, "%02d:%02d:%03d",
-        (uTimeMs/60000) % 100, (uTimeMs/1000) % 100, uTimeMs % 1000);
+    sprintf(buff, "%2d:%02d:%03d",
+        (uTimeMs/60000), (uTimeMs/1000) % 60, uTimeMs % 1000);
     return buff;
 }
 
