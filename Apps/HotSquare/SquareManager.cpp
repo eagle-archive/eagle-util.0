@@ -141,7 +141,6 @@ bool GenerateSquareIds_Multi(const SEGMENT_T segments[], int nSegs,
     return !squareIdSet.empty();
 }
 
-
 static void SquareSetToArray(hash_set<SQUARE_ID_T> &squareIdSet, vector<SQUARE_ID_T> &arrIds)
 {
     arrIds.reserve(squareIdSet.size());
@@ -149,7 +148,6 @@ static void SquareSetToArray(hash_set<SQUARE_ID_T> &squareIdSet, vector<SQUARE_I
         arrIds.push_back(*it);
     }
 }
-
 
 static bool GenerateSquareArray(TileManager &tileMgr, SQUARE_ID_T squareIds[], int num,
     vector<SQUARE_T> &squareArr)
@@ -203,7 +201,7 @@ bool SquareManager::BuildSquareMap_Multi(SegManager &segMgr, TileManager &tileMg
 {
     mpSegMgr = &segMgr;
     mpTileMgr = &tileMgr;
-    
+
     hash_set<SQUARE_ID_T> squareIdSet;
     bool res = GenerateSquareIds_Multi(segMgr.GetSegArray(), segMgr.GetSegArrayCount(),
         nThreadCount, squareIdSet);
@@ -254,7 +252,7 @@ bool SquareManager::SaveToCsvFile(const char *filename)
         for (size_t i = 0; i < pSq->arr_headings_seg_id.size(); i++) {
             char buff[512];
             // "seqare id, heading_from, heading_to, segment id"
-            sprintf(buff, "0x%llX, %lld,%d,%d,%lld\n", pSq->square_id, pSq->square_id,
+            sprintf(buff, "%lld,%d,%d,%lld\n", pSq->square_id,
                 pSq->arr_headings_seg_id[i].from_level, pSq->arr_headings_seg_id[i].to_level,
                 pSq->arr_headings_seg_id[i].seg_id);
             out << buff;

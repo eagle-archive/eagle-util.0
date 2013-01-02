@@ -23,17 +23,8 @@
 #define SQUARE_LAT_SPAN     7
 #define SQUARE_LNG_SPAN     7
 
-// To change zoom level, update ZOOM_LEVEL & TOTAL_TILE_NUM
-#define ZOOM_LEVEL      ZOOM_17
-#define TOTAL_TILE_NUM  TOTAL_TILE_17
-
-// Predefined constants, DO NOT CHANGE!
-#define ZOOM_16         16
-#define TOTAL_TILE_16   65536  // 2^16
-#define ZOOM_17         17
-#define TOTAL_TILE_17   131072 // 2^17
-#define ZOOM_18         18
-#define TOTAL_TILE_18   262144 // 2^18
+#define ZOOM_LEVEL  17
+#define TOTAL_TILE_NUM  (2 << (ZOOM_LEVEL - 1))
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
