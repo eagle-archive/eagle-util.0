@@ -2,7 +2,12 @@
 #define TILE_MANAGER_H_
 
 #include <hash_set>
+#include <math.h>
 #include "SegManager.h"
+
+#ifndef M_PI
+#define M_PI       3.14159265358979323846
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // class TileManager
@@ -46,25 +51,30 @@ public:
     SEG_ID_T AssignSegment(const COORDINATE_T &coord, int nHeading); // return 0 if not found
 
     static void GetTileCoordinates(const TILE_ID_T &tileId, COORDINATE_T *pCoord1, COORDINATE_T *pCoord2);
-    static inline TILE_ID_T CoordToTileId(const COORDINATE_T &coord);
-    static inline void TileIdToCenterCoord(const TILE_ID_T &tileId, COORDINATE_T *pCoord);
+    static void GetBoundingBox(const TILE_ID_T &tileId, double &north, double &south, double &east, double &west);
+
+    static inline TILE_ID_T CoordToTileId(const COORDINATE_T &coord) {
+        unsigned int hi = int((1.0 - log( tan(coord.lat * M_PI/180.0) + 1.0 / cos(coord.lat * M_PI/180.0)) / M_PI) / 2.0 * (double)TOTAL_TILE_NUM + 0.5);
+        unsigned int low = int((coord.lng + 180.0) / 360.0 * (double)TOTAL_TILE_NUM + 0.5);
+        return ((unsigned long long)hi << 32) | low;
+    };
+    static inline void TileIdToCenterCoord(const TILE_ID_T &tileId, COORDINATE_T *pCoord) {
+        // Refer to http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Tile_servers
+        pCoord->lat = LatIdToLat((unsigned int)tileId);
+        pCoord->lng = LngIdToLng((unsigned int)(tileId >> 32));
+    };
+    static inline double LngIdToLng(unsigned int lngId) {
+        return lngId / (double)TOTAL_TILE_NUM * 360.0 - 180;
+    };
+    static inline double LatIdToLat(unsigned int latId) {
+        double n = M_PI - 2.0 * M_PI * latId / (double)TOTAL_TILE_NUM;
+        return 180.0 / M_PI * atan(0.5 * (exp(n) - exp(-n)));
+    };
 
 private:
     void ClearTileMap();
     SegManager *mpSegMgr;
     TILE_MAP_T mTileMap;
 };
-
-void TileManager::TileIdToCenterCoord(const TILE_ID_T &tileId, COORDINATE_T *pCoord)
-{
-    pCoord->lat = (unsigned int)(tileId >> 32) * (double)LAT_TILE_SPAN / LAT_METERS_PER_DEGREE;
-    pCoord->lng = (unsigned int)tileId * (double)LNG_TILE_SPAN / LNG_METERS_PER_DEGREE;
-}
-
-TILE_ID_T TileManager::CoordToTileId(const COORDINATE_T &coord) {
-    unsigned int hi = int(coord.lat * ((double)LAT_METERS_PER_DEGREE / LAT_TILE_SPAN) + 0.5);
-    unsigned int low = int(coord.lng * ((double)LNG_METERS_PER_DEGREE / LNG_TILE_SPAN) + 0.5);
-    return ((unsigned long long)hi << 32) | low;
-}
 
 #endif // TILE_MANAGER_H_

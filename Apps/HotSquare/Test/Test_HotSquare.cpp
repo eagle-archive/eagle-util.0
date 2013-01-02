@@ -17,14 +17,26 @@ bool Test_CoordinateMapping()
     return true;
 }
 
+void PrintCoord(const char *str, const COORDINATE_T &coord)
+{
+    printf("%s: %lf, %lf\n", str, coord.lng, coord.lat);
+}
+
 bool Test_CoordinateToTile()
 {
     COORDINATE_T coord;
-    coord.lat = 45.720608;
     coord.lng = 126.602420;
+    coord.lat = 45.720608;
+    PrintCoord("coord", coord);
     TILE_T *pTile = gTileManager.GetTileByCoord(coord);
+    if (pTile == NULL)
+        return false;
 
-    return pTile != NULL;
+    COORDINATE_T coord1, coord2;
+    TileManager::GetTileCoordinates(pTile->tile_id, &coord1, &coord2);
+    PrintCoord("coord1", coord1);
+    PrintCoord("coord2", coord2);
+    return true;
 }
 
 bool Test_Main()

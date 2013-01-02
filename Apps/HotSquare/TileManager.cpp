@@ -183,7 +183,7 @@ bool TileManager::SaveToCsvFile(const char *filename)
         GetTileCoordinates(it->second->tile_id, &coord1, &coord2);
 
         char buff[1024];
-        sprintf(buff, "%lld,%lf,%lf,%lf,%lf\n", it->second->tile_id,
+        sprintf(buff, "0x%llX,%lf,%lf,%lf,%lf\n", it->second->tile_id,
             coord1.lat, coord1.lng, coord2.lat, coord2.lng);
         out << buff;
     }
@@ -191,21 +191,30 @@ bool TileManager::SaveToCsvFile(const char *filename)
     return true;
 }
 
+void TileManager::GetBoundingBox(const TILE_ID_T &tileId,
+    double &north, double &south, double &east, double &west)
+{
+    north = LatIdToLat((unsigned int)tileId);
+    south = LatIdToLat((unsigned int)tileId + 1);
+    west = LngIdToLng((unsigned int)(tileId >> 32));
+    east = LngIdToLng((unsigned int)(tileId >> 32) + 1);
+}
+
 void TileManager::GetTileCoordinates(const TILE_ID_T &tileId, COORDINATE_T *pCoord1, COORDINATE_T *pCoord2)
 {
     if (pCoord1 == NULL && pCoord2 == NULL)
         return;
 
-    COORDINATE_T centerCoord;
-    TileIdToCenterCoord(tileId, &centerCoord);
+    double north, south, east, west;
+    GetBoundingBox(tileId, north, south, east, west);
 
     if (pCoord1) {
-        pCoord1->lat = centerCoord.lat - LAT_TILE_SPAN / 2.0 / LAT_METERS_PER_DEGREE;
-        pCoord1->lng = centerCoord.lng - LNG_TILE_SPAN / 2.0 / LNG_METERS_PER_DEGREE;
+        pCoord1->lat = north;
+        pCoord1->lng = west;
     }
     if (pCoord2) {
-        pCoord2->lat = centerCoord.lat + LAT_TILE_SPAN / 2.0 / LAT_METERS_PER_DEGREE;
-        pCoord2->lng = centerCoord.lng + LNG_TILE_SPAN / 2.0 / LNG_METERS_PER_DEGREE;
+        pCoord2->lat = south;
+        pCoord2->lng = east;
     }
 }
 

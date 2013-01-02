@@ -17,13 +17,21 @@
 
 #define SEGMENTS_CSV_PATH   "Data\\WAY_SEGMENTS\\data"
 
-// square size (in meter)
+// square size (in meters)
 #define SQUARE_LAT_SPAN     7
 #define SQUARE_LNG_SPAN     7
 
-// tile span in meters
-#define LAT_TILE_SPAN   200
-#define LNG_TILE_SPAN   200
+// To change zoom level, update ZOOM_LEVEL & TOTAL_TILE_NUM
+#define ZOOM_LEVEL      ZOOM_18
+#define TOTAL_TILE_NUM  TOTAL_TILE_18
+
+// Predefined constants, DO NOT CHANGE!
+#define ZOOM_16         16
+#define TOTAL_TILE_16   65536  // 2^16
+#define ZOOM_17         17
+#define TOTAL_TILE_17   131072 // 2^17
+#define ZOOM_18         18
+#define TOTAL_TILE_18   262144 // 2^18
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
