@@ -57,13 +57,13 @@ private:
 
 void TileManager::TileIdToCenterCoord(const TILE_ID_T &tileId, COORDINATE_T *pCoord)
 {
-    pCoord->lat = (unsigned int)(tileId >> 32) * (double)TILE_SPAN / LAT_METERS_PER_DEGREE;
-    pCoord->lng = (unsigned int)tileId * (double)TILE_SPAN / LNG_METERS_PER_DEGREE;
+    pCoord->lat = (unsigned int)(tileId >> 32) * (double)LAT_TILE_SPAN / LAT_METERS_PER_DEGREE;
+    pCoord->lng = (unsigned int)tileId * (double)LNG_TILE_SPAN / LNG_METERS_PER_DEGREE;
 }
 
 TILE_ID_T TileManager::CoordToTileId(const COORDINATE_T &coord) {
-    unsigned int hi = int(coord.lat * ((double)LAT_METERS_PER_DEGREE / TILE_SPAN) + 0.5);
-    unsigned int low = int(coord.lng * ((double)LNG_METERS_PER_DEGREE / TILE_SPAN) + 0.5);
+    unsigned int hi = int(coord.lat * ((double)LAT_METERS_PER_DEGREE / LAT_TILE_SPAN) + 0.5);
+    unsigned int low = int(coord.lng * ((double)LNG_METERS_PER_DEGREE / LNG_TILE_SPAN) + 0.5);
     return ((unsigned long long)hi << 32) | low;
 }
 

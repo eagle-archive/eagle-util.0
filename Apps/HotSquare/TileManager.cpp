@@ -200,12 +200,12 @@ void TileManager::GetTileCoordinates(const TILE_ID_T &tileId, COORDINATE_T *pCoo
     TileIdToCenterCoord(tileId, &centerCoord);
 
     if (pCoord1) {
-        pCoord1->lat = centerCoord.lat - TILE_SPAN / 2.0 / LAT_METERS_PER_DEGREE;
-        pCoord1->lng = centerCoord.lng - TILE_SPAN / 2.0 / LNG_METERS_PER_DEGREE;
+        pCoord1->lat = centerCoord.lat - LAT_TILE_SPAN / 2.0 / LAT_METERS_PER_DEGREE;
+        pCoord1->lng = centerCoord.lng - LNG_TILE_SPAN / 2.0 / LNG_METERS_PER_DEGREE;
     }
     if (pCoord2) {
-        pCoord2->lat = centerCoord.lat + TILE_SPAN / 2.0 / LAT_METERS_PER_DEGREE;
-        pCoord2->lng = centerCoord.lng + TILE_SPAN / 2.0 / LNG_METERS_PER_DEGREE;
+        pCoord2->lat = centerCoord.lat + LAT_TILE_SPAN / 2.0 / LAT_METERS_PER_DEGREE;
+        pCoord2->lng = centerCoord.lng + LNG_TILE_SPAN / 2.0 / LNG_METERS_PER_DEGREE;
     }
 }
 

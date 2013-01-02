@@ -21,7 +21,9 @@
 #define SQUARE_LAT_SPAN     7
 #define SQUARE_LNG_SPAN     7
 
-#define TILE_SPAN   200 // tile span in meters
+// tile span in meters
+#define LAT_TILE_SPAN   200
+#define LNG_TILE_SPAN   200
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
