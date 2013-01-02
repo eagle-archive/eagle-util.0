@@ -34,7 +34,7 @@ int main()
         ElapsedTimeStr().c_str(), gTileManager.GetTileCount());
     gTileManager.SaveToCsvFile("Data\\Tiles.txt");
     printf("%s: Tiles for zoom level %d saved to file Data\\Tiles.txt\n",
-        ElapsedTimeStr().c_str(), ZOOM_LEVEL);
+        ElapsedTimeStr().c_str(), TILE_ZOOM_LEVEL);
 
     //Test_Main();
 

@@ -158,9 +158,9 @@ static bool GenerateSquarePtrArray(TileManager &tileMgr, SQUARE_ID_T squareIds[]
     for (int i = 0; i < num; i++) {
         SQUARE_T *psq = new SQUARE_T;
         psq->square_id = squareIds[i];
-        if ((i % 100000) == 0) {
-            printf("%s: thread #%d - Pre-calculate for square ID %d\n",
-                ElapsedTimeStr().c_str(), nThreadId, i);
+        if ((i % 10000) == 0) {
+            printf("%s: thread #%d - Pre-calculating %d/%d, %2.2lf%%\n",
+                ElapsedTimeStr().c_str(), nThreadId, i, num, (double)i/num * 100);
         }
 
         COORDINATE_T centerCoord;
@@ -175,6 +175,7 @@ static bool GenerateSquarePtrArray(TileManager &tileMgr, SQUARE_ID_T squareIds[]
         psq->arr_headings_seg_id.clear();
         psq->arr_headings_seg_id.reserve(HEADING_LEVEL_COUNT);
 
+        // compress seg_id_heading_levels[] into psq->arr_headings_seg_id
         for (int i1 = 0; i1 < HEADING_LEVEL_COUNT;) {
             int i2 = i1;
             while(i2 < HEADING_LEVEL_COUNT && seg_id_heading_levels[i2] == seg_id_heading_levels[i1]) {
@@ -263,6 +264,7 @@ bool SquareManager::BuildSquareMap_Multi(SegManager &segMgr, TileManager &tileMg
     mpSegMgr = &segMgr;
     mpTileMgr = &tileMgr;
 
+    printf("%s: To generate square Ids, waiting ...\n", ElapsedTimeStr().c_str());
     hash_set<SQUARE_ID_T> squareIdSet;
     bool res = GenerateSquareIds_Multi(segMgr.GetSegArray(), segMgr.GetSegArrayCount(),
         nThreadCount, squareIdSet);
