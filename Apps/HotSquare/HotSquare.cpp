@@ -36,7 +36,7 @@ int main()
     printf("%s: Tiles for zoom level %d saved to file Data\\Tiles.txt\n",
         ElapsedTimeStr().c_str(), TILE_ZOOM_LEVEL);
 
-    //Test_Main();
+    Test_Main();
 
     gSquareManager.BuildSquareMap_Multi(gSegManager, gTileManager, 4);
     printf("%s: Generated %d squares.\n",

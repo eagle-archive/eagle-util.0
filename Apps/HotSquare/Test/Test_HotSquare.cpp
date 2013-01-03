@@ -93,6 +93,6 @@ bool Test_Main()
         printf("Test_TileManager failed!\n");
     }
 
-    Test_SampleDataAssignment_TileManager();
+    while(1) Test_SampleDataAssignment_TileManager();
     return true;
 }

@@ -50,13 +50,13 @@ public:
     static void GetBoundingBox(const TILE_ID_T &tileId, double &north, double &south, double &east, double &west);
 
     static inline TILE_ID_T CoordToTileId(const COORDINATE_T &coord) {
-        // Refer to http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames, find C/C++ section
+        // Refer to http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames, C/C++ section
         int latId = (int)floor((1.0 - log( tan(coord.lat * M_PI/180.0) + 1.0 / cos(coord.lat * M_PI/180.0)) / M_PI) / 2.0 * (double)TOTAL_TILE_NUM);
         int lngId = (int)floor((coord.lng + 180.0) / 360.0 * (double)TOTAL_TILE_NUM);
         return ((unsigned long long)latId << 32) | (unsigned long long)lngId;
     };
     static inline void TileIdToCenterCoord(const TILE_ID_T &tileId, COORDINATE_T *pCoord) {
-        // Refer to http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames, find C/C++ section
+        // Refer to http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames, C/C++ section
         pCoord->lat = LatIdToLat((int)(tileId >> 32));
         pCoord->lng = LngIdToLng((int)tileId);
     };

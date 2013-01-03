@@ -13,11 +13,15 @@ using namespace std;
 #endif
 
 #define MAKE_TILE_ID(low, hi) ((TILE_ID_T)(low) | ((TILE_ID_T)(hi) << 32))
-#define NEIGHBOR_ID_ARRAY(arr_name, low, hi) \
-    TILE_ID_T arr_name[] = { \
-        MAKE_TILE_ID(low-1, hi-1), MAKE_TILE_ID(low, hi-1), MAKE_TILE_ID(low+1, hi-1), \
-        MAKE_TILE_ID(low-1, hi),                            MAKE_TILE_ID(low+1, hi), \
-        MAKE_TILE_ID(low-1, hi+1), MAKE_TILE_ID(low, hi+1), MAKE_TILE_ID(low+1, hi+1)}
+
+#define DECLARE_NEIGHBOR_IDS(arr_name, tile_id) \
+        int _lng_ = (int)(tile_id); \
+        int _lat_ = (int)((tile_id) >> 32); \
+        TILE_ID_T arr_name[] = { \
+            MAKE_TILE_ID(_lng_-1, _lat_-1), MAKE_TILE_ID(_lng_, _lat_-1), MAKE_TILE_ID(_lng_+1, _lat_-1), \
+            MAKE_TILE_ID(_lng_-1, _lat_),                                 MAKE_TILE_ID(_lng_+1, _lat_), \
+            MAKE_TILE_ID(_lng_-1, _lat_+1), MAKE_TILE_ID(_lng_, _lat_+1), MAKE_TILE_ID(_lng_+1, _lat_+1) \
+        }
 
 static inline bool InSameDirection(int heading1, int heading2) {
     int diff = (heading2 + 360 - heading1) % 360;
@@ -38,10 +42,7 @@ void TileManager::ClearTileMap()
 // return number of neighboring tiles
 // NOTE: count of neiTiles[] must be 8
 static inline int GetNeighborTiles(TILE_MAP_T &tileMap, TILE_T *pThisTile, P_TILE_T neiTiles[]) {
-    unsigned int low = (unsigned int)pThisTile->tile_id;
-    unsigned int hi = (unsigned int)(pThisTile->tile_id >> 32);
-
-    NEIGHBOR_ID_ARRAY(idNeighbors, low, hi);
+    DECLARE_NEIGHBOR_IDS(idNeighbors, pThisTile->tile_id);
     int count = 0;
     for (int i = 0; i < COUNT_OF(idNeighbors); i++) {
         auto it = tileMap.find(idNeighbors[i]);
@@ -99,9 +100,7 @@ static inline void AddToSegsNoDuplicate(std::vector<SEG_ID_T> &segs, hash_set<SE
 //  E4   This E5
 //  E6   E7   E8
 static inline void CheckAddEmptyNeighborTiles(TILE_MAP_T &tileMap, TILE_ID_T tileId) {
-    unsigned int low = (unsigned int)tileId;
-    unsigned int hi = (unsigned int)(tileId >> 32);
-    NEIGHBOR_ID_ARRAY(nbTileIdArray, low, hi);
+    DECLARE_NEIGHBOR_IDS(nbTileIdArray, tileId);
     for (int i = 0; i < COUNT_OF(nbTileIdArray); i++) {
         auto it = tileMap.find(nbTileIdArray[i]);
         if (it == tileMap.end()) {
