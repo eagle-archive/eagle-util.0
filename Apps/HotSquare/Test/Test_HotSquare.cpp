@@ -62,7 +62,7 @@ bool Test_TileManager()
     return true;
 }
 
-bool Test_SampleDataAssignment_TileManager()
+bool Test_TileManager_SampleDataAssignment()
 {
     SQUARE_ID_T sId;
 
@@ -84,6 +84,19 @@ bool Test_SampleDataAssignment_TileManager()
     return true;
 }
 
+bool Test_SegManager_Distance()
+{
+    COORDINATE_T coord;
+    coord.lng = 126.63961;
+    coord.lat = 45.78882;
+    const SEGMENT_T *pSeg1 = gSegManager.GetSegByID(20925); // should be of minimal distance?
+    const SEGMENT_T *pSeg2 = gSegManager.GetSegByID(20923);
+    double distance1 = gSegManager.CalcDistance(coord, *pSeg1);
+    double distance2 = gSegManager.CalcDistance(coord, *pSeg2);
+
+    return true;
+}
+
 bool Test_Main()
 {
     if (false == Test_CoordinateMapping()) {
@@ -92,7 +105,7 @@ bool Test_Main()
     if (false == Test_TileManager()) {
         printf("Test_TileManager failed!\n");
     }
-
-    while(1) Test_SampleDataAssignment_TileManager();
+    //while(1) Test_SegManager_Distance();
+    Test_TileManager_SampleDataAssignment();
     return true;
 }

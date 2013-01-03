@@ -26,6 +26,8 @@ int main()
     printf("%s: Found %d segments.\n",
         ElapsedTimeStr().c_str(), gSegManager.GetSegArrayCount());
 
+    Test_Main();
+
     if (false == gTileManager.GenerateTiles(gSegManager)) {
         printf("Error: cannot generate tiles\n");
         return 20;
@@ -35,8 +37,6 @@ int main()
     gTileManager.SaveToCsvFile("Data\\Tiles.txt");
     printf("%s: Tiles for zoom level %d saved to file Data\\Tiles.txt\n",
         ElapsedTimeStr().c_str(), TILE_ZOOM_LEVEL);
-
-    Test_Main();
 
     gSquareManager.BuildSquareMap_Multi(gSegManager, gTileManager, 4);
     printf("%s: Generated %d squares.\n",
