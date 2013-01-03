@@ -37,10 +37,10 @@ public:
         return mSquareMap;
     };
     int GetSquareCount() {
-        return mSquareMap.size();
+        return (int)mSquareMap.size();
     };
     SQUARE_T *GetSquareById(const SQUARE_ID_T &id) {
-        auto it = mSquareMap.find(id);
+		SQUARE_MAP_T::iterator it = mSquareMap.find(id);
         return (it == mSquareMap.end()) ? NULL : it->second;
     };
     bool SaveToCsvFile(const char *filename);

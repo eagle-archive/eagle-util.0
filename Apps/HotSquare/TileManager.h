@@ -30,10 +30,10 @@ public:
         ClearTileMap();
     };
     int GetTileCount() const {
-        return mTileMap.size();
+        return (int)mTileMap.size();
     };
     TILE_T *GetTileById(const TILE_ID_T &tileId) {
-        auto it = mTileMap.find(tileId);
+		TILE_MAP_T::iterator it = mTileMap.find(tileId);
         return it == mTileMap.end() ? NULL : it->second;
     };
     TILE_T *GetTileByCoord(const COORDINATE_T &coord) {

@@ -28,7 +28,7 @@ SEGMENT_T *SegManager::GetSegArray()
 
 int SegManager::GetSegArrayCount() const
 {
-    return mAllSegs.size();
+    return (int)mAllSegs.size();
 }
 
 static
