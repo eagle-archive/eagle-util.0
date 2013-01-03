@@ -26,7 +26,7 @@
 // Device [0, 360) into some heading levels
 // E.g., for 8 heading levels: 0: [-22.5, 22.5), Level 1: [22.5, 45+22.5), ...
 // NOTE: make sure it can be divided by 360
-#define HEADING_LEVEL_COUNT     8
+#define HEADING_LEVEL_COUNT     360
 
 #define TILE_ZOOM_LEVEL  17
 #define TOTAL_TILE_NUM  (2 << (TILE_ZOOM_LEVEL - 1))
