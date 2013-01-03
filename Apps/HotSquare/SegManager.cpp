@@ -6,6 +6,7 @@
 #include <math.h>
 #include <string>
 #include <fstream>
+#include <iostream>
 #include "HotSquare.h"
 #include "SegManager.h"
 
@@ -107,6 +108,8 @@ double SegManager::GetHeading(const COORDINATE_T &coFrom, const COORDINATE_T &co
     return heading;
 }
 
+// Refer to http://pastebin.com/n9rUuGRh
+// TODO: method correct?
 double SegManager::CalcDistance(const COORDINATE_T &coord, const SEGMENT_T &seg)
 {
     double apx = coord.lng - seg.from.lng;
@@ -122,7 +125,9 @@ double SegManager::CalcDistance(const COORDINATE_T &coord, const SEGMENT_T &seg)
     else if (t > 1) {
         t = 1;
     }
-
-    return (coord.lng - seg.from.lng + abx * t) * (coord.lng - seg.from.lng + abx * t)
-        + (seg.from.lat + aby * t) * (seg.from.lat + aby * t);
+    
+    //cout<< seg.from.lng + abx * t << "," << (seg.from.lat + aby * t) << "\n";
+    double r1 = coord.lng - (seg.from.lng + abx * t);
+    double r2 = coord.lat - (seg.from.lat + aby * t);
+    return r1*r1 + r2*r2;
 }

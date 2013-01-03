@@ -1,4 +1,5 @@
 
+#include <iostream>
 #include "../HotSquare.h"
 #include "../SquareManager.h"
 
@@ -62,24 +63,23 @@ bool Test_TileManager()
     return true;
 }
 
+bool Test_TileManager_AssignOnePoint(double lng, double lat, int heading, const SEG_ID_T &expected_id)
+{
+    COORDINATE_T coord;
+    coord.lng = lng;
+    coord.lat = lat;
+
+    SEG_ID_T res_id = gTileManager.AssignSegment(coord, heading);
+    cout << "expected seg ID: " << expected_id << " assigned ID: " << res_id << "\n";
+    return res_id == expected_id;
+}
+
 bool Test_TileManager_SampleDataAssignment()
 {
-    SQUARE_ID_T sId;
-
-    COORDINATE_T coord;
-    coord.lng = 126.63172;
-    coord.lat = 45.76266;
-    int heading = 61;
-    SEG_ID_T seg_id_expected = 15352;
-    sId = SquareManager::CoordinateToSquareId(coord);
-    SEG_ID_T assignedId = gTileManager.AssignSegment(coord, heading);
-
-    coord.lng = 126.63961;
-    coord.lat = 45.78882;
-    heading = 102;
-    seg_id_expected = 20925;
-    sId = SquareManager::CoordinateToSquareId(coord);
-    assignedId = gTileManager.AssignSegment(coord, heading);
+    Test_TileManager_AssignOnePoint(126.63172, 45.76266, 61, 15352);
+    Test_TileManager_AssignOnePoint(126.61701, 45.738483, 283, 11725);
+    Test_TileManager_AssignOnePoint(126.63961, 45.78882, 102, 20925);
+    Test_TileManager_AssignOnePoint(126.648125, 45.782818, 252, 12778);
 
     return true;
 }
@@ -105,7 +105,7 @@ bool Test_Main()
     if (false == Test_TileManager()) {
         printf("Test_TileManager failed!\n");
     }
-    //while(1) Test_SegManager_Distance();
+    Test_SegManager_Distance();
     Test_TileManager_SampleDataAssignment();
     return true;
 }
