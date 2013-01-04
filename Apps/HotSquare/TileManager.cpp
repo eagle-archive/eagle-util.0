@@ -28,6 +28,11 @@ static inline bool InSameDirection(int heading1, int heading2) {
     return diff <= 90 || diff >= 270;
 }
 
+static inline int GetAngle(int heading1, int heading2) {
+    int diff = (heading2 + 360 - heading1) % 360;
+    return (diff <= 180) ? diff : 360 - diff;
+}
+
 void TileManager::ClearTileMap()
 {
     for (TILE_MAP_T::iterator it = mTileMap.begin(); it != mTileMap.end(); it++) {
@@ -230,16 +235,39 @@ SEG_ID_T TileManager::AssignSegment(const COORDINATE_T &coord, int nHeading)
     double distanceMin = DBL_MAX;
     int minIndex = -1;
 
+    const int MAX = 512;
+    if (arrSegs.size() > MAX) {
+        printf("BUFFER SIZE TOO SMALL!!!\n");
+        *(int*)0 = 1;
+    }
+    bool aIsSameDir[MAX];
+    memset(aIsSameDir, 0, sizeof(aIsSameDir));
+    double aDistances[MAX];
+
     for (size_t i = 0; i < arrSegs.size(); i++) {
         const SEGMENT_T *pSeg = mpSegMgr->GetSegByID(arrSegs[i]);
 
         // If not the same direction, ignore
-        if (pSeg != NULL && InSameDirection((int)(pSeg->heading + 0.5), nHeading)) {
+        aIsSameDir[i] = InSameDirection((int)(pSeg->heading + 0.5), nHeading);
+        if (pSeg != NULL && aIsSameDir[i]) {
             // get the min distance
             double distance = SegManager::CalcDistance(coord, *pSeg);
+            aDistances[i] = distance;
             if (distance < distanceMin) {
                 minIndex = i;
                 distanceMin = distance;
+            }
+        }
+    }
+
+    int angleMin = 180;
+    for (size_t i = 0; i < arrSegs.size(); i++) {
+        if (aIsSameDir[i] && (distanceMin == aDistances[i])) {
+            const SEGMENT_T *pSeg = mpSegMgr->GetSegByID(arrSegs[i]);
+            int angle = GetAngle((int)(pSeg->heading + 0.5), nHeading);
+            if (angle < angleMin) {
+                minIndex = i;
+                angleMin = angle;
             }
         }
     }
