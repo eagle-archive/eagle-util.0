@@ -3,6 +3,8 @@
 #include "../HotSquare.h"
 #include "../SquareManager.h"
 
+#define DMS_TO_DEGREE(d,m,s,ms)    (d + (m)/60.0 + ((s) + (ms)/1000.0)/3600.0)
+
 using namespace std;
 
 extern SegManager gSegManager;
@@ -76,10 +78,9 @@ bool Test_TileManager_AssignOnePoint(double lng, double lat, int heading, const 
 
 bool Test_TileManager_SampleDataAssignment()
 {
-    Test_TileManager_AssignOnePoint(126.63172, 45.76266, 61, 15352);
-    Test_TileManager_AssignOnePoint(126.61701, 45.738483, 283, 11725);
-    Test_TileManager_AssignOnePoint(126.63961, 45.78882, 102, 20925);
-    Test_TileManager_AssignOnePoint(126.648125, 45.782818, 252, 12778);
+    Test_TileManager_AssignOnePoint(DMS_TO_DEGREE(126,36,51,299), DMS_TO_DEGREE(45,39,46,619), 217, 0);
+    Test_TileManager_AssignOnePoint(DMS_TO_DEGREE(126,39,42,803), DMS_TO_DEGREE(45,45,24,299), 272, 9774);
+    Test_TileManager_AssignOnePoint(DMS_TO_DEGREE(126,40,45,433), DMS_TO_DEGREE(45,44, 3,418),  56, 2798);
 
     return true;
 }
@@ -93,8 +94,7 @@ bool Test_SegManager_Distance()
     const SEGMENT_T *pSeg2 = gSegManager.GetSegByID(20923);
     double distance1 = gSegManager.CalcDistance(coord, *pSeg1);
     double distance2 = gSegManager.CalcDistance(coord, *pSeg2);
-
-    return true;
+    return distance1 <= distance2;
 }
 
 bool Test_Main()
@@ -107,5 +107,6 @@ bool Test_Main()
     }
     Test_SegManager_Distance();
     Test_TileManager_SampleDataAssignment();
+
     return true;
 }

@@ -32,18 +32,18 @@ int main()
     }
     printf("%s: Generated %d tiles.\n",
         ElapsedTimeStr().c_str(), gTileManager.GetTileCount());
-    gTileManager.SaveToCsvFile("Data\\Tiles.txt");
-    printf("%s: Tiles for zoom level %d saved to file Data\\Tiles.txt\n",
+    gTileManager.SaveToCsvFile("Data\\Tiles.csv");
+    printf("%s: Tiles for zoom level %d saved to file Data\\Tiles.csv\n",
         ElapsedTimeStr().c_str(), TILE_ZOOM_LEVEL);
 
-    //Test_Main();
+    Test_Main();
 
     gSquareManager.BuildSquareMap_Multi(gSegManager, gTileManager, 4);
     printf("%s: Generated %d squares.\n",
         ElapsedTimeStr().c_str(), gSquareManager.GetSquareCount());
  
-    gSquareManager.SaveToCsvFile("Data\\Squares.txt");
-    printf("%s: Squares saved to file Data\\Squares.txt\n",
+    gSquareManager.SaveToCsvFile("Data\\Squares.csv");
+    printf("%s: Squares saved to file Data\\Squares.csv\n",
         ElapsedTimeStr().c_str());
 
     printf("%s: Done!\n", ElapsedTimeStr().c_str());
