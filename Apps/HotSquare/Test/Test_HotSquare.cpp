@@ -9,6 +9,7 @@ using namespace std;
 
 extern SegManager gSegManager;
 extern TileManager gTileManager;
+extern SquareManager gSquareManager;
 
 bool Test_CoordinateMapping()
 {
@@ -78,10 +79,37 @@ bool Test_TileManager_AssignOnePoint(double lng, double lat, int heading, const 
 
 bool Test_TileManager_SampleDataAssignment()
 {
+    printf("\nTest_TileManager_SampleDataAssignment:\n");
     Test_TileManager_AssignOnePoint(DMS_TO_DEGREE(126,36,51,299), DMS_TO_DEGREE(45,39,46,619), 217, 0);
     Test_TileManager_AssignOnePoint(DMS_TO_DEGREE(126,39,42,803), DMS_TO_DEGREE(45,45,24,299), 272, 9774);
     Test_TileManager_AssignOnePoint(DMS_TO_DEGREE(126,40,45,433), DMS_TO_DEGREE(45,44, 3,418),  56, 2798);
+    Test_TileManager_AssignOnePoint(126.70537972222222, 45.75574972222222, 19, 3980);
+    Test_TileManager_AssignOnePoint(126.78225972222222, 45.77801972222222, 17, 22197);
+    Test_TileManager_AssignOnePoint(126.64852972222224, 45.743409722222225, 22, 12759);
+    return true;
+}
 
+bool Test_SquareManager_AssignOnePoint(double lng, double lat, int heading, const SEG_ID_T &expected_id)
+{
+    COORDINATE_T coord;
+    coord.lng = lng;
+    coord.lat = lat;
+
+    SEG_ID_T res_id = gSquareManager.AssignSegment(coord, heading);
+    cout << "expected seg ID: " << expected_id << " assigned ID: " << res_id << "\n";
+    return res_id == expected_id;
+    return true;
+}
+
+bool Test_SquareManager_SampleDataAssignment()
+{
+    printf("\nTest_SquareManager_SampleDataAssignment:\n");
+    Test_SquareManager_AssignOnePoint(DMS_TO_DEGREE(126,36,51,299), DMS_TO_DEGREE(45,39,46,619), 217, 0);
+    Test_SquareManager_AssignOnePoint(DMS_TO_DEGREE(126,39,42,803), DMS_TO_DEGREE(45,45,24,299), 272, 9774);
+    Test_SquareManager_AssignOnePoint(DMS_TO_DEGREE(126,40,45,433), DMS_TO_DEGREE(45,44, 3,418),  56, 2798);
+    Test_SquareManager_AssignOnePoint(126.70537972222222, 45.75574972222222, 19, 3980);
+    Test_SquareManager_AssignOnePoint(126.78225972222222, 45.77801972222222, 17, 22197);
+    Test_SquareManager_AssignOnePoint(126.64852972222224, 45.743409722222225, 22, 12759);
     return true;
 }
 
@@ -105,8 +133,9 @@ bool Test_Main()
     if (false == Test_TileManager()) {
         printf("Test_TileManager failed!\n");
     }
-    Test_SegManager_Distance();
+    //Test_SegManager_Distance();
     Test_TileManager_SampleDataAssignment();
+    Test_SquareManager_SampleDataAssignment();
 
     return true;
 }

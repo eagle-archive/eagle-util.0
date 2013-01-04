@@ -50,9 +50,12 @@ public:
         return (it == mSegIdMap.end()) ? NULL : &mAllSegs[it->second];
     };
 
+    static int HeadingToLevel(double heading) {
+        return int(heading / (360.0/HEADING_LEVEL_COUNT) + 0.5) % HEADING_LEVEL_COUNT;
+    };
     static double GetHeading(const COORDINATE_T &coFrom, const COORDINATE_T &coTo);
     static int GetHeadingLevel(const COORDINATE_T &coFrom, const COORDINATE_T &coTo) {
-        return int((GetHeading(coFrom, coTo) + (180.0/HEADING_LEVEL_COUNT)) / (360.0/HEADING_LEVEL_COUNT)) % HEADING_LEVEL_COUNT;
+        return HeadingToLevel(GetHeading(coFrom, coTo));
     }
     static double CalcDistance(const COORDINATE_T &coord, const SEGMENT_T &seg);
 

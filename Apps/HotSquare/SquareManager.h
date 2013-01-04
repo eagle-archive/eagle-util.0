@@ -44,6 +44,7 @@ public:
         return (it == mSquareMap.end()) ? NULL : it->second;
     };
     bool SaveToCsvFile(const char *filename);
+    SEG_ID_T AssignSegment(const COORDINATE_T &coord, int nHeading); // return 0 if not found
 
     static inline SQUARE_ID_T CoordinateToSquareId(const COORDINATE_T &coord) {
         unsigned int hi = (unsigned int)(coord.lat * LAT_METERS_PER_DEGREE / SQUARE_LAT_SPAN);

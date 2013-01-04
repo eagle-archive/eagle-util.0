@@ -25,7 +25,7 @@ using namespace std;
 
 static inline bool InSameDirection(int heading1, int heading2) {
     int diff = (heading2 + 360 - heading1) % 360;
-    return diff < 90 || diff > 270;
+    return diff <= 90 || diff >= 270;
 }
 
 void TileManager::ClearTileMap()

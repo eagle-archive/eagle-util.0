@@ -315,3 +315,19 @@ bool SquareManager::SaveToCsvFile(const char *filename)
     out.close();
     return true;
 }
+
+SEG_ID_T SquareManager::AssignSegment(const COORDINATE_T &coord, int nHeading)
+{
+    SQUARE_ID_T sqId = SquareManager::CoordinateToSquareId(coord);
+    SQUARE_T *pSq = GetSquareById(sqId);
+    if (!pSq) return 0;
+
+    int headingLevel = SegManager::HeadingToLevel(nHeading);
+    for (size_t i = 0; i < pSq->arr_headings_seg_id.size(); i++) {
+        const HEADINGS_TO_SEG_IDS_T &head_segids = pSq->arr_headings_seg_id[i];
+        if (headingLevel >= head_segids.from_level && headingLevel <= head_segids.to_level) {
+            return head_segids.seg_id;
+        }
+    }
+    return 0;
+}
