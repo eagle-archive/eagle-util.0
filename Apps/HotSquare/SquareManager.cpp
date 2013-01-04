@@ -8,6 +8,7 @@
 #include "SquareManager.h"
 
 using namespace std;
+using namespace stdext;
 
 
 static const double LAT_MARGIN = 50.0 / LAT_METERS_PER_DEGREE;
@@ -119,18 +120,18 @@ bool GenerateSquareIds_Multi(const SEGMENT_T segments[], int nSegs,
     }
 
     // Wait until all threads have terminated.
-    ::WaitForMultipleObjects(nThreadCount, hThreadArray.data(), TRUE, INFINITE);
+    ::WaitForMultipleObjects(nThreadCount, &hThreadArray[0], TRUE, INFINITE);
     for(int i=0; i<nThreadCount; i++) {
         CloseHandle(hThreadArray[i]);
     }
 
     // combine the result set
     squareIdSet.clear();
-    const decltype(squareIdSet.end()) squareIdSet_End = squareIdSet.end();
+	const hash_set<SQUARE_ID_T>::iterator squareIdSet_End = squareIdSet.end();
 
     for (int i=0; i<nThreadCount; i++) {
-        stdext::hash_set<SQUARE_ID_T> &subSet = dataArray[i].squareIdSet;
-        const auto subSet_End = subSet.end();
+        hash_set<SQUARE_ID_T> &subSet = dataArray[i].squareIdSet;
+		const hash_set<SQUARE_ID_T>::iterator subSet_End = subSet.end();
         for (stdext::hash_set<SQUARE_ID_T>::iterator it = subSet.begin(); it != subSet_End; it++) {
             if (squareIdSet_End == squareIdSet.find(*it)) {
                 squareIdSet.insert(*it);
@@ -144,7 +145,7 @@ bool GenerateSquareIds_Multi(const SEGMENT_T segments[], int nSegs,
 static void SquareSetToArray(hash_set<SQUARE_ID_T> &squareIdSet, vector<SQUARE_ID_T> &arrIds)
 {
     arrIds.reserve(squareIdSet.size());
-    for (auto it = squareIdSet.begin(); it != squareIdSet.end(); it++) {
+	for (hash_set<SQUARE_ID_T>::iterator it = squareIdSet.begin(); it != squareIdSet.end(); it++) {
         arrIds.push_back(*it);
     }
 }
@@ -192,7 +193,9 @@ static bool GenerateSquarePtrArray(TileManager &tileMgr, SQUARE_ID_T squareIds[]
             i1 = i2 + 1;
         }
 
-        psq->arr_headings_seg_id.shrink_to_fit();
+#ifdef CPP11_SUPPORT
+		psq->arr_headings_seg_id.shrink_to_fit();
+#endif
         arrSquarePtr.push_back(psq);
     }
 
@@ -229,7 +232,7 @@ static bool GenerateSquareArray_Multi(TileManager &tileMgr, int nThreadCount,
     for (int i = 0; i < nThreadCount; i++) {
         dataArray[i].nThreadId = i;
         dataArray[i].pTileManager = &tileMgr;
-        dataArray[i].pSqStart = (SQUARE_ID_T *)squareIdArr.data() + nAverageCount * i;
+        dataArray[i].pSqStart = (SQUARE_ID_T *)&squareIdArr[0] + nAverageCount * i;
         dataArray[i].nSqCount = nAverageCount;
         if (i == nThreadCount - 1) {
             dataArray[i].nSqCount = squareIdArr.size() - nAverageCount * i;
@@ -240,7 +243,7 @@ static bool GenerateSquareArray_Multi(TileManager &tileMgr, int nThreadCount,
     }
 
     // Wait until all threads have terminated.
-    ::WaitForMultipleObjects(nThreadCount, hThreadArray.data(), TRUE, INFINITE);
+    ::WaitForMultipleObjects(nThreadCount, &hThreadArray[0], TRUE, INFINITE);
     for(int i=0; i<nThreadCount; i++) {
         ::CloseHandle(hThreadArray[i]);
     }
@@ -248,7 +251,7 @@ static bool GenerateSquareArray_Multi(TileManager &tileMgr, int nThreadCount,
     // build mSquareMap
     sqMap.clear();
     for (size_t n = 0; n < dataArray.size(); n++) {
-        auto arrSquarePtr = dataArray[n].arrSquarePtr;
+        vector<SQUARE_T *> &arrSquarePtr = dataArray[n].arrSquarePtr;
         for (size_t i = 0; i < arrSquarePtr.size(); i++) {
             sqMap.insert(SQUARE_MAP_T::value_type(arrSquarePtr[i]->square_id, arrSquarePtr[i]));
         }
@@ -286,7 +289,7 @@ bool SquareManager::BuildSquareMap_Multi(SegManager &segMgr, TileManager &tileMg
 
 void SquareManager::ClearSquareMap()
 {
-    for (auto it = mSquareMap.begin(); it != mSquareMap.end(); it++) {
+	for (SQUARE_MAP_T::iterator it = mSquareMap.begin(); it != mSquareMap.end(); it++) {
         if (it->second != NULL) {
             delete it->second;
             it->second = NULL;
@@ -301,7 +304,7 @@ bool SquareManager::SaveToCsvFile(const char *filename)
     if (!out.good())
         return false;
 
-    for (auto it = mSquareMap.begin(); it != mSquareMap.end(); it++) {
+	for (SQUARE_MAP_T::iterator it = mSquareMap.begin(); it != mSquareMap.end(); it++) {
         SQUARE_T *pSq = it->second;
         for (size_t i = 0; i < pSq->arr_headings_seg_id.size(); i++) {
             char buff[512];

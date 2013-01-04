@@ -4,9 +4,12 @@
 
 #include <string>
 #include <fstream>
+#include <float.h>
 #include "TileManager.h"
 
 using namespace std;
+using namespace stdext;
+
 
 #ifndef COUNT_OF
 #define COUNT_OF(a) (sizeof(a)/sizeof(*a))
@@ -50,7 +53,7 @@ static inline int GetNeighborTiles(TILE_MAP_T &tileMap, TILE_T *pThisTile, P_TIL
     DECLARE_NEIGHBOR_IDS(idNeighbors, pThisTile->tile_id);
     int count = 0;
     for (int i = 0; i < COUNT_OF(idNeighbors); i++) {
-        auto it = tileMap.find(idNeighbors[i]);
+		TILE_MAP_T::iterator it = tileMap.find(idNeighbors[i]);
         if (it != tileMap.end()) {
             neiTiles[count] = it->second;
             count++;
@@ -82,7 +85,7 @@ static inline void CheckUpdateTile(TILE_MAP_T &tileMap, const TILE_ID_T &tileId,
     }
 }
 
-static inline void AddToSegsNoDuplicate(std::vector<SEG_ID_T> &segs, hash_set<SEG_ID_T> &segIdsSet) {
+static inline void AddToSegsNoDuplicate(vector<SEG_ID_T> &segs, hash_set<SEG_ID_T> &segIdsSet) {
     for (hash_set<SEG_ID_T>::iterator it = segIdsSet.begin(); it != segIdsSet.end(); it++) {
         const SEG_ID_T &segId = *it;
         bool found = false;
@@ -107,7 +110,7 @@ static inline void AddToSegsNoDuplicate(std::vector<SEG_ID_T> &segs, hash_set<SE
 static inline void CheckAddEmptyNeighborTiles(TILE_MAP_T &tileMap, TILE_ID_T tileId) {
     DECLARE_NEIGHBOR_IDS(nbTileIdArray, tileId);
     for (int i = 0; i < COUNT_OF(nbTileIdArray); i++) {
-        auto it = tileMap.find(nbTileIdArray[i]);
+		TILE_MAP_T::iterator it = tileMap.find(nbTileIdArray[i]);
         if (it == tileMap.end()) {
             // Simply inser an empty tile for the neighbor
             TILE_T *pTile = new TILE_T();
@@ -123,7 +126,7 @@ static inline void UpdateTileForNeighborSegs(TILE_MAP_T &tileMap, TILE_T *pTile)
     pTile->segsWithNeighbors.reserve(pTile->segIdsSet.size() * 3);
 
     // copy the segments into pTile->segsWithNeighbors
-    for (auto it = pTile->segIdsSet.begin(); it != pTile->segIdsSet.end(); it++) {
+	for (hash_set<SEG_ID_T>::iterator it = pTile->segIdsSet.begin(); it != pTile->segIdsSet.end(); it++) {
         pTile->segsWithNeighbors.push_back(*it);
     }
 
@@ -134,7 +137,9 @@ static inline void UpdateTileForNeighborSegs(TILE_MAP_T &tileMap, TILE_T *pTile)
         AddToSegsNoDuplicate(pTile->segsWithNeighbors, nbTiles[i]->segIdsSet);
     }
 
+#ifdef CPP11_SUPPORT
     pTile->segsWithNeighbors.shrink_to_fit();
+#endif
 }
 
 bool TileManager::GenerateTiles(SegManager &mSegMgr)
@@ -161,7 +166,7 @@ bool TileManager::GenerateTiles(SegManager &mSegMgr)
     {
         vector<TILE_ID_T> arrTileIds;
         arrTileIds.reserve(mTileMap.size());
-        for (auto it = mTileMap.begin(); it != mTileMap.end(); it++) {
+		for (TILE_MAP_T::iterator it = mTileMap.begin(); it != mTileMap.end(); it++) {
             arrTileIds.push_back(it->first);
         }
         for (int i = (int)arrTileIds.size() - 1; i >= 0; i--) {
@@ -169,7 +174,7 @@ bool TileManager::GenerateTiles(SegManager &mSegMgr)
         }
     }
 
-    for (auto it = mTileMap.begin(); it != mTileMap.end(); it++) {
+	for (TILE_MAP_T::iterator it = mTileMap.begin(); it != mTileMap.end(); it++) {
         UpdateTileForNeighborSegs(mTileMap, it->second);
     }
 
@@ -225,12 +230,12 @@ void TileManager::GetTileCoordinates(const TILE_ID_T &tileId, COORDINATE_T *pCoo
 SEG_ID_T TileManager::AssignSegment(const COORDINATE_T &coord, int nHeading)
 {
     TILE_ID_T tileId = TileManager::CoordToTileId(coord);
-    auto it = mTileMap.find(tileId);
+	TILE_MAP_T::iterator it = mTileMap.find(tileId);
     if (it == mTileMap.end())
         return false;
 
     TILE_T *pTile = it->second;
-    auto arrSegs = pTile->segsWithNeighbors;
+    std::vector<SEG_ID_T> &arrSegs = pTile->segsWithNeighbors;
 
     double distanceMin = DBL_MAX;
     int minIndex = -1;

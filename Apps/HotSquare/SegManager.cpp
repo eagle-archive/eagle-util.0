@@ -23,7 +23,11 @@ SegManager::~SegManager()
 
 SEGMENT_T *SegManager::GetSegArray()
 {
+#ifdef CPP11_SUPPORT
     return mAllSegs.data();
+#else
+    return &mAllSegs[0];
+#endif
 }
 
 int SegManager::GetSegArrayCount() const
@@ -87,7 +91,9 @@ bool SegManager::LoadFromCsvFile(const char *path)
     }
 
     in.close();
+#ifdef CPP11_SUPPORT
     mAllSegs.shrink_to_fit();
+#endif
     return !mAllSegs.empty();
 }
 
