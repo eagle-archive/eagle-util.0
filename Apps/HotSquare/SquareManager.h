@@ -46,13 +46,13 @@ public:
     bool SaveToCsvFile(const char *filename);
 
     static inline SQUARE_ID_T CoordinateToSquareId(const COORDINATE_T &coord) {
-        unsigned int hi = (unsigned int)(coord.lat * LAT_METERS_PER_DEGREE / SQUARE_LAT_SPAN + 0.5);
-        unsigned int low = (unsigned int)(coord.lng * LNG_METERS_PER_DEGREE / SQUARE_LNG_SPAN + 0.5);
+        unsigned int hi = (unsigned int)(coord.lat * LAT_METERS_PER_DEGREE / SQUARE_LAT_SPAN);
+        unsigned int low = (unsigned int)(coord.lng * LNG_METERS_PER_DEGREE / SQUARE_LNG_SPAN);
         return ((unsigned long long)hi << 32) | low;
     };
     static inline void SquareIdToCenterCoordinate(const SQUARE_ID_T &id, COORDINATE_T *pCoord) {
-        pCoord->lat = (unsigned int)(id >> 32) * (double)SQUARE_LAT_SPAN / LAT_METERS_PER_DEGREE;
-        pCoord->lng = (unsigned int)id * (double)SQUARE_LNG_SPAN / LNG_METERS_PER_DEGREE;
+        pCoord->lat = ((unsigned int)(id >> 32) + 0.5) * (double)SQUARE_LAT_SPAN / LAT_METERS_PER_DEGREE;
+        pCoord->lng = ((unsigned int)id + 0.5) * (double)SQUARE_LNG_SPAN / LNG_METERS_PER_DEGREE;
     };
 
 private:

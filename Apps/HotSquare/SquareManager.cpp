@@ -10,8 +10,8 @@
 using namespace std;
 
 
-static const double LAT_MARGIN = 60.0 / LAT_METERS_PER_DEGREE;
-static const double LNG_MARGIN = 60.0 / LNG_METERS_PER_DEGREE;
+static const double LAT_MARGIN = 50.0 / LAT_METERS_PER_DEGREE;
+static const double LNG_MARGIN = 50.0 / LNG_METERS_PER_DEGREE;
 static const double LAT_STEP = 2.0 / LAT_METERS_PER_DEGREE;
 static const double LNG_STEP = 2.0 / LNG_METERS_PER_DEGREE;
 
