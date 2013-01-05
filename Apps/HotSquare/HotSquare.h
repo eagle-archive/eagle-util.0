@@ -20,8 +20,8 @@
 #define SEGMENTS_CSV_PATH   "Data\\WAY_SEGMENTS\\data"
 
 // square size (in meters)
-#define SQUARE_LAT_SPAN     7
-#define SQUARE_LNG_SPAN     7
+#define SQUARE_LAT_SPAN     10
+#define SQUARE_LNG_SPAN     10
 
 // Device [0, 360) into some heading levels
 // E.g., for 8 heading levels: 0: [-22.5, 22.5), Level 1: [22.5, 45+22.5), ...
@@ -30,6 +30,8 @@
 
 #define TILE_ZOOM_LEVEL  17
 #define TOTAL_TILE_NUM  (2 << (TILE_ZOOM_LEVEL - 1))
+
+#define SEG_ASSIGN_DISTANCE_MAX     150 // in meter
 
 // Check if there is C++11 support
 #if !(defined(_MSC_VER) && _MSC_VER < 1600)

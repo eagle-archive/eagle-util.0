@@ -114,6 +114,7 @@ double SegManager::GetHeading(const COORDINATE_T &coFrom, const COORDINATE_T &co
     return heading;
 }
 
+// Actually returns the square of distance
 // Refer to http://pastebin.com/n9rUuGRh
 double SegManager::CalcDistance(const COORDINATE_T &coord, const SEGMENT_T &seg)
 {
@@ -134,5 +135,28 @@ double SegManager::CalcDistance(const COORDINATE_T &coord, const SEGMENT_T &seg)
     //printf("points(%3.8lf, %3.8lf)\n", seg.from.lng + abx * t, seg.from.lat + aby * t);
     double r1 = coord.lng - (seg.from.lng + abx * t);
     double r2 = coord.lat - (seg.from.lat + aby * t);
+    return r1*r1 + r2*r2;
+}
+
+// Returns the square meters of distance
+double SegManager::CalcDistanceSquareMeters(const COORDINATE_T &coord, const SEGMENT_T &seg)
+{
+    double apx = coord.lng - seg.from.lng;
+    double apy = coord.lat - seg.from.lat;
+    double abx = seg.to.lng - seg.from.lng;
+    double aby = seg.to.lat - seg.from.lat;
+    double ab2 = abx * abx + aby * aby;
+    double ap_ab = apx * abx + apy * aby;
+    double t = ap_ab / ab2;
+    if (t < 0) {
+        t = 0;
+    }
+    else if (t > 1) {
+        t = 1;
+    }
+
+    //printf("points(%3.8lf, %3.8lf)\n", seg.from.lng + abx * t, seg.from.lat + aby * t);
+    double r1 = (coord.lng - (seg.from.lng + abx * t)) * LNG_METERS_PER_DEGREE;
+    double r2 = (coord.lat - (seg.from.lat + aby * t)) * LAT_METERS_PER_DEGREE;
     return r1*r1 + r2*r2;
 }

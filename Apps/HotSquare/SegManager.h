@@ -58,6 +58,7 @@ public:
         return HeadingToLevel(GetHeading(coFrom, coTo));
     }
     static double CalcDistance(const COORDINATE_T &coord, const SEGMENT_T &seg);
+    static double CalcDistanceSquareMeters(const COORDINATE_T &coord, const SEGMENT_T &seg);
 
 private:
     typedef std::map<SEG_ID_T, int> SEG_ID_MAP;

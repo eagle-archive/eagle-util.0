@@ -110,6 +110,7 @@ bool Test_SquareManager_SampleDataAssignment()
     Test_SquareManager_AssignOnePoint(126.70537972222222, 45.75574972222222, 19, 3980);
     Test_SquareManager_AssignOnePoint(126.78225972222222, 45.77801972222222, 17, 22197);
     Test_SquareManager_AssignOnePoint(126.64852972222224, 45.743409722222225, 22, 12759);
+
     return true;
 }
 

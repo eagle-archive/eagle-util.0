@@ -11,13 +11,13 @@ using namespace std;
 using namespace stdext;
 
 
-static const double LAT_MARGIN = 50.0 / LAT_METERS_PER_DEGREE;
-static const double LNG_MARGIN = 50.0 / LNG_METERS_PER_DEGREE;
-static const double LAT_STEP = 2.0 / LAT_METERS_PER_DEGREE;
-static const double LNG_STEP = 2.0 / LNG_METERS_PER_DEGREE;
+static const double LAT_MARGIN = SEG_ASSIGN_DISTANCE_MAX * 1.1 / LAT_METERS_PER_DEGREE;
+static const double LNG_MARGIN = SEG_ASSIGN_DISTANCE_MAX * 1.1 / LNG_METERS_PER_DEGREE;
+static const double LAT_STEP = SQUARE_LAT_SPAN / 5.0 / LAT_METERS_PER_DEGREE;
+static const double LNG_STEP = SQUARE_LNG_SPAN / 5.0 / LNG_METERS_PER_DEGREE;
 
 static
-bool GetSegmentNeighboringSquareIds(const SEGMENT_T *pSegment, vector<SQUARE_ID_T> &squareIds)
+bool GetSegmentNeighboringSquareIds(const SEGMENT_T *pSegment, hash_set<SQUARE_ID_T> &sqIdSet)
 {
     double lat1 = pSegment->from.lat;
     double lng1 = pSegment->from.lng;
@@ -35,41 +35,36 @@ bool GetSegmentNeighboringSquareIds(const SEGMENT_T *pSegment, vector<SQUARE_ID_
     lng1 -= LNG_MARGIN;
     lng2 += LNG_MARGIN;
 
+    sqIdSet.clear();
     COORDINATE_T coord;
-    squareIds.clear();
     for (coord.lat = lat1; coord.lat <= lat2; coord.lat += LAT_STEP) {
         for (coord.lng = lng1; coord.lng < lng2; coord.lng += LNG_STEP) {
             SQUARE_ID_T id = SquareManager::CoordinateToSquareId(coord);
-            bool found = false;
-            for (int i=squareIds.size()-1; i>=0; i--) {
-                if (squareIds[i] == id) {
-                    found = true;
-                    break;
+            if (sqIdSet.find(id) == sqIdSet.end()) {
+                if (SegManager::CalcDistanceSquareMeters(coord, *pSegment) <
+                    SEG_ASSIGN_DISTANCE_MAX * SEG_ASSIGN_DISTANCE_MAX) {
+                        sqIdSet.insert(id);
                 }
-            }
-            if (!found) {
-                squareIds.push_back(id);
             }
         }
     }
 
-    return !squareIds.empty();
+    return !sqIdSet.empty();
 }
 
 
 bool GenerateSquareIds(const SEGMENT_T segments[], int count, hash_set<SQUARE_ID_T> &squareIdSet)
 {
-    vector<SQUARE_ID_T> squareIds;
-    stdext::hash_set<SQUARE_ID_T>::iterator itEnd = squareIdSet.end();
-
+    hash_set<SQUARE_ID_T> subSet;
     squareIdSet.clear();
-    for (int i=0; i<count; i++) {
-        squareIds.clear();
-        GetSegmentNeighboringSquareIds(&segments[i], squareIds);
 
-        for (int k=(int)squareIds.size()-1; k>=0; k--) {
-            if (squareIdSet.find(squareIds[k]) == itEnd) {
-                squareIdSet.insert(squareIds[k]);
+    for (int i=0; i<count; i++) {
+        subSet.clear();
+        GetSegmentNeighboringSquareIds(&segments[i], subSet);
+
+        for (hash_set<SQUARE_ID_T>::iterator it = subSet.begin(); it != subSet.end(); it++) {
+            if (squareIdSet.find(*it) == squareIdSet.end()) {
+                squareIdSet.insert(*it);
             }
         }
     }
