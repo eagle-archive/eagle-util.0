@@ -48,7 +48,7 @@ void TileManager::ClearTileMap()
 }
 
 // return number of neighboring tiles
-// NOTE: count of neiTiles[] must be 8
+// NOTE: buff size of neiTiles[] must be 8
 static inline int GetNeighborTiles(TILE_MAP_T &tileMap, TILE_T *pThisTile, P_TILE_T neiTiles[]) {
     DECLARE_NEIGHBOR_IDS(idNeighbors, pThisTile->tile_id);
     int count = 0;
@@ -243,10 +243,9 @@ SEG_ID_T TileManager::AssignSegment(const COORDINATE_T &coord, int nHeading)
     const int MAX = 512;
     if (arrSegs.size() > MAX) {
         printf("BUFFER SIZE TOO SMALL!!!\n");
-        *(int*)0 = 1;
+        *(int*)0 = 1; // to crash
     }
-    bool aIsSameDir[MAX];
-    memset(aIsSameDir, 0, sizeof(aIsSameDir));
+	bool aIsSameDir[MAX];
     double aDistances[MAX];
 
     for (size_t i = 0; i < arrSegs.size(); i++) {
@@ -254,7 +253,7 @@ SEG_ID_T TileManager::AssignSegment(const COORDINATE_T &coord, int nHeading)
 
         // If not the same direction, ignore
         aIsSameDir[i] = InSameDirection((int)(pSeg->heading + 0.5), nHeading);
-        if (pSeg != NULL && aIsSameDir[i]) {
+        if (aIsSameDir[i]) {
             // get the min distance
             double distance = SegManager::CalcDistance(coord, *pSeg);
             aDistances[i] = distance;

@@ -59,6 +59,11 @@ bool GenerateSquareIds(const SEGMENT_T segments[], int count, hash_set<SQUARE_ID
     squareIdSet.clear();
 
     for (int i=0; i<count; i++) {
+        if ((i % 2) == 0) {
+            printf("%s: thread #%d - Generating square IDs, %d/%d, %2.2lf%%\n",
+				ElapsedTimeStr().c_str(), ::GetCurrentThreadId(), i, count, (double)i/count * 100);
+        }
+
         subSet.clear();
         GetSegmentNeighboringSquareIds(&segments[i], subSet);
 
