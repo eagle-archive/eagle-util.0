@@ -13,8 +13,8 @@ using namespace stdext;
 
 static const double LAT_MARGIN = SEG_ASSIGN_DISTANCE_MAX * 1.1 / LAT_METERS_PER_DEGREE;
 static const double LNG_MARGIN = SEG_ASSIGN_DISTANCE_MAX * 1.1 / LNG_METERS_PER_DEGREE;
-static const double LAT_STEP = SQUARE_LAT_SPAN / 5.0 / LAT_METERS_PER_DEGREE;
-static const double LNG_STEP = SQUARE_LNG_SPAN / 5.0 / LNG_METERS_PER_DEGREE;
+static const double LAT_STEP = SQUARE_LAT_SPAN / 4.0 / LAT_METERS_PER_DEGREE;
+static const double LNG_STEP = SQUARE_LNG_SPAN / 4.0 / LNG_METERS_PER_DEGREE;
 
 static
 bool GetSegmentNeighboringSquareIds(const SEGMENT_T *pSegment, hash_set<SQUARE_ID_T> &sqIdSet)
@@ -59,11 +59,12 @@ bool GenerateSquareIds(const SEGMENT_T segments[], int count, hash_set<SQUARE_ID
     squareIdSet.clear();
 
     for (int i=0; i<count; i++) {
+/*
         if ((i % 2) == 0) {
             printf("%s: thread #%d - Generating square IDs, %d/%d, %2.2lf%%\n",
 				ElapsedTimeStr().c_str(), ::GetCurrentThreadId(), i, count, (double)i/count * 100);
         }
-
+*/
         subSet.clear();
         GetSegmentNeighboringSquareIds(&segments[i], subSet);
 
@@ -166,20 +167,20 @@ static bool GenerateSquarePtrArray(TileManager &tileMgr, SQUARE_ID_T squareIds[]
 
         COORDINATE_T centerCoord;
         SquareManager::SquareIdToCenterCoordinate(psq->square_id, &centerCoord);
-        SEG_ID_T seg_id_heading_levels[HEADING_LEVEL_COUNT];
+        SEG_ID_T seg_id_heading_levels[HEADING_LEVEL_NUM];
         // Get seg ID for each heading for the coordinate
-        for (int level = HEADING_LEVEL_COUNT - 1; level >= 0; level--) {
+        for (int level = HEADING_LEVEL_NUM - 1; level >= 0; level--) {
             seg_id_heading_levels[level] =
-                tileMgr.AssignSegment(centerCoord, level * (360 / HEADING_LEVEL_COUNT));
+                tileMgr.AssignSegment(centerCoord, level * (360 / HEADING_LEVEL_NUM));
         }
 
         psq->arr_headings_seg_id.clear();
-        psq->arr_headings_seg_id.reserve(HEADING_LEVEL_COUNT);
+        psq->arr_headings_seg_id.reserve(HEADING_LEVEL_NUM);
 
         // compress seg_id_heading_levels[] into psq->arr_headings_seg_id
-        for (int i1 = 0; i1 < HEADING_LEVEL_COUNT;) {
+        for (int i1 = 0; i1 < HEADING_LEVEL_NUM;) {
             int i2 = i1;
-            while(i2 < HEADING_LEVEL_COUNT && seg_id_heading_levels[i2] == seg_id_heading_levels[i1]) {
+            while(i2 < HEADING_LEVEL_NUM && seg_id_heading_levels[i2] == seg_id_heading_levels[i1]) {
                 i2++;
             }
             i2--;

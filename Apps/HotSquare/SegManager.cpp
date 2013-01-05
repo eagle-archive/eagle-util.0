@@ -72,7 +72,7 @@ bool SegManager::LoadFromCsvFile(const char *path)
 
             // remove duplicated
             if (mSegIdMap.find(seg.seg_id) == mSegIdMap.end()) {
-                seg.heading = SegManager::GetHeading(seg.from, seg.to);
+                seg.heading_int = (int)(SegManager::GetHeading(seg.from, seg.to) + 0.5);
                 mAllSegs.push_back(seg);
                 mSegIdMap.insert(SEG_ID_MAP::value_type(seg.seg_id, count));
                 count++;

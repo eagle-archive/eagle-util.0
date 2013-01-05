@@ -9,7 +9,8 @@
 // Global Constants
 
 // define it to 0 to read all segments
-#define SEGMENTS_CSV_READ_LIMIT  200
+#define SEGMENTS_CSV_READ_LIMIT  0
+#define SEGMENTS_CSV_PATH   "Data\\WAY_SEGMENTS\\data"
 
 // Below two defines are specific to Harbin
 // Refer to http://www.hhlink.com/%E7%BB%8F%E7%BA%AC%E5%BA%A6
@@ -17,16 +18,14 @@
 #define LAT_METERS_PER_DEGREE   111190
 #define LNG_METERS_PER_DEGREE   77628
 
-#define SEGMENTS_CSV_PATH   "Data\\WAY_SEGMENTS\\data"
-
 // square size (in meters)
-#define SQUARE_LAT_SPAN     10
-#define SQUARE_LNG_SPAN     10
+#define SQUARE_LAT_SPAN     8
+#define SQUARE_LNG_SPAN     8
 
 // Device [0, 360) into some heading levels
 // E.g., for 8 heading levels: 0: [-22.5, 22.5), Level 1: [22.5, 45+22.5), ...
 // NOTE: make sure it can be divided by 360
-#define HEADING_LEVEL_COUNT     32
+#define HEADING_LEVEL_NUM   32
 
 #define TILE_ZOOM_LEVEL  17
 #define TOTAL_TILE_NUM  (2 << (TILE_ZOOM_LEVEL - 1))

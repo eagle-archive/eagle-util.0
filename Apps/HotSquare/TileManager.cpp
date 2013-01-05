@@ -85,18 +85,19 @@ static inline void CheckUpdateTile(TILE_MAP_T &tileMap, const TILE_ID_T &tileId,
     }
 }
 
-static inline void AddToSegsNoDuplicate(vector<SEG_ID_T> &segs, hash_set<SEG_ID_T> &segIdsSet) {
+static inline void AddToSegsNoDuplicate(SegManager &mSegMgr, vector<SEGMENT_T *> &segs,
+    hash_set<SEG_ID_T> &segIdsSet) {
     for (hash_set<SEG_ID_T>::iterator it = segIdsSet.begin(); it != segIdsSet.end(); it++) {
         const SEG_ID_T &segId = *it;
         bool found = false;
         for (int i = (int)segs.size() - 1; i >= 0; i--) {
-            if (segId == segs[i]) {
+            if (segId == segs[i]->seg_id) {
                 found = true;
                 break;
             }
         }
         if (!found) {
-            segs.push_back(segId);
+            segs.push_back((SEGMENT_T *)mSegMgr.GetSegByID(segId));
         }
     }
 }
@@ -121,20 +122,21 @@ static inline void CheckAddEmptyNeighborTiles(TILE_MAP_T &tileMap, TILE_ID_T til
 }
 
 // This function only update pTile->segsWithNeighbors[]
-static inline void UpdateTileForNeighborSegs(TILE_MAP_T &tileMap, TILE_T *pTile) {
+static inline void UpdateTileForNeighborSegs(SegManager &mSegMgr, TILE_MAP_T &mTileMap, TILE_T *pTile) {
     pTile->segsWithNeighbors.clear();
     pTile->segsWithNeighbors.reserve(pTile->segIdsSet.size() * 3);
 
     // copy the segments into pTile->segsWithNeighbors
 	for (hash_set<SEG_ID_T>::iterator it = pTile->segIdsSet.begin(); it != pTile->segIdsSet.end(); it++) {
-        pTile->segsWithNeighbors.push_back(*it);
+        //pTile->segsWithNeighbors.push_back(*it);
+        pTile->segsWithNeighbors.push_back((SEGMENT_T *)mSegMgr.GetSegByID(*it));
     }
 
     // copy the neighboring segments into pTile->segsWithNeighbors
     P_TILE_T nbTiles[8];
-    int count = GetNeighborTiles(tileMap, pTile, nbTiles);
+    int count = GetNeighborTiles(mTileMap, pTile, nbTiles);
     for (int i = 0; i < count; i++) {
-        AddToSegsNoDuplicate(pTile->segsWithNeighbors, nbTiles[i]->segIdsSet);
+        AddToSegsNoDuplicate(mSegMgr, pTile->segsWithNeighbors, nbTiles[i]->segIdsSet);
     }
 
 #ifdef CPP11_SUPPORT
@@ -142,9 +144,9 @@ static inline void UpdateTileForNeighborSegs(TILE_MAP_T &tileMap, TILE_T *pTile)
 #endif
 }
 
-bool TileManager::GenerateTiles(SegManager &mSegMgr)
+bool TileManager::GenerateTiles(SegManager &segMgr)
 {
-    mpSegMgr = &mSegMgr;
+    mpSegMgr = &segMgr;
     if (mpSegMgr->GetSegArrayCount() == 0)
         return false;
 
@@ -175,7 +177,7 @@ bool TileManager::GenerateTiles(SegManager &mSegMgr)
     }
 
 	for (TILE_MAP_T::iterator it = mTileMap.begin(); it != mTileMap.end(); it++) {
-        UpdateTileForNeighborSegs(mTileMap, it->second);
+        UpdateTileForNeighborSegs(segMgr, mTileMap, it->second);
     }
 
     return !mTileMap.empty();
@@ -235,7 +237,7 @@ SEG_ID_T TileManager::AssignSegment(const COORDINATE_T &coord, int nHeading)
         return false;
 
     TILE_T *pTile = it->second;
-    std::vector<SEG_ID_T> &arrSegs = pTile->segsWithNeighbors;
+    std::vector<SEGMENT_T *> &arrSegs = pTile->segsWithNeighbors;
 
     double distanceMin = DBL_MAX;
     int minIndex = -1;
@@ -249,13 +251,14 @@ SEG_ID_T TileManager::AssignSegment(const COORDINATE_T &coord, int nHeading)
     double aDistances[MAX];
 
     for (size_t i = 0; i < arrSegs.size(); i++) {
-        const SEGMENT_T *pSeg = mpSegMgr->GetSegByID(arrSegs[i]);
+        //const SEGMENT_T *pSeg = mpSegMgr->GetSegByID(arrSegs[i]);
+        const SEGMENT_T *pSeg = arrSegs[i];
 
         // If not the same direction, ignore
-        aIsSameDir[i] = InSameDirection((int)(pSeg->heading + 0.5), nHeading);
+        aIsSameDir[i] = InSameDirection(pSeg->heading_int, nHeading);
         if (aIsSameDir[i]) {
             // get the min distance
-            double distance = SegManager::CalcDistance(coord, *pSeg);
+            double distance = SegManager::CalcDistanceSquareMeters(coord, *pSeg);
             aDistances[i] = distance;
             if (distance < distanceMin) {
                 minIndex = i;
@@ -266,9 +269,11 @@ SEG_ID_T TileManager::AssignSegment(const COORDINATE_T &coord, int nHeading)
 
     int angleMin = 180;
     for (size_t i = 0; i < arrSegs.size(); i++) {
-        if (aIsSameDir[i] && (distanceMin == aDistances[i])) {
-            const SEGMENT_T *pSeg = mpSegMgr->GetSegByID(arrSegs[i]);
-            int angle = GetAngle((int)(pSeg->heading + 0.5), nHeading);
+        if (aIsSameDir[i] &&
+            (distanceMin - aDistances[i] < 1) &&
+            (distanceMin - aDistances[i] > -1))
+        {
+            int angle = GetAngle(arrSegs[i]->heading_int, nHeading);
             if (angle < angleMin) {
                 minIndex = i;
                 angleMin = angle;
@@ -276,5 +281,5 @@ SEG_ID_T TileManager::AssignSegment(const COORDINATE_T &coord, int nHeading)
         }
     }
 
-    return minIndex < 0 ? 0 : arrSegs[minIndex];
+    return minIndex < 0 ? 0 : arrSegs[minIndex]->seg_id;
 }

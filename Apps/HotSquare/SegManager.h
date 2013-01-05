@@ -27,6 +27,7 @@ typedef struct {
 typedef unsigned long long SEG_ID_T;
 
 typedef struct {
+    // The following are raw data members
     SEG_ID_T seg_id;
     COORDINATE_T from;
     COORDINATE_T to;
@@ -34,7 +35,9 @@ typedef struct {
     short int one_way;
     double length;
     double weight;
-    double heading; // not in raw data, dynimically generated
+
+    // Below are dynamically generated
+    int heading_int; // [0, 359]
 } SEGMENT_T;
 
 class SegManager {
@@ -51,7 +54,7 @@ public:
     };
 
     static int HeadingToLevel(double heading) {
-        return int(heading / (360.0/HEADING_LEVEL_COUNT) + 0.5) % HEADING_LEVEL_COUNT;
+        return int(heading / (360.0/HEADING_LEVEL_NUM) + 0.5) % HEADING_LEVEL_NUM;
     };
     static double GetHeading(const COORDINATE_T &coFrom, const COORDINATE_T &coTo);
     static int GetHeadingLevel(const COORDINATE_T &coFrom, const COORDINATE_T &coTo) {

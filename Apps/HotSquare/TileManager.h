@@ -16,7 +16,8 @@ typedef struct {
     // hash set for all intersected segments
     stdext::hash_set<SEG_ID_T> segIdsSet;
     // array of segments containing segments from extra 8 neighbor 
-    std::vector<SEG_ID_T> segsWithNeighbors;
+    //std::vector<SEG_ID_T> segsWithNeighbors;
+    std::vector<SEGMENT_T *> segsWithNeighbors;
 } TILE_T, *P_TILE_T;
 
 typedef std::map<TILE_ID_T, TILE_T *> TILE_MAP_T;
