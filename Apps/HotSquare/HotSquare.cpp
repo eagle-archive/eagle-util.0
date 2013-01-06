@@ -37,15 +37,15 @@ int main()
         ElapsedTimeStr().c_str(), TILE_ZOOM_LEVEL);
 
     gSquareManager.BuildSquareMap_Multi(gSegManager, gTileManager, 4);
-    printf("%s: Generated %d squares.\n",
+    printf("\n%s: Generated %d squares.\n",
         ElapsedTimeStr().c_str(), gSquareManager.GetSquareCount());
 
-    Test_Main();
-
+    //Test_Main();
+/*
     gSquareManager.SaveToCsvFile("Data\\Squares.csv");
     printf("%s: Squares saved to file Data\\Squares.csv\n",
         ElapsedTimeStr().c_str());
-
+*/
     printf("%s: Done!\n", ElapsedTimeStr().c_str());
 	return 0;
 }

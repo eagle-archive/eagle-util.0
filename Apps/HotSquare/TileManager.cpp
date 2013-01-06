@@ -270,8 +270,7 @@ SEG_ID_T TileManager::AssignSegment(const COORDINATE_T &coord, int nHeading)
     int angleMin = 180;
     for (size_t i = 0; i < arrSegs.size(); i++) {
         if (aIsSameDir[i] &&
-            (distanceMin - aDistances[i] < 1) &&
-            (distanceMin - aDistances[i] > -1))
+            (distanceMin - aDistances[i] < 1) && (distanceMin - aDistances[i] > -1))
         {
             int angle = GetAngle(arrSegs[i]->heading_int, nHeading);
             if (angle < angleMin) {
