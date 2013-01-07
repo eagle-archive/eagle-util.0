@@ -41,11 +41,11 @@ int main()
         ElapsedTimeStr().c_str(), gSquareManager.GetSquareCount());
 
     //Test_Main();
-/*
+
     gSquareManager.SaveToCsvFile("Data\\Squares.csv");
     printf("%s: Squares saved to file Data\\Squares.csv\n",
         ElapsedTimeStr().c_str());
-*/
+
     printf("%s: Done!\n", ElapsedTimeStr().c_str());
 	return 0;
 }
