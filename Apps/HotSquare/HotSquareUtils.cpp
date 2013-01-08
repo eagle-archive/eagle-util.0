@@ -36,6 +36,8 @@ double GetDistanceInMeter(double lat1, double lng1, double lat2, double lng2)
     double radLat2 = rad(lat2);
     double a = radLat1 - radLat2;
     double b = rad(lng1) - rad(lng2);
-    double s = 2 * asin(sqrt(pow(sin(a/2),2) + cos(radLat1)*cos(radLat2)*pow(sin(b/2),2)));
+    double sin_a_2 = sin(a/2);
+    double sin_b_2 = sin(b/2);
+    double s = 2 * asin(sqrt((sin_a_2*sin_a_2) + cos(radLat1)*cos(radLat2)* (sin_b_2*sin_b_2)));
     return s * 6378137; // 6378137 is earth radius in meter
 }
