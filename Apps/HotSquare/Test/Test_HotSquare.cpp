@@ -126,6 +126,19 @@ bool Test_SegManager_Distance()
     return distance1 <= distance2;
 }
 
+void Test_GetTileSize()
+{
+    COORDINATE_T coord;
+    coord.lng = 126.5288783855;
+    coord.lat = 45.8017592384;
+    TILE_ID_T tid = TileManager::CoordToTileId(coord);
+    double north, south, east, west;
+    TileManager::GetBoundingBox(tid, north, south, east, west);
+
+    double m1 = GetDistanceInMeter(north, east, south, east);
+    double m2 = GetDistanceInMeter(north, east, north, west);
+}
+
 bool Test_Main()
 {
     if (false == Test_CoordinateMapping()) {
@@ -134,7 +147,8 @@ bool Test_Main()
     if (false == Test_TileManager()) {
         printf("Test_TileManager failed!\n");
     }
-    //Test_SegManager_Distance();
+    Test_SegManager_Distance();
+    Test_GetTileSize();
     Test_TileManager_SampleDataAssignment();
     Test_SquareManager_SampleDataAssignment();
 

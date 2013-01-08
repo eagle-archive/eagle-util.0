@@ -41,6 +41,7 @@
 
 std::string FormatTimeStr(unsigned int uTimeMs);
 std::string ElapsedTimeStr();
+double GetDistanceInMeter(double lat1, double lng1, double lat2, double lng2);
 
 
 #endif // HOT_SQUARE_H_
