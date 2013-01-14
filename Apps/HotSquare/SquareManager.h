@@ -18,6 +18,8 @@ typedef struct {
 } HEADINGS_TO_SEG_IDS_T;
 
 typedef struct {
+    int square_lng_id;
+    int square_lat_id;
     // low 32 bit from lng coordinate, hi 32 bit from lat coordinate
     SQUARE_ID_T square_id;
     // Array of segment IDs for all the heading levels
@@ -44,6 +46,7 @@ public:
         return (it == mSquareMap.end()) ? NULL : it->second;
     };
     bool SaveToCsvFile(const char *filename);
+    bool SaveToCsvFile2(const char *filename);
     SEG_ID_T AssignSegment(const COORDINATE_T &coord, int nHeading); // return 0 if not found
 
     static inline SQUARE_ID_T CoordinateToSquareId(const COORDINATE_T &coord) {

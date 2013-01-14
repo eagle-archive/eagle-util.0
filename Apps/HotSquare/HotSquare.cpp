@@ -42,7 +42,7 @@ int main()
 
     //Test_Main();
 
-    gSquareManager.SaveToCsvFile("Data\\Squares.csv");
+    gSquareManager.SaveToCsvFile2("Data\\Squares.csv");
     printf("%s: Squares saved to file Data\\Squares.csv\n",
         ElapsedTimeStr().c_str());
 

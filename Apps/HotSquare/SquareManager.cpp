@@ -320,6 +320,27 @@ bool SquareManager::SaveToCsvFile(const char *filename)
     return true;
 }
 
+bool SquareManager::SaveToCsvFile2(const char *filename)
+{
+    std::ofstream out(filename);
+    if (!out.good())
+        return false;
+
+	for (SQUARE_MAP_T::iterator it = mSquareMap.begin(); it != mSquareMap.end(); it++) {
+        SQUARE_T *pSq = it->second;
+        for (size_t i = 0; i < pSq->arr_headings_seg_id.size(); i++) {
+            char buff[512];
+            // "seqare lng id, seqare lat id, heading_from, heading_to, segment id"
+            sprintf(buff, "%d,%d,%d,%d,%lld\n", pSq->square_lng_id, pSq->square_lat_id,
+                pSq->arr_headings_seg_id[i].from_level, pSq->arr_headings_seg_id[i].to_level,
+                pSq->arr_headings_seg_id[i].seg_id);
+            out << buff;
+        }
+    }
+    out.close();
+    return true;
+}
+
 SEG_ID_T SquareManager::AssignSegment(const COORDINATE_T &coord, int nHeading)
 {
     SQUARE_ID_T sqId = SquareManager::CoordinateToSquareId(coord);
